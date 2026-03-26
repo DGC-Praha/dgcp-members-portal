@@ -1,27 +1,63 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { Box, Button, Card, CardContent, Typography } from '@mui/material';
+import { Box, Button, Card, CardContent, Typography, Divider } from '@mui/material';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+
+const TAGOVACKA_PRIMARY = '#001645';
+const TAGOVACKA_ACCENT = '#db2228';
 
 const LoginPage: React.FC = () => {
   const { isAuthenticated, loading, login } = useAuth();
   const { t } = useTranslation();
 
   if (loading) return null;
-  if (isAuthenticated) return <Navigate to="/members" replace />;
+  if (isAuthenticated) return <Navigate to="/" replace />;
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: 'grey.100' }}>
-      <Card sx={{ maxWidth: 400, width: '100%', mx: 2 }}>
-        <CardContent sx={{ textAlign: 'center', py: 4 }}>
-          <Typography variant="h4" gutterBottom fontWeight="bold">
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        bgcolor: '#0d47a1',
+        background: 'linear-gradient(135deg, #0d47a1 0%, #1565c0 100%)',
+      }}
+    >
+      <Card sx={{ maxWidth: 400, width: '100%', mx: 2, border: '1px solid', borderColor: 'divider', boxShadow: '0 8px 32px rgba(0,0,0,0.12)' }}>
+        <CardContent sx={{ textAlign: 'center', py: 5, px: 4 }}>
+          <Box
+            component="img"
+            src="/dgcp-logo-white.png"
+            alt="DGCP"
+            sx={{ height: 48, mb: 2, filter: 'brightness(0)' }}
+          />
+          <Typography variant="h5" fontWeight={700} sx={{ mb: 0.5 }}>
             DGCP Members
           </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
             {t('login.subtitle')}
           </Typography>
-          <Button variant="contained" size="large" fullWidth onClick={login}>
+
+          <Divider sx={{ mb: 3 }} />
+
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={login}
+            sx={{
+              bgcolor: TAGOVACKA_PRIMARY,
+              color: 'white',
+              fontWeight: 600,
+              py: 1.5,
+              textTransform: 'none',
+              '&:hover': {
+                bgcolor: TAGOVACKA_ACCENT,
+              },
+            }}
+          >
             {t('login.button')}
           </Button>
         </CardContent>

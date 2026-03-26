@@ -1,7 +1,7 @@
 {
   "login": {
     "subtitle": "Portál pro členy Discgolf club Prague",
-    "button": "Přihlásit se přes Disc Golf Tags"
+    "button": "Přihlásit se přes tagovacka.cz"
   },
   "callback": {
     "noCode": "Chybí autorizační kód.",
