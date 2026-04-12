@@ -44,6 +44,9 @@ const OAuthCallbackPage: React.FC = () => {
           redirect_uri: `${window.location.origin}/oauth/callback`,
         });
 
+        if (res.data.refresh_token) {
+          localStorage.setItem('oauth_refresh_token', res.data.refresh_token);
+        }
         await setTokenFromCallback(res.data.access_token);
         navigate('/', { replace: true });
       } catch {
