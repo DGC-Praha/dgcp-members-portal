@@ -11,7 +11,7 @@
   },
   "nav": {
     "home": "Přehled",
-    "tournaments": "Nadcházející turnaje",
+    "tournaments": "Turnaje",
     "members": "Členové",
     "account": "Účet"
   },
@@ -19,7 +19,12 @@
     "competitions": "Soutěže",
     "profile": "Můj profil",
     "membersDesc": "Zobrazit seznam členů klubu",
-    "role": "Role"
+    "role": "Role",
+    "myTournaments": "Moje turnaje",
+    "clubMates": "Kde hrají ostatní",
+    "watchedTournaments": "Hlídané turnaje",
+    "myTournamentsEmpty": "Nemáš žádné nadcházející turnaje",
+    "browseTournaments": "Prohlédnout turnaje"
   },
   "members": {
     "title": "Členové",
@@ -30,14 +35,28 @@
   },
   "tournaments": {
     "upcoming": "Nadcházející turnaje",
+    "all": "Turnaje",
     "member": "člen",
     "members": "členů",
-    "name": "Jméno",
+    "name": "Název",
+    "date": "Datum",
     "division": "Divize",
     "rating": "Rating",
     "tag": "Tag",
     "showAll": "Zobrazit všechny ({{count}})",
-    "empty": "Žádné nadcházející turnaje."
+    "empty": "Žádné turnaje k zobrazení.",
+    "players": "Hráčů",
+    "totalCount": "Nalezeno {{count}} turnajů",
+    "filter": {
+      "region": "Kraj",
+      "cadgTier": "Série",
+      "registration": "Registrace",
+      "clear": "Vymazat filtry",
+      "all": "Vše",
+      "yes": "Ano",
+      "no": "Ne",
+      "search": "Hledat turnaj..."
+    }
   },
   "competitions": {
     "tagovacka": "Tagovačka",
@@ -54,5 +73,27 @@
     "pdga": "PDGA číslo",
     "changePassword": "Změnit heslo (na tagovacka.cz)",
     "logout": "Odhlásit se"
+  },
+  "watchdog": {
+    "notify": "Upozornit mě",
+    "subscribed": "Hlídáno",
+    "unsubscribe": "Zrušit",
+    "phase": "Fáze {{number}}",
+    "opensAt": "Otevírá se {{date}}",
+    "atOpen": "Při otevření",
+    "minutesBefore": "{{minutes}} min předem",
+    "noPhases": "Žádné fáze registrace",
+    "alreadyOpened": "Registrace již proběhla",
+    "registrationPhases": "Fáze registrace"
+  },
+  "membership": {
+    "title": "Členství",
+    "dgcp": "DGCP",
+    "cadg": "ČADG",
+    "pdga": "PDGA",
+    "active": "Aktivní",
+    "inactive": "Neaktivní",
+    "unknown": "Nezjištěno",
+    "renew": "Prodloužit"
   }
 }

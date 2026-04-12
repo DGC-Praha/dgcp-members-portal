@@ -26,6 +26,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import TagBadge from './TagBadge';
+import RegistrationWatchdog from './RegistrationWatchdog';
 
 export interface TournamentMember {
   name: string;
@@ -34,6 +35,13 @@ export interface TournamentMember {
   tagNumber: number | null;
   iDiscGolfRating: number | null;
   pdgaRating: number | null;
+}
+
+export interface RegistrationPhase {
+  phaseNumber: number;
+  startsAt: string;
+  endsAt: string;
+  restrictions: string | null;
 }
 
 export interface Tournament {
@@ -49,6 +57,7 @@ export interface Tournament {
   iDiscGolfTournamentId: number;
   pdgaTournamentId: number | null;
   propositionsSyncedAt: string | null;
+  registrationPhases?: RegistrationPhase[];
   members: TournamentMember[];
 }
 
@@ -105,6 +114,14 @@ export const TournamentCard: React.FC<{
             <Typography variant="caption" color="text.secondary">
               {formatDateRange(tournament.dateStart, tournament.dateEnd)}
             </Typography>
+            {tournament.registrationPhases && tournament.registrationPhases.length > 0 && (
+              <Box onClick={(e) => e.stopPropagation()}>
+                <RegistrationWatchdog
+                  tournamentIdgId={tournament.iDiscGolfTournamentId}
+                  registrationPhases={tournament.registrationPhases}
+                />
+              </Box>
+            )}
             <ExpandMoreIcon
               sx={{
                 fontSize: 18,
@@ -260,9 +277,10 @@ export const TournamentCard: React.FC<{
 interface UpcomingTournamentsProps {
   limit?: number;
   showHeader?: boolean;
+  headerKey?: string;
 }
 
-const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHeader = true }) => {
+const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHeader = true, headerKey = 'tournaments.upcoming' }) => {
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
@@ -291,7 +309,7 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
       <Box>
         {showHeader && (
           <Typography variant="overline" sx={{ mb: 1.5, display: 'block', letterSpacing: 1.5, color: 'text.secondary' }}>
-            {tr('tournaments.upcoming')}
+            {tr(headerKey)}
           </Typography>
         )}
         {[1, 2].map((i) => (
@@ -310,7 +328,7 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
     <Box>
       {showHeader && (
         <Typography variant="overline" sx={{ mb: 1.5, display: 'block', letterSpacing: 1.5, color: 'text.secondary' }}>
-          {tr('tournaments.upcoming')}
+          {tr(headerKey)}
         </Typography>
       )}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>

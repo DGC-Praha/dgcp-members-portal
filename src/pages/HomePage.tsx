@@ -17,6 +17,9 @@ import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import TagBadge from '../components/TagBadge';
 import UpcomingTournaments from '../components/UpcomingTournaments';
+import MembershipStatus from '../components/MembershipStatus';
+import MyTournaments from '../components/MyTournaments';
+import WatchedTournaments from '../components/WatchedTournaments';
 
 const TAGOVACKA_PRIMARY = '#001645';
 const TAGOVACKA_ACCENT = '#db2228';
@@ -63,7 +66,7 @@ const HomePage: React.FC = () => {
   return (
     <Box>
       <Grid container spacing={3}>
-        {/* Competition tiles */}
+        {/* Left column: Competitions → Club mates */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Typography variant="overline" sx={{ mb: 1.5, display: 'block', letterSpacing: 1.5, color: 'text.secondary' }}>
             {t('home.competitions')}
@@ -108,11 +111,11 @@ const HomePage: React.FC = () => {
           </Grid>
 
           <Box sx={{ mt: 3 }}>
-            <UpcomingTournaments limit={8} />
+            <UpcomingTournaments limit={5} showHeader headerKey="home.clubMates" />
           </Box>
         </Grid>
 
-        {/* Profile card */}
+        {/* Right column: Profile → My tournaments → Watched tournaments */}
         <Grid size={{ xs: 12, md: 4 }}>
           <Typography variant="overline" sx={{ mb: 1.5, display: 'block', letterSpacing: 1.5, color: 'text.secondary' }}>
             {t('home.profile')}
@@ -178,8 +181,20 @@ const HomePage: React.FC = () => {
                   />
                 )}
               </Box>
+
+              <Divider sx={{ my: 2 }} />
+
+              <MembershipStatus user={user} />
             </CardContent>
           </Card>
+
+          <Box sx={{ mt: 3 }}>
+            <MyTournaments />
+          </Box>
+
+          <Box sx={{ mt: 3 }}>
+            <WatchedTournaments />
+          </Box>
         </Grid>
       </Grid>
     </Box>
