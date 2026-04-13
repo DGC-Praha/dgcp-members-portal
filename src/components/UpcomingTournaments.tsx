@@ -345,7 +345,7 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
           <Button
             variant="text"
             endIcon={<ArrowForwardIcon />}
-            onClick={() => setVisibleCount((prev) => prev + (limit ?? 5))}
+            onClick={() => setVisibleCount(tournaments.length)}
             sx={{ color: ACCENT, fontWeight: 600 }}
           >
             {tr('tournaments.showMore', { count: tournaments.length - visibleCount })}

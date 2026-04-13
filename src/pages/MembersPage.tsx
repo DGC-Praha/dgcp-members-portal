@@ -15,6 +15,7 @@ import {
   InputAdornment,
   Chip,
   Avatar,
+  TableSortLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { api } from '../api/client';
@@ -66,6 +67,8 @@ const MembersPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'tag' | 'rating' | null>(null);
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -88,11 +91,37 @@ const MembersPage: React.FC = () => {
     fetchMembers();
   }, [t]);
 
+  const handleSort = (column: 'tag' | 'rating') => {
+    if (sortBy === column) {
+      setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(column);
+      setSortDir('asc');
+    }
+  };
+
   const filtered = useMemo(() => {
-    if (!search.trim()) return members;
-    const q = search.toLowerCase();
-    return members.filter((m) => m.name.toLowerCase().includes(q));
-  }, [members, search]);
+    let result = members;
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter((m) => m.name.toLowerCase().includes(q));
+    }
+    if (sortBy) {
+      result = [...result].sort((a, b) => {
+        let valA: number;
+        let valB: number;
+        if (sortBy === 'tag') {
+          valA = a.tagNumber ?? Infinity;
+          valB = b.tagNumber ?? Infinity;
+        } else {
+          valA = a.pdgaRating ?? a.iDiscGolfRating ?? 0;
+          valB = b.pdgaRating ?? b.iDiscGolfRating ?? 0;
+        }
+        return sortDir === 'asc' ? valA - valB : valB - valA;
+      });
+    }
+    return result;
+  }, [members, search, sortBy, sortDir]);
 
   if (loading) {
     return (
@@ -143,9 +172,25 @@ const MembersPage: React.FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ width: 40 }} />
-                  <TableCell sx={{ width: 48 }} align="center">Tag</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>{t('members.name')}</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>{t('tournaments.rating')}</TableCell>
+                  <TableCell sx={{ width: 48, fontWeight: 600 }} align="center">
+                    <TableSortLabel
+                      active={sortBy === 'tag'}
+                      direction={sortBy === 'tag' ? sortDir : 'asc'}
+                      onClick={() => handleSort('tag')}
+                    >
+                      Tag
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>
+                    <TableSortLabel
+                      active={sortBy === 'rating'}
+                      direction={sortBy === 'rating' ? sortDir : 'desc'}
+                      onClick={() => handleSort('rating')}
+                    >
+                      {t('tournaments.rating')}
+                    </TableSortLabel>
+                  </TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600 }}>ČADG</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600 }}>PDGA</TableCell>
                 </TableRow>
@@ -170,6 +215,11 @@ const MembersPage: React.FC = () => {
                         {getInitials(member.name)}
                       </Avatar>
                     </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {member.name}
+                      </Typography>
+                    </TableCell>
                     <TableCell align="center">
                       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                         <TagBadge
@@ -178,20 +228,6 @@ const MembersPage: React.FC = () => {
                           badgeColor={badgeColor}
                           highlightColor={highlightColor}
                         />
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {member.name}
-                        </Typography>
-                        {member.role === 'admin' && (
-                          <Chip
-                            label="Admin"
-                            size="small"
-                            sx={{ height: 18, fontSize: '0.6rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
-                          />
-                        )}
                       </Box>
                     </TableCell>
                     <TableCell>

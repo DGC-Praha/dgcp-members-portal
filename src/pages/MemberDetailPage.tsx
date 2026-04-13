@@ -112,17 +112,6 @@ const StatusDot: React.FC<{ active: boolean | null; label: string }> = ({ active
   );
 };
 
-const StatBox: React.FC<{ label: string; value: string | number | null }> = ({ label, value }) => (
-  <Box sx={{ textAlign: 'center', px: 2 }}>
-    <Typography variant="h5" sx={{ fontWeight: 700, color: ACCENT, lineHeight: 1.2 }}>
-      {value ?? '–'}
-    </Typography>
-    <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-      {label}
-    </Typography>
-  </Box>
-);
-
 const MemberDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<MemberDetail | null>(null);
@@ -155,7 +144,7 @@ const MemberDetailPage: React.FC = () => {
 
   if (!data) return null;
 
-  const { player, membership, tagStats, tagHistory, upcomingTournaments, pastTournaments, sharedTournaments } = data;
+  const { player, membership, tagHistory, upcomingTournaments, pastTournaments, sharedTournaments } = data;
 
   return (
     <Box>
@@ -260,34 +249,6 @@ const MemberDetailPage: React.FC = () => {
           </Grid>
         </CardContent>
       </Card>
-
-      {/* Tag stats */}
-      {tagStats.totalExchanges > 0 && (
-        <Card sx={{ border: '1px solid', borderColor: 'divider', boxShadow: 'none', mb: 3 }}>
-          <CardContent sx={{ py: 2 }}>
-            <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
-              {tr('playerCard.tagStats')}
-            </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, flexWrap: 'wrap' }}>
-              <StatBox label={tr('playerCard.currentTag')} value={tagStats.currentTag ? `#${tagStats.currentTag}` : null} />
-              <Divider orientation="vertical" flexItem />
-              <StatBox label={tr('playerCard.bestTag')} value={tagStats.bestTag ? `#${tagStats.bestTag}` : null} />
-              <Divider orientation="vertical" flexItem />
-              <StatBox label={tr('playerCard.exchanges')} value={tagStats.totalExchanges} />
-              <Divider orientation="vertical" flexItem />
-              <StatBox label={tr('playerCard.wins')} value={tagStats.wins} />
-              <Divider orientation="vertical" flexItem />
-              <StatBox label={tr('playerCard.losses')} value={tagStats.losses} />
-              {tagStats.longestHoldDays > 0 && (
-                <>
-                  <Divider orientation="vertical" flexItem />
-                  <StatBox label={tr('playerCard.holdDays')} value={tagStats.longestHoldDays} />
-                </>
-              )}
-            </Box>
-          </CardContent>
-        </Card>
-      )}
 
       <Grid container spacing={3}>
         {/* Left column */}
