@@ -30,6 +30,7 @@ import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import TagBadge from '../components/TagBadge';
+import Achievements from '../components/Achievements';
 import { formatDateRange } from '../components/UpcomingTournaments';
 
 const ACCENT = '#e65100';
@@ -247,6 +248,16 @@ const MemberDetailPage: React.FC = () => {
               </Box>
             </Grid>
           </Grid>
+        </CardContent>
+      </Card>
+
+      {/* Achievements */}
+      <Card sx={{ border: '1px solid', borderColor: 'divider', boxShadow: 'none', mb: 3 }}>
+        <CardContent sx={{ py: 2 }}>
+          <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
+            {tr('playerCard.achievements')}
+          </Typography>
+          <Achievements iDiscGolfId={player.iDiscGolfId} />
         </CardContent>
       </Card>
 
