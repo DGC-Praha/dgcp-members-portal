@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -284,8 +283,8 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [visibleCount, setVisibleCount] = useState(limit ?? Infinity);
   const { t: tr } = useTranslation();
-  const navigate = useNavigate();
 
   useEffect(() => {
     api
@@ -321,8 +320,8 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
 
   if (tournaments.length === 0) return null;
 
-  const visible = limit ? tournaments.slice(0, limit) : tournaments;
-  const hasMore = limit ? tournaments.length > limit : false;
+  const visible = tournaments.slice(0, visibleCount);
+  const hasMore = visibleCount < tournaments.length;
 
   return (
     <Box>
@@ -346,10 +345,10 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
           <Button
             variant="text"
             endIcon={<ArrowForwardIcon />}
-            onClick={() => navigate('/turnaje')}
+            onClick={() => setVisibleCount((prev) => prev + (limit ?? 5))}
             sx={{ color: ACCENT, fontWeight: 600 }}
           >
-            {tr('tournaments.showAll', { count: tournaments.length })}
+            {tr('tournaments.showMore', { count: tournaments.length - visibleCount })}
           </Button>
         </Box>
       )}

@@ -116,6 +116,7 @@ apiClient.interceptors.response.use(
 export const api = {
   getMe: () => apiClient.get('/api/me'),
   getMembers: () => apiClient.get('/api/members'),
+  getMemberDetail: (iDiscGolfId: number) => apiClient.get(`/api/members/${iDiscGolfId}`),
   getUpcomingTournaments: () => apiClient.get('/api/tournaments/upcoming'),
   getMyTournaments: () => apiClient.get('/api/tournaments/my'),
   getMyWatchdogSubscriptions: () => apiClient.get('/api/registration-watchdog/subscriptions'),

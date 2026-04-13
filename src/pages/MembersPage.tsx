@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -10,11 +11,10 @@ import {
   TableRow,
   CircularProgress,
   Alert,
-  Card,
-  CardContent,
   TextField,
   InputAdornment,
   Chip,
+  Avatar,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { api } from '../api/client';
@@ -27,6 +27,38 @@ interface Member {
   iDiscGolfId: number;
   pdgaNumber: number | null;
   tagNumber: number | null;
+  avatarUrl: string | null;
+  iDiscGolfRating: number | null;
+  pdgaRating: number | null;
+  role: string;
+  joinedAt: string;
+  cadgMembershipActive: boolean | null;
+  pdgaMembershipActive: boolean | null;
+}
+
+const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
+  const color = active === true ? '#4caf50' : active === false ? '#f44336' : '#bdbdbd';
+  return (
+    <Box
+      sx={{
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+        bgcolor: color,
+        display: 'inline-block',
+      }}
+    />
+  );
+};
+
+function getInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 }
 
 const MembersPage: React.FC = () => {
@@ -36,6 +68,7 @@ const MembersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const { user } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const m = user?.membership;
   const badgeColor = m?.club.tagBadgeColor || '#1565c0';
@@ -76,7 +109,7 @@ const MembersPage: React.FC = () => {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 2 }}>
-        <Typography variant="h4">
+        <Typography variant="h5" sx={{ fontWeight: 700 }}>
           {t('members.title')}
           <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1.5 }}>
             {members.length}
@@ -105,79 +138,91 @@ const MembersPage: React.FC = () => {
             sx={{ mb: 2, maxWidth: 320 }}
             fullWidth
           />
-          <Card sx={{ border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
-            <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ width: 60 }} align="center">Tag</TableCell>
-                      <TableCell>{t('members.name')}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {filtered.map((member) => (
-                      <TableRow key={member.iDiscGolfId} sx={{ '&:last-child td': { border: 0 } }}>
-                        <TableCell align="center" sx={{ py: 1.5 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <TagBadge
-                              number={member.tagNumber}
-                              size="small"
-                              badgeColor={badgeColor}
-                              highlightColor={highlightColor}
-                            />
-                          </Box>
-                        </TableCell>
-                        <TableCell sx={{ py: 1.5 }}>
-                          <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                            {member.name}
-                          </Typography>
-                          <Box sx={{ display: 'flex', gap: 0.75, mt: 0.75, flexWrap: 'wrap' }}>
-                            <Chip
-                              label={`DGOLF #${member.iDiscGolfId}`}
-                              size="small"
-                              component="a"
-                              href={`https://www.dgolf.cz/cs/players/${member.iDiscGolfId}/`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              clickable
-                              sx={{
-                                height: 22,
-                                fontSize: '0.7rem',
-                                fontWeight: 600,
-                                bgcolor: '#e8f5e9',
-                                color: '#2e7d32',
-                                '&:hover': { bgcolor: '#c8e6c9' },
-                              }}
-                            />
-                            {member.pdgaNumber && (
-                              <Chip
-                                label={`PDGA #${member.pdgaNumber}`}
-                                size="small"
-                                component="a"
-                                href={`https://www.pdga.com/player/${member.pdgaNumber}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                clickable
-                                sx={{
-                                  height: 22,
-                                  fontSize: '0.7rem',
-                                  fontWeight: 600,
-                                  bgcolor: '#e3f2fd',
-                                  color: '#1565c0',
-                                  '&:hover': { bgcolor: '#bbdefb' },
-                                }}
-                              />
-                            )}
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </CardContent>
-          </Card>
+          <TableContainer>
+            <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.8rem' } }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ width: 40 }} />
+                  <TableCell sx={{ width: 48 }} align="center">Tag</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{t('members.name')}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{t('tournaments.rating')}</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600 }}>ČADG</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600 }}>PDGA</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filtered.map((member) => (
+                  <TableRow
+                    key={member.iDiscGolfId}
+                    hover
+                    sx={{
+                      cursor: 'pointer',
+                      '&:last-child td': { border: 0 },
+                    }}
+                    onClick={() => navigate(`/clenove/${member.iDiscGolfId}`)}
+                  >
+                    <TableCell sx={{ px: 1 }}>
+                      <Avatar
+                        src={member.avatarUrl || undefined}
+                        alt={member.name}
+                        sx={{ width: 32, height: 32, bgcolor: '#0d47a1', fontSize: '0.75rem' }}
+                      >
+                        {getInitials(member.name)}
+                      </Avatar>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <TagBadge
+                          number={member.tagNumber}
+                          size="tiny"
+                          badgeColor={badgeColor}
+                          highlightColor={highlightColor}
+                        />
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          {member.name}
+                        </Typography>
+                        {member.role === 'admin' && (
+                          <Chip
+                            label="Admin"
+                            size="small"
+                            sx={{ height: 18, fontSize: '0.6rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', gap: 0.5 }}>
+                        {member.iDiscGolfRating && (
+                          <Chip
+                            label={member.iDiscGolfRating}
+                            size="small"
+                            sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: '#e8f5e9', color: '#2e7d32' }}
+                          />
+                        )}
+                        {member.pdgaRating && (
+                          <Chip
+                            label={member.pdgaRating}
+                            size="small"
+                            sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600, bgcolor: '#e3f2fd', color: '#1565c0' }}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell align="center">
+                      <StatusDot active={member.cadgMembershipActive} />
+                    </TableCell>
+                    <TableCell align="center">
+                      <StatusDot active={member.pdgaMembershipActive} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </>
       )}
     </Box>

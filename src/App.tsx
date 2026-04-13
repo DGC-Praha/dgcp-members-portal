@@ -9,6 +9,7 @@ import HomePage from './pages/HomePage';
 import MembersPage from './pages/MembersPage';
 import AccountPage from './pages/AccountPage';
 import TournamentsPage from './pages/TournamentsPage';
+import MemberDetailPage from './pages/MemberDetailPage';
 import './i18n';
 
 const theme = createTheme({
@@ -35,6 +36,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/turnaje" element={<TournamentsPage />} />
               <Route path="/members" element={<MembersPage />} />
+              <Route path="/clenove/:id" element={<MemberDetailPage />} />
               <Route path="/ucet" element={<AccountPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -44,6 +44,7 @@
     "rating": "Rating",
     "tag": "Tag",
     "showAll": "Zobrazit všechny ({{count}})",
+    "showMore": "Zobrazit další ({{count}})",
     "empty": "Žádné turnaje k zobrazení.",
     "players": "Hráčů",
     "totalCount": "Nalezeno {{count}} turnajů",
@@ -95,5 +96,20 @@
     "inactive": "Neaktivní",
     "unknown": "Nezjištěno",
     "renew": "Prodloužit"
+  },
+  "playerCard": {
+    "memberSince": "Člen od",
+    "tagStats": "Tagovačka",
+    "currentTag": "Aktuální",
+    "bestTag": "Nejlepší",
+    "exchanges": "Výměny",
+    "wins": "Výhry",
+    "losses": "Prohry",
+    "holdDays": "Drží (dní)",
+    "upcoming": "Nadcházející turnaje",
+    "pastTournaments": "Odehrané turnaje 2026",
+    "sharedTournaments": "Hrajeme spolu",
+    "tagHistory": "Historie tagů",
+    "score": "Skóre"
   }
 }

@@ -111,7 +111,7 @@ const HomePage: React.FC = () => {
           </Grid>
 
           <Box sx={{ mt: 3 }}>
-            <UpcomingTournaments limit={5} showHeader headerKey="home.clubMates" />
+            <UpcomingTournaments limit={3} showHeader headerKey="home.clubMates" />
           </Box>
         </Grid>
 
