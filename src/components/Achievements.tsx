@@ -144,17 +144,18 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId }) => {
 
   for (const ach of achievements) {
     const bgColor = ACHIEVEMENT_BG[ach.key] ?? '#f5f5f5';
+    const singleTier = ach.tiers.length === 1;
     for (const t of ach.tiers) {
       badges.push({
         key: `${ach.key}_${t.tier}`,
         emoji: ach.emoji,
-        name: `${ach.name} — ${t.tier.charAt(0).toUpperCase() + t.tier.slice(1)}`,
+        name: singleTier ? ach.name : `${ach.name} — ${t.tier.charAt(0).toUpperCase() + t.tier.slice(1)}`,
         tier: t.tier,
         threshold: t.threshold,
         progress: t.progress,
         earned: t.earned,
         bgColor,
-        ringColor: TIER_COLORS[t.tier] ?? '#9ca3af',
+        ringColor: singleTier ? '#1565c0' : (TIER_COLORS[t.tier] ?? '#9ca3af'),
       });
     }
   }
@@ -164,7 +165,8 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId }) => {
     .map((ach) => {
       const nextTier = ach.tiers.find((t) => !t.earned);
       if (!nextTier) return null;
-      return { name: ach.name, emoji: ach.emoji, progress: nextTier.progress, threshold: nextTier.threshold, tier: nextTier.tier };
+      const singleTier = ach.tiers.length === 1;
+      return { name: ach.name, emoji: ach.emoji, progress: nextTier.progress, threshold: nextTier.threshold, tier: singleTier ? null : nextTier.tier };
     })
     .filter(Boolean)
     .sort((a, b) => (b!.progress / b!.threshold) - (a!.progress / a!.threshold))
@@ -190,7 +192,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId }) => {
         <Box sx={{ mt: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-              {nextGoal.emoji} {nextGoal.name} — {nextGoal.tier}
+              {nextGoal.emoji} {nextGoal.name}{nextGoal.tier ? ` — ${nextGoal.tier}` : ''}
             </Typography>
             <Typography variant="caption" color="text.secondary">
               {nextGoal.progress}/{nextGoal.threshold}
@@ -205,7 +207,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId }) => {
               bgcolor: '#f0f0f0',
               '& .MuiLinearProgress-bar': {
                 borderRadius: 3,
-                bgcolor: TIER_COLORS[nextGoal.tier] ?? '#9ca3af',
+                bgcolor: nextGoal.tier ? (TIER_COLORS[nextGoal.tier] ?? '#9ca3af') : '#1565c0',
               },
             }}
           />
