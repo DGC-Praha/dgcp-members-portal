@@ -251,16 +251,6 @@ const MemberDetailPage: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Achievements */}
-      <Card sx={{ border: '1px solid', borderColor: 'divider', boxShadow: 'none', mb: 3 }}>
-        <CardContent sx={{ py: 2 }}>
-          <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
-            {tr('playerCard.achievements')}
-          </Typography>
-          <Achievements iDiscGolfId={player.iDiscGolfId} />
-        </CardContent>
-      </Card>
-
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid size={{ xs: 12, md: 8 }}>
@@ -375,6 +365,16 @@ const MemberDetailPage: React.FC = () => {
 
         {/* Right column */}
         <Grid size={{ xs: 12, md: 4 }}>
+          {/* Achievements */}
+          {import.meta.env.VITE_FEATURES_ACHIEVEMENTS === 'true' && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
+                {tr('playerCard.achievements')}
+              </Typography>
+              <Achievements iDiscGolfId={player.iDiscGolfId} />
+            </Box>
+          )}
+
           {/* Shared tournaments */}
           {sharedTournaments.length > 0 && (
             <Box sx={{ mb: 3 }}>
