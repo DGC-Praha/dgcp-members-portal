@@ -31,6 +31,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import TagBadge from '../components/TagBadge';
 import Achievements from '../components/Achievements';
+import RatingChart from '../components/RatingChart';
 import { formatDateRange } from '../components/UpcomingTournaments';
 
 const ACCENT = '#e65100';
@@ -92,6 +93,11 @@ interface MemberDetail {
     dateEnd: string;
     iDiscGolfTournamentId: number;
   }>;
+  ratingHistory: Array<{
+    type: string;
+    rating: number;
+    date: string;
+  }>;
 }
 
 function getInitials(name: string): string {
@@ -145,7 +151,7 @@ const MemberDetailPage: React.FC = () => {
 
   if (!data) return null;
 
-  const { player, membership, tagHistory, upcomingTournaments, pastTournaments, sharedTournaments } = data;
+  const { player, membership, tagHistory, upcomingTournaments, pastTournaments, sharedTournaments, ratingHistory } = data;
 
   return (
     <Box>
@@ -167,86 +173,98 @@ const MemberDetailPage: React.FC = () => {
       >
         <CardContent sx={{ p: 3 }}>
           <Grid container spacing={3} alignItems="center">
-            <Grid size={{ xs: 12, sm: 'auto' }}>
-              <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
-                <Avatar
-                  src={player.avatarUrl || undefined}
-                  alt={player.name}
-                  sx={{
-                    width: 96,
-                    height: 96,
-                    bgcolor: badgeColor,
-                    fontSize: '2rem',
-                    fontWeight: 700,
-                    border: '3px solid white',
-                    boxShadow: `0 4px 20px ${alpha(badgeColor, 0.3)}`,
-                  }}
-                >
-                  {getInitials(player.name)}
-                </Avatar>
-              </Box>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 'grow' }}>
-              <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: { xs: 'center', sm: 'flex-start' }, flexWrap: 'wrap' }}>
-                  <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                    {player.name}
-                  </Typography>
-                  {membership.role === 'admin' && (
-                    <Chip label="Admin" size="small" sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }} />
-                  )}
-                </Box>
+            {/* Left: player info (60%) */}
+            <Grid size={{ xs: 12, md: ratingHistory && ratingHistory.length >= 2 ? 7 : 12 }}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid size={{ xs: 12, sm: 'auto' }}>
+                  <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
+                    <Avatar
+                      src={player.avatarUrl || undefined}
+                      alt={player.name}
+                      sx={{
+                        width: 96,
+                        height: 96,
+                        bgcolor: badgeColor,
+                        fontSize: '2rem',
+                        fontWeight: 700,
+                        border: '3px solid white',
+                        boxShadow: `0 4px 20px ${alpha(badgeColor, 0.3)}`,
+                      }}
+                    >
+                      {getInitials(player.name)}
+                    </Avatar>
+                  </Box>
+                </Grid>
+                <Grid size={{ xs: 12, sm: 'grow' }}>
+                  <Box sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, justifyContent: { xs: 'center', sm: 'flex-start' }, flexWrap: 'wrap' }}>
+                      <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                        {player.name}
+                      </Typography>
+                      {membership.role === 'admin' && (
+                        <Chip label="Admin" size="small" sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }} />
+                      )}
+                    </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1, justifyContent: { xs: 'center', sm: 'flex-start' }, flexWrap: 'wrap' }}>
-                  <TagBadge number={membership.tagNumber} size="small" badgeColor={badgeColor} highlightColor={highlightColor} />
-                  <Chip
-                    label={`DGOLF #${player.iDiscGolfId}`}
-                    size="small"
-                    component="a"
-                    href={`https://www.dgolf.cz/cs/players/${player.iDiscGolfId}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    clickable
-                    sx={{ fontWeight: 600, fontSize: '0.75rem', bgcolor: '#e8f5e9', color: '#2e7d32', '&:hover': { bgcolor: '#c8e6c9' } }}
-                  />
-                  {player.pdgaNumber && (
-                    <Chip
-                      label={`PDGA #${player.pdgaNumber}`}
-                      size="small"
-                      component="a"
-                      href={`https://www.pdga.com/player/${player.pdgaNumber}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      clickable
-                      sx={{ fontWeight: 600, fontSize: '0.75rem', bgcolor: '#e3f2fd', color: '#1565c0', '&:hover': { bgcolor: '#bbdefb' } }}
-                    />
-                  )}
-                </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1, justifyContent: { xs: 'center', sm: 'flex-start' }, flexWrap: 'wrap' }}>
+                      <TagBadge number={membership.tagNumber} size="small" badgeColor={badgeColor} highlightColor={highlightColor} />
+                      <Chip
+                        label={`DGOLF #${player.iDiscGolfId}`}
+                        size="small"
+                        component="a"
+                        href={`https://www.dgolf.cz/cs/players/${player.iDiscGolfId}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        clickable
+                        sx={{ fontWeight: 600, fontSize: '0.75rem', bgcolor: '#e8f5e9', color: '#2e7d32', '&:hover': { bgcolor: '#c8e6c9' } }}
+                      />
+                      {player.pdgaNumber && (
+                        <Chip
+                          label={`PDGA #${player.pdgaNumber}`}
+                          size="small"
+                          component="a"
+                          href={`https://www.pdga.com/player/${player.pdgaNumber}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          clickable
+                          sx={{ fontWeight: 600, fontSize: '0.75rem', bgcolor: '#e3f2fd', color: '#1565c0', '&:hover': { bgcolor: '#bbdefb' } }}
+                        />
+                      )}
+                    </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1.5, justifyContent: { xs: 'center', sm: 'flex-start' }, flexWrap: 'wrap' }}>
-                  {player.iDiscGolfRating && (
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      <Typography component="span" color="text.secondary" sx={{ fontSize: '0.75rem' }}>iDG </Typography>
-                      {player.iDiscGolfRating}
-                    </Typography>
-                  )}
-                  {player.pdgaRating && (
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      <Typography component="span" color="text.secondary" sx={{ fontSize: '0.75rem' }}>PDGA </Typography>
-                      {player.pdgaRating}
-                    </Typography>
-                  )}
-                  <Divider orientation="vertical" flexItem />
-                  <StatusDot active={membership.active} label="DGCP" />
-                  <StatusDot active={player.cadgMembershipActive} label="ČADG" />
-                  {player.pdgaNumber && <StatusDot active={player.pdgaMembershipActive} label="PDGA" />}
-                  <Divider orientation="vertical" flexItem />
-                  <Typography variant="caption" color="text.secondary">
-                    {tr('playerCard.memberSince')} {new Date(membership.joinedAt).toLocaleDateString('cs-CZ')}
-                  </Typography>
-                </Box>
-              </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1.5, justifyContent: { xs: 'center', sm: 'flex-start' }, flexWrap: 'wrap' }}>
+                      {player.iDiscGolfRating && (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          <Typography component="span" color="text.secondary" sx={{ fontSize: '0.75rem' }}>iDG </Typography>
+                          {player.iDiscGolfRating}
+                        </Typography>
+                      )}
+                      {player.pdgaRating && (
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                          <Typography component="span" color="text.secondary" sx={{ fontSize: '0.75rem' }}>PDGA </Typography>
+                          {player.pdgaRating}
+                        </Typography>
+                      )}
+                      <Divider orientation="vertical" flexItem />
+                      <StatusDot active={membership.active} label="DGCP" />
+                      <StatusDot active={player.cadgMembershipActive} label="ČADG" />
+                      {player.pdgaNumber && <StatusDot active={player.pdgaMembershipActive} label="PDGA" />}
+                      <Divider orientation="vertical" flexItem />
+                      <Typography variant="caption" color="text.secondary">
+                        {tr('playerCard.memberSince')} {new Date(membership.joinedAt).toLocaleDateString('cs-CZ')}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Grid>
+              </Grid>
             </Grid>
+
+            {/* Right: rating chart (40%) */}
+            {ratingHistory && ratingHistory.length >= 2 && (
+              <Grid size={{ xs: 12, md: 5 }}>
+                <RatingChart ratingHistory={ratingHistory} height={140} />
+              </Grid>
+            )}
           </Grid>
         </CardContent>
       </Card>
