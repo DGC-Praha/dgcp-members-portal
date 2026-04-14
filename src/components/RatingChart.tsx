@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import {
   ResponsiveContainer,
   LineChart,
@@ -7,7 +7,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   CartesianGrid,
 } from 'recharts';
 
@@ -54,9 +53,6 @@ const RatingChart: React.FC<RatingChartProps> = ({ ratingHistory, height = 220 }
 
   return (
     <Box>
-      <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1 }}>
-        Rating
-      </Typography>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
@@ -83,11 +79,6 @@ const RatingChart: React.FC<RatingChartProps> = ({ ratingHistory, height = 220 }
               fontSize: 13,
             }}
           />
-          {(hasIdg && hasPdga) && (
-            <Legend
-              wrapperStyle={{ fontSize: 12, paddingTop: 4 }}
-            />
-          )}
           {hasIdg && (
             <Line
               type="monotone"

@@ -261,8 +261,10 @@ const MemberDetailPage: React.FC = () => {
 
             {/* Right: rating chart (40%) */}
             {ratingHistory && ratingHistory.length >= 2 && (
-              <Grid size={{ xs: 12, md: 5 }}>
-                <RatingChart ratingHistory={ratingHistory} height={140} />
+              <Grid size={{ xs: 12, md: 5 }} sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ width: '100%' }}>
+                  <RatingChart ratingHistory={ratingHistory} height={140} />
+                </Box>
               </Grid>
             )}
           </Grid>
