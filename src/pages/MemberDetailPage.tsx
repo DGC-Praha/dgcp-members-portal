@@ -366,14 +366,12 @@ const MemberDetailPage: React.FC = () => {
         {/* Right column */}
         <Grid size={{ xs: 12, md: 4 }}>
           {/* Achievements */}
-          {import.meta.env.VITE_FEATURES_ACHIEVEMENTS === 'true' && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
-                {tr('playerCard.achievements')}
-              </Typography>
-              <Achievements iDiscGolfId={player.iDiscGolfId} />
-            </Box>
-          )}
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
+              {tr('playerCard.achievements')}
+            </Typography>
+            <Achievements iDiscGolfId={player.iDiscGolfId} />
+          </Box>
 
           {/* Shared tournaments */}
           {sharedTournaments.length > 0 && (
