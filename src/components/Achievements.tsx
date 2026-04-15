@@ -103,7 +103,7 @@ const ArcBadge: React.FC<{
   const pct = earned ? 100 : Math.min((progress / threshold) * 100, 100);
 
   const tooltipContent = earned ? (
-    <Typography variant="body2" sx={{ fontWeight: 700 }}>{name} ✓</Typography>
+    <Typography variant="body2" sx={{ fontWeight: 700 }}>{name}</Typography>
   ) : (
     <Box sx={{ textAlign: 'center' }}>
       <Typography variant="body2" sx={{ fontWeight: 700 }}>{name}</Typography>
@@ -294,12 +294,15 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
   for (const ach of achievements) {
     const bgColor = ACHIEVEMENT_BG[ach.key] ?? '#f5f5f5';
     const singleTier = ach.tiers.length === 1;
+    let foundNextTier = false;
     for (const t of ach.tiers) {
+      const isNextTier = !t.earned && !foundNextTier;
+      if (isNextTier) foundNextTier = true;
       badges.push({
         key: `${ach.key}_${t.tier}`,
         emoji: ach.emoji,
         name: singleTier ? ach.name : `${ach.name} — ${t.tier.charAt(0).toUpperCase() + t.tier.slice(1)}`,
-        progress: t.progress,
+        progress: t.earned ? t.threshold : isNextTier ? t.progress : 0,
         threshold: t.threshold,
         earned: t.earned,
         bgColor,
