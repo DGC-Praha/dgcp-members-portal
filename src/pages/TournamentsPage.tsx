@@ -4,10 +4,7 @@ import {
   Typography,
   Chip,
   Skeleton,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+  Autocomplete,
   Pagination,
   Button,
   TextField,
@@ -64,8 +61,8 @@ const TournamentsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({ leagues: [], regions: [], cadgTiers: [], pdgaTiers: [] });
 
-  const [region, setRegion] = useState('');
-  const [cadgTier, setCadgTier] = useState('');
+  const [regions, setRegions] = useState<string[]>([]);
+  const [cadgTiers, setCadgTiers] = useState<string[]>([]);
   const [pdgaFilter, setPdgaFilter] = useState<'all' | 'yes' | 'no'>('all');
   const [regFilter, setRegFilter] = useState<'all' | 'yes' | 'no'>('all');
   const [search, setSearch] = useState('');
@@ -93,9 +90,9 @@ const TournamentsPage: React.FC = () => {
 
   const fetchTournaments = useCallback(() => {
     setLoading(true);
-    const params: Record<string, string | number> = { page, limit };
-    if (region) params.region = region;
-    if (cadgTier) params.cadgTier = cadgTier;
+    const params: Record<string, string | number | string[]> = { page, limit };
+    if (regions.length) params.region = regions;
+    if (cadgTiers.length) params.cadgTier = cadgTiers;
     if (pdgaFilter === 'yes') params.pdga = 1;
     if (pdgaFilter === 'no') params.pdga = 0;
     if (regFilter === 'yes') params.registration = 1;
@@ -109,25 +106,20 @@ const TournamentsPage: React.FC = () => {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [page, region, cadgTier, pdgaFilter, regFilter, debouncedSearch]);
+  }, [page, regions, cadgTiers, pdgaFilter, regFilter, debouncedSearch]);
 
   useEffect(() => {
     fetchTournaments();
   }, [fetchTournaments]);
 
-  const hasFilters = region || cadgTier || pdgaFilter !== 'all' || regFilter !== 'all' || debouncedSearch;
+  const hasFilters = regions.length > 0 || cadgTiers.length > 0 || pdgaFilter !== 'all' || regFilter !== 'all' || debouncedSearch;
 
   const clearFilters = () => {
-    setRegion('');
-    setCadgTier('');
+    setRegions([]);
+    setCadgTiers([]);
     setPdgaFilter('all');
     setRegFilter('all');
     setSearch('');
-    setPage(1);
-  };
-
-  const handleFilterChange = (setter: (v: string) => void) => (e: { target: { value: string } }) => {
-    setter(e.target.value);
     setPage(1);
   };
 
@@ -157,24 +149,26 @@ const TournamentsPage: React.FC = () => {
           }}
           sx={{ minWidth: 200 }}
         />
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>{tr('tournaments.filter.region')}</InputLabel>
-          <Select value={region} onChange={handleFilterChange(setRegion)} label={tr('tournaments.filter.region')}>
-            <MenuItem value="">{tr('tournaments.filter.all')}</MenuItem>
-            {filterOptions.regions.map((v) => (
-              <MenuItem key={v} value={v}>{v}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
-          <InputLabel>{tr('tournaments.filter.cadgTier')}</InputLabel>
-          <Select value={cadgTier} onChange={handleFilterChange(setCadgTier)} label={tr('tournaments.filter.cadgTier')}>
-            <MenuItem value="">{tr('tournaments.filter.all')}</MenuItem>
-            {filterOptions.cadgTiers.map((v) => (
-              <MenuItem key={v} value={v}>{v}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Autocomplete
+          multiple
+          size="small"
+          options={filterOptions.regions}
+          value={regions}
+          onChange={(_e, v) => { setRegions(v); setPage(1); }}
+          renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.region')} />}
+          sx={{ minWidth: 200 }}
+          limitTags={2}
+        />
+        <Autocomplete
+          multiple
+          size="small"
+          options={filterOptions.cadgTiers}
+          value={cadgTiers}
+          onChange={(_e, v) => { setCadgTiers(v); setPage(1); }}
+          renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.cadgTier')} />}
+          sx={{ minWidth: 200 }}
+          limitTags={2}
+        />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
             PDGA

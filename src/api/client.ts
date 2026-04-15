@@ -123,8 +123,8 @@ export const api = {
   getMyTournaments: () => apiClient.get('/api/tournaments/my'),
   getMyWatchdogSubscriptions: () => apiClient.get('/api/registration-watchdog/subscriptions'),
   getAllTournaments: (params: {
-    region?: string;
-    cadgTier?: string;
+    region?: string[];
+    cadgTier?: string[];
     pdga?: number;
     registration?: number;
     search?: string;
