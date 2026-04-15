@@ -252,9 +252,10 @@ const AchievementDetailModal: React.FC<{
 
 interface AchievementsProps {
   iDiscGolfId: number;
+  title?: string;
 }
 
-const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId }) => {
+const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -309,6 +310,17 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId }) => {
 
   return (
     <Box>
+      {title && (
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+          <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary' }}>
+            {title}
+          </Typography>
+          <IconButton size="small" onClick={() => setModalOpen(true)} sx={{ color: 'text.disabled', '&:hover': { color: 'primary.main' } }}>
+            <InfoOutlinedIcon sx={{ fontSize: 16 }} />
+          </IconButton>
+        </Box>
+      )}
+
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         {badges.map((b) => (
           <ArcBadge
@@ -322,24 +334,6 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId }) => {
             earned={b.earned}
           />
         ))}
-      </Box>
-
-      <Box
-        onClick={() => setModalOpen(true)}
-        sx={{
-          mt: 1,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 0.5,
-          cursor: 'pointer',
-          color: 'text.secondary',
-          '&:hover': { color: 'primary.main' },
-        }}
-      >
-        <InfoOutlinedIcon sx={{ fontSize: 14 }} />
-        <Typography variant="caption" sx={{ fontSize: '0.7rem' }}>
-          Detail
-        </Typography>
       </Box>
 
       <AchievementDetailModal

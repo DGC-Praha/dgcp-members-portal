@@ -387,10 +387,7 @@ const MemberDetailPage: React.FC = () => {
         <Grid size={{ xs: 12, md: 4 }}>
           {/* Achievements */}
           <Box sx={{ mb: 3 }}>
-            <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
-              {tr('playerCard.achievements')}
-            </Typography>
-            <Achievements iDiscGolfId={player.iDiscGolfId} />
+            <Achievements iDiscGolfId={player.iDiscGolfId} title={tr('playerCard.achievements')} />
           </Box>
 
           {/* Shared tournaments */}
