@@ -71,58 +71,45 @@ const HomePage: React.FC = () => {
 
   return (
     <Box>
-      <Grid container spacing={3}>
-        {/* Left column: Competitions → Club mates */}
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Typography variant="overline" sx={{ mb: 1.5, display: 'block', letterSpacing: 1.5, color: 'text.secondary' }}>
-            {t('home.competitions')}
-          </Typography>
-          <Grid container spacing={2}>
-            {competitions.map((c) => (
-              <Grid size={{ xs: 12, sm: 4 }} key={c.titleKey}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    boxShadow: 'none',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      borderColor: c.accent,
-                      boxShadow: `0 4px 20px ${alpha(c.accent, 0.15)}`,
-                    },
-                  }}
-                >
-                  <CardActionArea
-                    href={c.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{ height: '100%', p: 2.5 }}
-                  >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-                      <Box sx={{ color: c.accent, display: 'flex' }}>
-                        {c.icon}
-                      </Box>
-                    </Box>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 700, color: c.color, mb: 0.5 }}>
-                      {t(c.titleKey)}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.5 }}>
-                      {t(c.descKey)}
-                    </Typography>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
+      {/* Top row: 3 competition cards + profile card, all same height */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        {competitions.map((c) => (
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={c.titleKey}>
+            <Card
+              sx={{
+                height: '100%',
+                border: '1px solid',
+                borderColor: 'divider',
+                boxShadow: 'none',
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  borderColor: c.accent,
+                  boxShadow: `0 4px 20px ${alpha(c.accent, 0.15)}`,
+                },
+              }}
+            >
+              <CardActionArea
+                href={c.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                sx={{ height: '100%', p: 2 }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
+                  <Box sx={{ color: c.accent, display: 'flex' }}>
+                    {c.icon}
+                  </Box>
+                </Box>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: c.color, mb: 0.25 }}>
+                  {t(c.titleKey)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.4 }}>
+                  {t(c.descKey)}
+                </Typography>
+              </CardActionArea>
+            </Card>
           </Grid>
-
-          <Box sx={{ mt: 3 }}>
-            <UpcomingTournaments limit={6} showHeader headerKey="home.clubMates" />
-          </Box>
-        </Grid>
-
-        {/* Right column: Profile → My tournaments → Watched tournaments */}
-        <Grid size={{ xs: 12, md: 4 }}>
+        ))}
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <Card
             sx={{
               border: '1px solid',
@@ -188,18 +175,35 @@ const HomePage: React.FC = () => {
                     sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
                   />
                 )}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 'auto' }}>
-                  <StatusDot active={m?.active ?? null} />
-                  <StatusDot active={user.cadgMembershipActive} />
-                  {user.pdgaNumber && <StatusDot active={user.pdgaMembershipActive} />}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 'auto' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                    <StatusDot active={m?.active ?? null} />
+                    <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>DGCP</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                    <StatusDot active={user.cadgMembershipActive} />
+                    <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>ČADG</Typography>
+                  </Box>
+                  {user.pdgaNumber && (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+                      <StatusDot active={user.pdgaMembershipActive} />
+                      <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>PDGA</Typography>
+                    </Box>
+                  )}
                 </Box>
               </Box>
             </CardContent>
           </Card>
+        </Grid>
+      </Grid>
 
-          <Box sx={{ mt: 3 }}>
-            <MyTournaments />
-          </Box>
+      {/* Bottom: two columns — club mates left, my stuff right */}
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <UpcomingTournaments limit={6} showHeader headerKey="home.clubMates" />
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <MyTournaments />
 
           <Box sx={{ mt: 3 }}>
             <WatchedTournaments />
