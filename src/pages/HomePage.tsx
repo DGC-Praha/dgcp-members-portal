@@ -71,10 +71,12 @@ const HomePage: React.FC = () => {
 
   return (
     <Box>
-      {/* Top row: 3 competition cards + profile card, all same height */}
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        {competitions.map((c) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={c.titleKey}>
+      {/* Top row: competitions (8 cols) + profile (4 cols) */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 12, md: 8 }}>
+          <Grid container spacing={2} sx={{ height: '100%' }}>
+            {competitions.map((c) => (
+              <Grid size={{ xs: 12, sm: 4 }} key={c.titleKey}>
             <Card
               sx={{
                 height: '100%',
@@ -109,7 +111,9 @@ const HomePage: React.FC = () => {
             </Card>
           </Grid>
         ))}
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          </Grid>
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             sx={{
               border: '1px solid',
