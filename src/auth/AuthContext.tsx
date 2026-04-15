@@ -19,6 +19,8 @@ export interface User {
   email: string;
   iDiscGolfId: number;
   pdgaNumber: number | null;
+  iDiscGolfRating: number | null;
+  pdgaRating: number | null;
   cadgMembershipActive: boolean | null;
   pdgaMembershipActive: boolean | null;
   membership: Membership | null;
@@ -58,6 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: d.email,
         iDiscGolfId: d.iDiscGolfId,
         pdgaNumber: d.pdgaNumber,
+        iDiscGolfRating: d.iDiscGolfRating ?? null,
+        pdgaRating: d.pdgaRating ?? null,
         cadgMembershipActive: d.cadgMembershipActive ?? null,
         pdgaMembershipActive: d.pdgaMembershipActive ?? null,
         membership: m ? {

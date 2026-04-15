@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -7,9 +8,10 @@ import {
   Typography,
   Grid,
   Chip,
-  Divider,
+  Button,
   alpha,
 } from '@mui/material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import AdjustOutlinedIcon from '@mui/icons-material/AdjustOutlined';
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined';
@@ -17,7 +19,6 @@ import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import TagBadge from '../components/TagBadge';
 import UpcomingTournaments from '../components/UpcomingTournaments';
-import MembershipStatus from '../components/MembershipStatus';
 import MyTournaments from '../components/MyTournaments';
 import WatchedTournaments from '../components/WatchedTournaments';
 
@@ -53,9 +54,15 @@ const competitions = [
   },
 ];
 
+const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
+  const color = active === true ? '#4caf50' : active === false ? '#f44336' : '#9e9e9e';
+  return <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: color, display: 'inline-block' }} />;
+};
+
 const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   if (!user) return null;
 
@@ -117,74 +124,91 @@ const HomePage: React.FC = () => {
 
         {/* Right column: Profile → My tournaments → Watched tournaments */}
         <Grid size={{ xs: 12, md: 4 }}>
-          <Typography variant="overline" sx={{ mb: 1.5, display: 'block', letterSpacing: 1.5, color: 'text.secondary' }}>
-            {t('home.profile')}
-          </Typography>
-          <Card sx={{ border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Card
+            sx={{
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: 'none',
+              overflow: 'visible',
+              background: `linear-gradient(135deg, ${alpha(badgeColor, 0.04)} 0%, ${alpha(highlightColor, 0.08)} 100%)`,
+            }}
+          >
+            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
+              {/* Tag + Name row */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
                 <TagBadge
                   number={m?.tagNumber ?? null}
                   size="large"
                   badgeColor={badgeColor}
                   highlightColor={highlightColor}
                 />
-                <Box sx={{ ml: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
                     {user.name}
                   </Typography>
                   {m && (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="caption" color="text.secondary">
                       {m.club.name}
                     </Typography>
                   )}
                 </Box>
               </Box>
 
-              <Divider sx={{ my: 2 }} />
+              {/* Ratings */}
+              {(user.iDiscGolfRating || user.pdgaRating) && (
+                <Box sx={{ display: 'flex', gap: 2, mb: 1.5 }}>
+                  {user.iDiscGolfRating && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.65rem', lineHeight: 1 }}>
+                        iDG Rating
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 700, color: '#2e7d32' }}>
+                        {user.iDiscGolfRating}
+                      </Typography>
+                    </Box>
+                  )}
+                  {user.pdgaRating && (
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.65rem', lineHeight: 1 }}>
+                        PDGA Rating
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 700, color: '#1565c0' }}>
+                        {user.pdgaRating}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              )}
 
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {user.iDiscGolfId && (
-                  <Chip
-                    label={`DGOLF #${user.iDiscGolfId}`}
-                    size="small"
-                    component="a"
-                    href={`https://www.dgolf.cz/cs/players/${user.iDiscGolfId}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    clickable
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '0.75rem',
-                      bgcolor: '#e8f5e9',
-                      color: '#2e7d32',
-                      '&:hover': { bgcolor: '#c8e6c9' },
-                    }}
-                  />
-                )}
+              {/* IDs + Membership in compact row */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1.5 }}>
+                <Chip label={`DGOLF #${user.iDiscGolfId}`} size="small" sx={{ height: 20, fontWeight: 600, fontSize: '0.65rem', bgcolor: alpha('#2e7d32', 0.1), color: '#2e7d32' }} />
                 {user.pdgaNumber && (
-                  <Chip
-                    label={`PDGA #${user.pdgaNumber}`}
-                    size="small"
-                    component="a"
-                    href={`https://www.pdga.com/player/${user.pdgaNumber}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    clickable
-                    sx={{
-                      fontWeight: 600,
-                      fontSize: '0.75rem',
-                      bgcolor: '#e3f2fd',
-                      color: '#1565c0',
-                      '&:hover': { bgcolor: '#bbdefb' },
-                    }}
-                  />
+                  <Chip label={`PDGA #${user.pdgaNumber}`} size="small" sx={{ height: 20, fontWeight: 600, fontSize: '0.65rem', bgcolor: alpha('#1565c0', 0.1), color: '#1565c0' }} />
                 )}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 'auto' }}>
+                  <StatusDot active={m?.active ?? null} />
+                  <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>DGCP</Typography>
+                  <StatusDot active={user.cadgMembershipActive} />
+                  <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>ČADG</Typography>
+                  {user.pdgaNumber && (
+                    <>
+                      <StatusDot active={user.pdgaMembershipActive} />
+                      <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>PDGA</Typography>
+                    </>
+                  )}
+                </Box>
               </Box>
 
-              <Divider sx={{ my: 2 }} />
-
-              <MembershipStatus user={user} />
+              {/* Profile link */}
+              <Button
+                size="small"
+                endIcon={<ArrowForwardIcon sx={{ fontSize: 14 }} />}
+                onClick={() => navigate(`/clenove/${user.iDiscGolfId}`)}
+                sx={{ fontWeight: 600, fontSize: '0.75rem', color: badgeColor, p: 0, minWidth: 0, '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' } }}
+              >
+                {t('home.viewProfile')}
+              </Button>
             </CardContent>
           </Card>
 
