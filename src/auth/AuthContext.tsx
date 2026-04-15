@@ -21,6 +21,7 @@ export interface User {
   pdgaNumber: number | null;
   iDiscGolfRating: number | null;
   pdgaRating: number | null;
+  avatarUrl: string | null;
   cadgMembershipActive: boolean | null;
   pdgaMembershipActive: boolean | null;
   membership: Membership | null;
@@ -62,6 +63,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         pdgaNumber: d.pdgaNumber,
         iDiscGolfRating: d.iDiscGolfRating ?? null,
         pdgaRating: d.pdgaRating ?? null,
+        avatarUrl: d.avatarUrl ?? null,
         cadgMembershipActive: d.cadgMembershipActive ?? null,
         pdgaMembershipActive: d.pdgaMembershipActive ?? null,
         membership: m ? {

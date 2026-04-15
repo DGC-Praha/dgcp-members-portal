@@ -8,10 +8,9 @@ import {
   Typography,
   Grid,
   Chip,
-  Button,
+  Avatar,
   alpha,
 } from '@mui/material';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import AdjustOutlinedIcon from '@mui/icons-material/AdjustOutlined';
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined';
@@ -129,86 +128,72 @@ const HomePage: React.FC = () => {
               border: '1px solid',
               borderColor: 'divider',
               boxShadow: 'none',
-              overflow: 'visible',
-              background: `linear-gradient(135deg, ${alpha(badgeColor, 0.04)} 0%, ${alpha(highlightColor, 0.08)} 100%)`,
+              background: `linear-gradient(135deg, ${alpha(badgeColor, 0.03)} 0%, ${alpha(highlightColor, 0.06)} 100%)`,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                borderColor: badgeColor,
+                boxShadow: `0 4px 16px ${alpha(badgeColor, 0.12)}`,
+              },
             }}
+            onClick={() => navigate(`/clenove/${user.iDiscGolfId}`)}
           >
-            <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-              {/* Tag + Name row */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
+            <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+              {/* Avatar + Name + Tag */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                <Avatar
+                  src={user.avatarUrl || undefined}
+                  alt={user.name}
+                  sx={{
+                    width: 48,
+                    height: 48,
+                    bgcolor: badgeColor,
+                    fontSize: '1rem',
+                    fontWeight: 700,
+                    border: '2px solid white',
+                    boxShadow: `0 2px 8px ${alpha(badgeColor, 0.25)}`,
+                  }}
+                >
+                  {user.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+                </Avatar>
+                <Box sx={{ minWidth: 0, flex: 1 }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.2 }} noWrap>
+                    {user.name}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                    {m?.club.name}
+                  </Typography>
+                </Box>
                 <TagBadge
                   number={m?.tagNumber ?? null}
-                  size="large"
+                  size="medium"
                   badgeColor={badgeColor}
                   highlightColor={highlightColor}
                 />
-                <Box sx={{ minWidth: 0 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
-                    {user.name}
-                  </Typography>
-                  {m && (
-                    <Typography variant="caption" color="text.secondary">
-                      {m.club.name}
-                    </Typography>
-                  )}
-                </Box>
               </Box>
 
-              {/* Ratings */}
-              {(user.iDiscGolfRating || user.pdgaRating) && (
-                <Box sx={{ display: 'flex', gap: 2, mb: 1.5 }}>
-                  {user.iDiscGolfRating && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.65rem', lineHeight: 1 }}>
-                        iDG Rating
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 700, color: '#2e7d32' }}>
-                        {user.iDiscGolfRating}
-                      </Typography>
-                    </Box>
-                  )}
-                  {user.pdgaRating && (
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', fontSize: '0.65rem', lineHeight: 1 }}>
-                        PDGA Rating
-                      </Typography>
-                      <Typography variant="body1" sx={{ fontWeight: 700, color: '#1565c0' }}>
-                        {user.pdgaRating}
-                      </Typography>
-                    </Box>
-                  )}
-                </Box>
-              )}
-
-              {/* IDs + Membership in compact row */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 1.5 }}>
-                <Chip label={`DGOLF #${user.iDiscGolfId}`} size="small" sx={{ height: 20, fontWeight: 600, fontSize: '0.65rem', bgcolor: alpha('#2e7d32', 0.1), color: '#2e7d32' }} />
-                {user.pdgaNumber && (
-                  <Chip label={`PDGA #${user.pdgaNumber}`} size="small" sx={{ height: 20, fontWeight: 600, fontSize: '0.65rem', bgcolor: alpha('#1565c0', 0.1), color: '#1565c0' }} />
+              {/* Ratings + Membership — single compact row */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                {user.iDiscGolfRating && (
+                  <Chip
+                    label={`iDG ${user.iDiscGolfRating}`}
+                    size="small"
+                    sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e8f5e9', color: '#2e7d32' }}
+                  />
                 )}
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 'auto' }}>
+                {user.pdgaRating && (
+                  <Chip
+                    label={`PDGA ${user.pdgaRating}`}
+                    size="small"
+                    sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
+                  />
+                )}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, ml: 'auto' }}>
                   <StatusDot active={m?.active ?? null} />
-                  <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>DGCP</Typography>
                   <StatusDot active={user.cadgMembershipActive} />
-                  <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>ČADG</Typography>
-                  {user.pdgaNumber && (
-                    <>
-                      <StatusDot active={user.pdgaMembershipActive} />
-                      <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.secondary' }}>PDGA</Typography>
-                    </>
-                  )}
+                  {user.pdgaNumber && <StatusDot active={user.pdgaMembershipActive} />}
                 </Box>
               </Box>
-
-              {/* Profile link */}
-              <Button
-                size="small"
-                endIcon={<ArrowForwardIcon sx={{ fontSize: 14 }} />}
-                onClick={() => navigate(`/clenove/${user.iDiscGolfId}`)}
-                sx={{ fontWeight: 600, fontSize: '0.75rem', color: badgeColor, p: 0, minWidth: 0, '&:hover': { bgcolor: 'transparent', textDecoration: 'underline' } }}
-              >
-                {t('home.viewProfile')}
-              </Button>
             </CardContent>
           </Card>
 
