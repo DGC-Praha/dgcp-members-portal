@@ -13,7 +13,31 @@
     "home": "Přehled",
     "tournaments": "Turnaje",
     "members": "Členové",
+    "admin": "Administrace",
     "account": "Účet"
+  },
+  "admin": {
+    "members": {
+      "title": "Správa členů",
+      "subtitle": "Přehled všech členů klubu a možnost upravit jejich kontaktní údaje a oprávnění.",
+      "searchPlaceholder": "Hledat podle jména, e-mailu nebo telefonu…",
+      "name": "Jméno",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "role": "Role",
+      "actions": "Akce",
+      "adminBadge": "Administrátor",
+      "memberBadge": "Člen",
+      "isAdmin": "Administrátor",
+      "edit": "Upravit",
+      "save": "Uložit",
+      "cancel": "Zrušit",
+      "editTitle": "Upravit člena: {{name}}",
+      "emailReadonlyHint": "E-mail spravuje tagovacka.cz",
+      "empty": "Žádní členové neodpovídají vyhledávání.",
+      "loadError": "Nepodařilo se načíst seznam členů.",
+      "saveError": "Uložení se nezdařilo. Zkuste to znovu."
+    }
   },
   "home": {
     "competitions": "Soutěže",
