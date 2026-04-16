@@ -33,6 +33,7 @@ jobs:
           VITE_OAUTH_CLIENT_ID: ${{ secrets.VITE_OAUTH_CLIENT_ID }}
           VITE_OAUTH_AUTHORIZE_URL: ${{ secrets.VITE_OAUTH_AUTHORIZE_URL }}
           VITE_OAUTH_CLIENT_SECRET: ${{ secrets.VITE_OAUTH_CLIENT_SECRET }}
+          VITE_MEMBERS_API_URL: https://api-members-dgcp.dominikvoda.com
 
       - name: Copy index.html to 404.html for SPA routing
         run: cp dist/index.html dist/404.html
