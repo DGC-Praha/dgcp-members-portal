@@ -27,6 +27,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SearchIcon from '@mui/icons-material/Search';
+import SyncIcon from '@mui/icons-material/Sync';
 import { useTranslation } from 'react-i18next';
 import { api, membersApi, type ClubMember } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
@@ -75,42 +76,64 @@ const AdminMembersPage: React.FC = () => {
   const [draftPhone, setDraftPhone] = useState('');
   const [draftAdmin, setDraftAdmin] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
+
+  const load = async () => {
+    const [tagRes, clubRes] = await Promise.all([
+      api.getMembers(),
+      membersApi.listClubMembers(),
+    ]);
+    const tagovackaMembers: TagovackaMember[] = tagRes.data;
+    const clubByIDiscGolfId = new Map<number, ClubMember>(
+      clubRes.data.map((c) => [c.iDiscGolfId, c]),
+    );
+    const merged: Row[] = tagovackaMembers.map((m) => {
+      const c = clubByIDiscGolfId.get(m.iDiscGolfId);
+      return {
+        iDiscGolfId: m.iDiscGolfId,
+        name: m.name,
+        avatarUrl: m.avatarUrl,
+        tagNumber: m.tagNumber,
+        email: c?.email ?? null,
+        phone: c?.phone ?? null,
+        isAdmin: c?.isAdmin ?? false,
+        clubId: c?.id ?? null,
+      };
+    });
+    setRows(merged);
+  };
 
   useEffect(() => {
     if (!user?.isAdmin) return;
-    const load = async () => {
-      try {
-        const [tagRes, clubRes] = await Promise.all([
-          api.getMembers(),
-          membersApi.listClubMembers(),
-        ]);
-        const tagovackaMembers: TagovackaMember[] = tagRes.data;
-        const clubByIDiscGolfId = new Map<number, ClubMember>(
-          clubRes.data.map((c) => [c.iDiscGolfId, c]),
-        );
-        const merged: Row[] = tagovackaMembers.map((m) => {
-          const c = clubByIDiscGolfId.get(m.iDiscGolfId);
-          return {
-            iDiscGolfId: m.iDiscGolfId,
-            name: m.name,
-            avatarUrl: m.avatarUrl,
-            tagNumber: m.tagNumber,
-            email: c?.email ?? null,
-            phone: c?.phone ?? null,
-            isAdmin: c?.isAdmin ?? false,
-            clubId: c?.id ?? null,
-          };
-        });
-        setRows(merged);
-      } catch (e) {
+    load()
+      .catch((e) => {
         console.error(e);
         setError(t('admin.members.loadError'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+      })
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.isAdmin, t]);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncMessage(null);
+    try {
+      const res = await membersApi.syncMembers();
+      setSyncMessage(
+        t('admin.members.syncSuccess', {
+          total: res.data.total,
+          created: res.data.created,
+        }),
+      );
+      await load();
+    } catch (e) {
+      console.error(e);
+      setError(t('admin.members.syncError'));
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const filtered = useMemo(() => {
     if (!search.trim()) return rows;
@@ -188,20 +211,36 @@ const AdminMembersPage: React.FC = () => {
         </Alert>
       )}
 
-      <TextField
-        size="small"
-        placeholder={t('admin.members.searchPlaceholder')}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{ mb: 2, maxWidth: 400, width: '100%' }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-        }}
-      />
+      {syncMessage && (
+        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSyncMessage(null)}>
+          {syncMessage}
+        </Alert>
+      )}
+
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2 }} alignItems={{ sm: 'center' }}>
+        <TextField
+          size="small"
+          placeholder={t('admin.members.searchPlaceholder')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{ maxWidth: 400, width: '100%' }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Button
+          variant="outlined"
+          startIcon={syncing ? <CircularProgress size={16} /> : <SyncIcon />}
+          onClick={handleSync}
+          disabled={syncing}
+        >
+          {t('admin.members.sync')}
+        </Button>
+      </Stack>
 
       <TableContainer sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
         <Table>
