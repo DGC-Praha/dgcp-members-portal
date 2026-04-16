@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { api } from '../api/client';
+import { api, membersApi } from '../api/client';
 
 interface Membership {
   tagNumber: number | null;
@@ -25,6 +25,9 @@ export interface User {
   cadgMembershipActive: boolean | null;
   pdgaMembershipActive: boolean | null;
   membership: Membership | null;
+  // Club-specific (from dgcp-members-api):
+  phone: string | null;
+  isAdmin: boolean;
 }
 
 interface AuthContextType {
@@ -52,9 +55,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUser = useCallback(async () => {
     try {
-      const res = await api.getMe();
-      const d = res.data;
+      // Fetch profile from tagovacka AND club-specific data from members-api
+      // in parallel. members-api is allowed to fail (e.g. during a rollout)
+      // without blocking login — we just won't have phone/admin data.
+      const [tagovackaRes, membersRes] = await Promise.all([
+        api.getMe(),
+        membersApi.getMe().catch(() => null),
+      ]);
+      const d = tagovackaRes.data;
       const m = d.memberships?.[0] ?? null;
+      const club = membersRes?.data ?? null;
       setUser({
         id: d.id,
         name: d.name,
@@ -77,6 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             tagBadgeHighlightColor: m.club.tagBadgeHighlightColor,
           },
         } : null,
+        phone: club?.phone ?? null,
+        isAdmin: club?.isAdmin ?? false,
       });
     } catch {
       localStorage.removeItem('oauth_token');

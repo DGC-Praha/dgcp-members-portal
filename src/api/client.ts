@@ -1,9 +1,20 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
+const MEMBERS_API_BASE = import.meta.env.VITE_MEMBERS_API_URL || '';
 
 const apiClient = axios.create({
   baseURL: API_BASE,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// Second axios instance for dgcp-members-api (club-specific data).
+// Shares the bearer token with apiClient — both backends verify the same
+// tagovacka-issued JWT. No separate refresh logic: when the members-api
+// returns 401, the next apiClient (tagovacka) call will trigger the shared
+// refresh flow.
+const membersApiClient = axios.create({
+  baseURL: MEMBERS_API_BASE,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -50,6 +61,16 @@ async function refreshAccessToken(): Promise<string> {
 // --- Interceptors ---
 
 apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('oauth_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Same bearer-token interceptor for membersApiClient. It does NOT do refresh;
+// refresh is delegated to apiClient's interceptor since both share the token.
+membersApiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('oauth_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -143,6 +164,34 @@ export const api = {
     tournamentIdgId: number;
     phaseNumber: number;
   }) => apiClient.post('/api/registration-watchdog/unsubscribe-phase', data),
+};
+
+// --- dgcp-members-api (club-specific data) ---
+
+export interface ClubMember {
+  id: number;
+  iDiscGolfId: number;
+  email: string | null;
+  phone: string | null;
+  isAdmin: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const membersApi = {
+  getMe: () => membersApiClient.get<ClubMember>('/api/me'),
+  updateMe: (data: { phone?: string | null }) =>
+    membersApiClient.patch<ClubMember>('/api/me', data),
+  listClubMembers: () =>
+    membersApiClient.get<ClubMember[]>('/api/admin/club-members'),
+  updateClubMember: (
+    iDiscGolfId: number,
+    data: { phone?: string | null; isAdmin?: boolean; email?: string | null },
+  ) =>
+    membersApiClient.patch<ClubMember>(
+      `/api/admin/club-members/${iDiscGolfId}`,
+      data,
+    ),
 };
 
 export default apiClient;
