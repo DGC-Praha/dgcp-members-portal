@@ -26,6 +26,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
+import GroupIcon from '@mui/icons-material/Group';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -152,6 +153,8 @@ const MemberDetailPage: React.FC = () => {
   if (!data) return null;
 
   const { player, membership, tagHistory, upcomingTournaments, pastTournaments, sharedTournaments, ratingHistory } = data;
+
+  const sharedIds = new Set(sharedTournaments.map((t) => t.iDiscGolfTournamentId));
 
   return (
     <Box>
@@ -281,7 +284,9 @@ const MemberDetailPage: React.FC = () => {
                 {tr('playerCard.upcoming')}
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {upcomingTournaments.map((t) => (
+                {upcomingTournaments.map((t) => {
+                  const isShared = sharedIds.has(t.iDiscGolfTournamentId);
+                  return (
                   <Card
                     key={t.iDiscGolfTournamentId}
                     component="a"
@@ -292,9 +297,10 @@ const MemberDetailPage: React.FC = () => {
                       textDecoration: 'none',
                       color: 'inherit',
                       border: '1px solid',
-                      borderColor: 'divider',
+                      borderColor: isShared ? '#1565c0' : 'divider',
                       boxShadow: 'none',
                       transition: 'all 0.2s ease',
+                      ...(isShared && { bgcolor: alpha('#1565c0', 0.03) }),
                       '&:hover': { borderColor: ACCENT, boxShadow: `0 2px 12px ${alpha(ACCENT, 0.1)}` },
                     }}
                   >
@@ -303,6 +309,11 @@ const MemberDetailPage: React.FC = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <EmojiEventsOutlinedIcon sx={{ color: ACCENT, fontSize: 18 }} />
                           <Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography>
+                          {isShared && (
+                            <Tooltip title={tr('playerCard.sharedTournaments')} arrow>
+                              <GroupIcon sx={{ fontSize: 16, color: '#1565c0' }} />
+                            </Tooltip>
+                          )}
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
                           <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }} />
@@ -317,7 +328,8 @@ const MemberDetailPage: React.FC = () => {
                       </Box>
                     </CardContent>
                   </Card>
-                ))}
+                  );
+                })}
               </Box>
             </Box>
           )}
@@ -341,12 +353,21 @@ const MemberDetailPage: React.FC = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {pastTournaments.map((t) => (
-                      <TableRow key={t.iDiscGolfTournamentId} hover>
+                    {pastTournaments.map((t) => {
+                      const isShared = sharedIds.has(t.iDiscGolfTournamentId);
+                      return (
+                      <TableRow key={t.iDiscGolfTournamentId} hover sx={isShared ? { bgcolor: alpha('#1565c0', 0.03) } : undefined}>
                         <TableCell sx={{ fontWeight: 600, maxWidth: 240 }}>
-                          <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }} noWrap>
-                            {t.name}
-                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }} noWrap>
+                              {t.name}
+                            </Typography>
+                            {isShared && (
+                              <Tooltip title={tr('playerCard.sharedTournaments')} arrow>
+                                <GroupIcon sx={{ fontSize: 14, color: '#1565c0', flexShrink: 0 }} />
+                              </Tooltip>
+                            )}
+                          </Box>
                         </TableCell>
                         <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
                           {new Date(t.dateEnd).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
@@ -375,7 +396,8 @@ const MemberDetailPage: React.FC = () => {
                           </Tooltip>
                         </TableCell>
                       </TableRow>
-                    ))}
+                      );
+                    })}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -389,46 +411,6 @@ const MemberDetailPage: React.FC = () => {
           <Box sx={{ mb: 3 }}>
             <Achievements iDiscGolfId={player.iDiscGolfId} title={tr('playerCard.achievements')} />
           </Box>
-
-          {/* Shared tournaments */}
-          {sharedTournaments.length > 0 && (
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
-                {tr('playerCard.sharedTournaments')}
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {sharedTournaments.map((t) => (
-                  <Box
-                    key={t.iDiscGolfTournamentId}
-                    component="a"
-                    href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      p: 1,
-                      borderRadius: 1.5,
-                      textDecoration: 'none',
-                      color: 'inherit',
-                      '&:hover': { bgcolor: 'action.hover' },
-                    }}
-                  >
-                    <EmojiEventsOutlinedIcon sx={{ fontSize: 16, color: ACCENT }} />
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem' }} noWrap>
-                        {t.name}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {formatDateRange(t.dateStart, t.dateEnd)}
-                      </Typography>
-                    </Box>
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-          )}
 
           {/* Tag history */}
           {tagHistory.length > 0 && (
