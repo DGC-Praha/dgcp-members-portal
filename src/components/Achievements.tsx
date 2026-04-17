@@ -319,6 +319,33 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
     }
   }
 
+  // Build earned timeline from existing data (no extra API call)
+  const timeline: Array<{
+    key: string;
+    emoji: string;
+    name: string;
+    tier: string;
+    threshold: number;
+    earnedAt: string;
+  }> = [];
+
+  for (const ach of achievements) {
+    for (const t of ach.tiers) {
+      if (t.earned && t.earnedAt) {
+        timeline.push({
+          key: `${ach.key}_${t.tier}`,
+          emoji: ach.emoji,
+          name: ach.name,
+          tier: t.tier,
+          threshold: t.threshold,
+          earnedAt: t.earnedAt,
+        });
+      }
+    }
+  }
+
+  timeline.sort((a, b) => new Date(b.earnedAt).getTime() - new Date(a.earnedAt).getTime());
+
   return (
     <Box>
       {title && (
@@ -347,6 +374,86 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
           />
         ))}
       </Box>
+
+      {/* Earned timeline */}
+      {timeline.length > 0 && (
+        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+          {timeline.map((item) => {
+            const ringColor = TIER_COLORS[item.tier] ?? '#9ca3af';
+            const bgColor = TIER_BG[item.tier] ?? '#f5f5f5';
+            const glow = TIER_GLOW[item.tier];
+
+            return (
+              <Box
+                key={item.key}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  py: 0.5,
+                  px: 0.5,
+                  borderRadius: 1,
+                }}
+              >
+                <Box
+                  sx={{
+                    position: 'relative',
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: ringColor,
+                    flexShrink: 0,
+                    ...(glow && { boxShadow: glow }),
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '2px',
+                      left: '2px',
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '50%',
+                      bgcolor: bgColor,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <img src={twemoji(item.emoji)} alt="" width={13} height={13} style={{ pointerEvents: 'none' }} />
+                  </Box>
+                </Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.75rem', lineHeight: 1.2 }} noWrap>
+                      {item.name}
+                      <Typography component="span" sx={{ fontWeight: 400, fontSize: '0.7rem', color: 'text.secondary' }}>
+                        {' '}({item.threshold})
+                      </Typography>
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: '0.55rem',
+                        color: ringColor,
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {item.tier.charAt(0).toUpperCase() + item.tier.slice(1)}
+                    </Typography>
+                  </Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
+                    {new Date(item.earnedAt).toLocaleDateString('cs-CZ')}
+                  </Typography>
+                </Box>
+              </Box>
+            );
+          })}
+        </Box>
+      )}
 
       <AchievementDetailModal
         achievements={achievements}
