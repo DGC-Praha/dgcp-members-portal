@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import TagBadge from '../components/TagBadge';
 import UpcomingTournaments from '../components/UpcomingTournaments';
 import MyTournaments from '../components/MyTournaments';
-import WatchedTournaments from '../components/WatchedTournaments';
 import RecentAchievements from '../components/RecentAchievements';
 
 const TAGOVACKA_PRIMARY = '#001645';
@@ -211,15 +210,10 @@ const HomePage: React.FC = () => {
           <MyTournaments />
 
           <Box sx={{ mt: 3 }}>
-            <WatchedTournaments />
+            <RecentAchievements />
           </Box>
         </Grid>
       </Grid>
-
-      {/* Recent Achievements */}
-      <Box sx={{ mt: 3 }}>
-        <RecentAchievements />
-      </Box>
     </Box>
   );
 };

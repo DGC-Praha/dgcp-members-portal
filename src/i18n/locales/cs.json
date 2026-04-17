@@ -14,7 +14,8 @@
     "tournaments": "Turnaje",
     "members": "Členové",
     "admin": "Administrace",
-    "account": "Účet"
+    "account": "Účet",
+    "watchedRegistrations": "Hlídané registrace"
   },
   "admin": {
     "members": {
@@ -106,6 +107,9 @@
     "pdga": "PDGA číslo",
     "changePassword": "Změnit heslo (na tagovacka.cz)",
     "logout": "Odhlásit se"
+  },
+  "watchedRegistrations": {
+    "empty": "Žádné hlídané registrace. Na stránce turnaje si můžeš nastavit upozornění."
   },
   "watchdog": {
     "notify": "Upozornit mě",

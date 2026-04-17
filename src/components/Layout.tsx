@@ -20,6 +20,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 
@@ -38,6 +39,7 @@ const Layout: React.FC = () => {
     { text: t('nav.home'), icon: <HomeIcon />, path: '/' },
     { text: t('nav.tournaments'), icon: <EmojiEventsOutlinedIcon />, path: '/turnaje' },
     { text: t('nav.members'), icon: <PeopleIcon />, path: '/members' },
+    { text: t('nav.watchedRegistrations'), icon: <NotificationsActiveIcon />, path: '/hlidane-registrace' },
     ...(user?.isAdmin
       ? [{ text: t('nav.admin'), icon: <AdminPanelSettingsIcon />, path: '/admin/members' }]
       : []),

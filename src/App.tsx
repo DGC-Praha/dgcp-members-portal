@@ -11,6 +11,7 @@ import AccountPage from './pages/AccountPage';
 import TournamentsPage from './pages/TournamentsPage';
 import MemberDetailPage from './pages/MemberDetailPage';
 import AdminMembersPage from './pages/AdminMembersPage';
+import WatchedRegistrationsPage from './pages/WatchedRegistrationsPage';
 import './i18n';
 
 const theme = createTheme({
@@ -38,6 +39,7 @@ function App() {
               <Route path="/turnaje" element={<TournamentsPage />} />
               <Route path="/members" element={<MembersPage />} />
               <Route path="/clenove/:id" element={<MemberDetailPage />} />
+              <Route path="/hlidane-registrace" element={<WatchedRegistrationsPage />} />
               <Route path="/admin/members" element={<AdminMembersPage />} />
               <Route path="/ucet" element={<AccountPage />} />
             </Route>
