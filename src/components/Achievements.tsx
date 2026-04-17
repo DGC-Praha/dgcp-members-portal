@@ -37,11 +37,17 @@ const TIER_COLORS: Record<string, string> = {
 };
 
 const TIER_BG: Record<string, string> = {
-  bronze: '#fef3c7',
+  bronze: '#f5e6d3',
   silver: '#f3f4f6',
-  gold: '#fef3c7',
+  gold: '#fef9c3',
   diamond: '#f5f3ff',
   legend: '#fee2e2',
+};
+
+const TIER_GLOW: Record<string, string> = {
+  gold: '0 0 8px rgba(245, 158, 11, 0.4)',
+  diamond: '0 0 10px rgba(124, 58, 237, 0.45)',
+  legend: '0 0 12px rgba(220, 38, 38, 0.5)',
 };
 
 // --- Types from API ---
@@ -99,8 +105,10 @@ const ArcBadge: React.FC<{
   earned: boolean;
   bgColor: string;
   ringColor: string;
-}> = ({ emoji, name, progress, threshold, earned, bgColor, ringColor }) => {
+  tier: string;
+}> = ({ emoji, name, progress, threshold, earned, bgColor, ringColor, tier }) => {
   const pct = earned ? 100 : Math.min((progress / threshold) * 100, 100);
+  const glow = earned ? TIER_GLOW[tier] : undefined;
 
   const tooltipContent = earned ? (
     <Typography variant="body2" sx={{ fontWeight: 700 }}>{name}</Typography>
@@ -126,6 +134,7 @@ const ArcBadge: React.FC<{
               : '#e0e0e0',
           transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
           cursor: 'default',
+          ...(glow && { boxShadow: glow }),
           ...(earned && {
             '&:hover': {
               transform: 'scale(1.15) translateY(-2px)',
@@ -153,9 +162,6 @@ const ArcBadge: React.FC<{
             justifyContent: 'center',
             filter: earned ? 'none' : pct > 0 ? 'none' : 'grayscale(1) brightness(0.9)',
             opacity: earned ? 1 : pct > 0 ? 0.7 : 0.3,
-            ...(earned && {
-              boxShadow: `0 2px 6px ${alpha(ringColor, 0.25)}`,
-            }),
           }}
         >
           <img
@@ -289,6 +295,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
     earned: boolean;
     bgColor: string;
     ringColor: string;
+    tier: string;
   }> = [];
 
   for (const ach of achievements) {
@@ -307,6 +314,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
         earned: t.earned,
         bgColor,
         ringColor: singleTier ? '#1565c0' : (TIER_COLORS[t.tier] ?? '#9ca3af'),
+        tier: t.tier,
       });
     }
   }
@@ -332,6 +340,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
             name={b.name}
             progress={b.progress}
             threshold={b.threshold}
+            tier={b.tier}
             ringColor={b.ringColor}
             bgColor={b.bgColor}
             earned={b.earned}

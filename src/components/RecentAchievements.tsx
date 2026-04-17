@@ -5,7 +5,6 @@ import {
   Button,
   Skeleton,
   Typography,
-  alpha,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -32,11 +31,17 @@ const TIER_COLORS: Record<string, string> = {
 };
 
 const TIER_BG: Record<string, string> = {
-  bronze: '#fef3c7',
+  bronze: '#f5e6d3',
   silver: '#f3f4f6',
-  gold: '#fef3c7',
+  gold: '#fef9c3',
   diamond: '#f5f3ff',
   legend: '#fee2e2',
+};
+
+const TIER_GLOW: Record<string, string> = {
+  gold: '0 0 8px rgba(245, 158, 11, 0.4)',
+  diamond: '0 0 10px rgba(124, 58, 237, 0.45)',
+  legend: '0 0 12px rgba(220, 38, 38, 0.5)',
 };
 
 interface AchievementItem {
@@ -54,6 +59,7 @@ interface AchievementItem {
 const AchievementBadge: React.FC<{ emoji: string; tier: string }> = ({ emoji, tier }) => {
   const ringColor = TIER_COLORS[tier] ?? '#9ca3af';
   const bgColor = TIER_BG[tier] ?? '#f5f5f5';
+  const glow = TIER_GLOW[tier];
 
   return (
     <Box
@@ -64,6 +70,7 @@ const AchievementBadge: React.FC<{ emoji: string; tier: string }> = ({ emoji, ti
         borderRadius: '50%',
         background: ringColor,
         flexShrink: 0,
+        ...(glow && { boxShadow: glow }),
       }}
     >
       <Box
@@ -78,7 +85,6 @@ const AchievementBadge: React.FC<{ emoji: string; tier: string }> = ({ emoji, ti
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: `0 1px 4px ${alpha(ringColor, 0.25)}`,
         }}
       >
         <img
