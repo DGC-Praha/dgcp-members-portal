@@ -20,6 +20,7 @@ import TagBadge from '../components/TagBadge';
 import UpcomingTournaments from '../components/UpcomingTournaments';
 import MyTournaments from '../components/MyTournaments';
 import WatchedTournaments from '../components/WatchedTournaments';
+import RecentAchievements from '../components/RecentAchievements';
 
 const TAGOVACKA_PRIMARY = '#001645';
 const TAGOVACKA_ACCENT = '#db2228';
@@ -214,6 +215,11 @@ const HomePage: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
+
+      {/* Recent Achievements */}
+      <Box sx={{ mt: 3 }}>
+        <RecentAchievements />
+      </Box>
     </Box>
   );
 };

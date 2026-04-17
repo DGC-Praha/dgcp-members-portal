@@ -140,6 +140,8 @@ export const api = {
   getMemberDetail: (iDiscGolfId: number) => apiClient.get(`/api/members/${iDiscGolfId}`),
   getPlayerAchievements: (iDiscGolfId: number, year?: number) =>
     apiClient.get(`/api/members/${iDiscGolfId}/achievements`, { params: { year } }),
+  getRecentAchievements: (page?: number) =>
+    apiClient.get('/api/recent-achievements', { params: { page } }),
   getUpcomingTournaments: () => apiClient.get('/api/tournaments/upcoming'),
   getMyTournaments: () => apiClient.get('/api/tournaments/my'),
   getMyWatchdogSubscriptions: () => apiClient.get('/api/registration-watchdog/subscriptions'),
