@@ -2,12 +2,12 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Button,
+  IconButton,
   Skeleton,
   Typography,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 
@@ -207,26 +207,26 @@ const RecentAchievements: React.FC = () => {
         })}
       </Box>
       {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mt: 1.5 }}>
-          <Button
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5, mt: 1 }}>
+          <IconButton
             size="small"
-            startIcon={<ArrowBackIcon />}
             disabled={page <= 1 || loading}
             onClick={() => load(page - 1)}
+            sx={{ width: 28, height: 28 }}
           >
-            {t('home.previousPage')}
-          </Button>
-          <Typography variant="caption" color="text.secondary">
+            <ChevronLeftIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem', minWidth: 40, textAlign: 'center' }}>
             {page} / {totalPages}
           </Typography>
-          <Button
+          <IconButton
             size="small"
-            endIcon={<ArrowForwardIcon />}
             disabled={page >= totalPages || loading}
             onClick={() => load(page + 1)}
+            sx={{ width: 28, height: 28 }}
           >
-            {t('home.nextPage')}
-          </Button>
+            <ChevronRightIcon sx={{ fontSize: 18 }} />
+          </IconButton>
         </Box>
       )}
     </Box>
