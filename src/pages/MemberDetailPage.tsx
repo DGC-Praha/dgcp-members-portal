@@ -128,7 +128,7 @@ const MemberDetailPage: React.FC = () => {
   const { user } = useAuth();
   const { t: tr } = useTranslation();
 
-  const m = user?.membership;
+  const m = user?.tagovacka?.membership;
   const badgeColor = m?.club.tagBadgeColor || '#1565c0';
   const highlightColor = m?.club.tagBadgeHighlightColor || '#0d47a1';
 
