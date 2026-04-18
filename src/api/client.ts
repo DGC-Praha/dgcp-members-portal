@@ -170,14 +170,38 @@ export const api = {
 
 // --- dgcp-members-api (club-specific data) ---
 
+export type Sex = 'male' | 'female';
+
 export interface ClubMember {
   id: number;
   iDiscGolfId: number;
   email: string | null;
   phone: string | null;
   isAdmin: boolean;
+  firstName: string | null;
+  lastName: string | null;
+  sex: Sex | null;
+  dateOfBirth: string | null;
+  identificationNumber: string | null;
+  address: string | null;
+  memberSince: string | null;
+  activeMember: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ClubMemberUpdate {
+  phone?: string | null;
+  isAdmin?: boolean;
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  sex?: Sex | null;
+  dateOfBirth?: string | null;
+  identificationNumber?: string | null;
+  address?: string | null;
+  memberSince?: string | null;
+  activeMember?: boolean;
 }
 
 export const membersApi = {
@@ -186,10 +210,7 @@ export const membersApi = {
     membersApiClient.patch<ClubMember>('/api/me', data),
   listClubMembers: () =>
     membersApiClient.get<ClubMember[]>('/api/admin/club-members'),
-  updateClubMember: (
-    iDiscGolfId: number,
-    data: { phone?: string | null; isAdmin?: boolean; email?: string | null },
-  ) =>
+  updateClubMember: (iDiscGolfId: number, data: ClubMemberUpdate) =>
     membersApiClient.patch<ClubMember>(
       `/api/admin/club-members/${iDiscGolfId}`,
       data,

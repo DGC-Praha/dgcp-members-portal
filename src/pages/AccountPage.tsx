@@ -18,7 +18,7 @@ const AccountPage: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Box>
               <Typography variant="caption" color="text.secondary">{t('account.name')}</Typography>
-              <Typography>{user.name}</Typography>
+              <Typography>{user.displayName}</Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary">Email</Typography>
@@ -43,12 +43,12 @@ const AccountPage: React.FC = () => {
                   }}
                 />
               )}
-              {user.pdgaNumber && (
+              {user.tagovacka?.pdgaNumber && (
                 <Chip
-                  label={`PDGA #${user.pdgaNumber}`}
+                  label={`PDGA #${user.tagovacka.pdgaNumber}`}
                   size="small"
                   component="a"
-                  href={`https://www.pdga.com/player/${user.pdgaNumber}`}
+                  href={`https://www.pdga.com/player/${user.tagovacka.pdgaNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   clickable

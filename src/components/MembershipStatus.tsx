@@ -33,24 +33,25 @@ const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
 const MembershipStatus: React.FC<MembershipStatusProps> = ({ user }) => {
   const { t: tr } = useTranslation();
 
+  const tag = user.tagovacka;
   const rows: MembershipRow[] = [
     {
       label: tr('membership.dgcp'),
-      active: user.membership?.active ?? null,
+      active: user.activeMember,
       renewUrl: 'https://tagovacka.cz',
       show: true,
     },
     {
       label: tr('membership.cadg'),
-      active: user.cadgMembershipActive,
+      active: tag?.cadgMembershipActive ?? null,
       renewUrl: 'https://www.cadg.cz/clenstvi/',
       show: true,
     },
     {
       label: tr('membership.pdga'),
-      active: user.pdgaMembershipActive,
+      active: tag?.pdgaMembershipActive ?? null,
       renewUrl: 'https://www.pdga.com/membership',
-      show: user.pdgaNumber !== null,
+      show: tag?.pdgaNumber != null,
     },
   ];
 

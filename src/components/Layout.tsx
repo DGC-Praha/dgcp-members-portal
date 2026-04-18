@@ -102,7 +102,7 @@ const Layout: React.FC = () => {
             DGCP Members
           </Typography>
           {user && (
-            <Typography variant="body2" sx={{ opacity: 0.85 }}>{user.name}</Typography>
+            <Typography variant="body2" sx={{ opacity: 0.85 }}>{user.displayName}</Typography>
           )}
         </Toolbar>
       </AppBar>

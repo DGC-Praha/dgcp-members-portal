@@ -13,11 +13,10 @@ interface Membership {
   };
 }
 
-export interface User {
-  id: number;
+// Tagovacka-sourced profile data. Lazy-loaded in parallel with the members-api
+// core identity — may be null briefly after login or if tagovacka is slow/down.
+export interface TagovackaProfile {
   name: string;
-  email: string;
-  iDiscGolfId: number;
   pdgaNumber: number | null;
   iDiscGolfRating: number | null;
   pdgaRating: number | null;
@@ -25,9 +24,23 @@ export interface User {
   cadgMembershipActive: boolean | null;
   pdgaMembershipActive: boolean | null;
   membership: Membership | null;
-  // Club-specific (from dgcp-members-api):
+}
+
+// Core identity is sourced from members-api. Tagovacka data arrives later and
+// is exposed via `user.tagovacka` + `tagovackaLoaded`.
+export interface User {
+  id: number;
+  iDiscGolfId: number;
+  email: string | null;
   phone: string | null;
   isAdmin: boolean;
+  firstName: string | null;
+  lastName: string | null;
+  activeMember: boolean;
+  /** Preferred display name: "First Last" from members-api, else tagovacka name, else email/id. */
+  displayName: string;
+  tagovacka: TagovackaProfile | null;
+  tagovackaLoaded: boolean;
 }
 
 interface AuthContextType {
@@ -48,6 +61,20 @@ export const useAuth = () => {
   return ctx;
 };
 
+function buildDisplayName(
+  firstName: string | null,
+  lastName: string | null,
+  tagovacka: TagovackaProfile | null,
+  email: string | null,
+  iDiscGolfId: number,
+): string {
+  const full = [firstName, lastName].filter(Boolean).join(' ').trim();
+  if (full !== '') return full;
+  if (tagovacka?.name) return tagovacka.name;
+  if (email) return email;
+  return `#${iDiscGolfId}`;
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('oauth_token'));
   const [user, setUser] = useState<User | null>(null);
@@ -55,46 +82,82 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUser = useCallback(async () => {
     try {
-      // Fetch profile from tagovacka AND club-specific data from members-api
-      // in parallel. members-api is allowed to fail (e.g. during a rollout)
-      // without blocking login — we just won't have phone/admin data.
-      const [tagovackaRes, membersRes] = await Promise.all([
-        api.getMe(),
-        membersApi.getMe().catch(() => null),
-      ]);
-      const d = tagovackaRes.data;
-      const m = d.memberships?.[0] ?? null;
-      const club = membersRes?.data ?? null;
-      setUser({
-        id: d.id,
-        name: d.name,
-        email: d.email,
-        iDiscGolfId: d.iDiscGolfId,
-        pdgaNumber: d.pdgaNumber,
-        iDiscGolfRating: d.iDiscGolfRating ?? null,
-        pdgaRating: d.pdgaRating ?? null,
-        avatarUrl: d.avatarUrl ?? null,
-        cadgMembershipActive: d.cadgMembershipActive ?? null,
-        pdgaMembershipActive: d.pdgaMembershipActive ?? null,
-        membership: m ? {
-          tagNumber: m.tagNumber,
-          role: m.role,
-          active: m.active ?? true,
-          club: {
-            name: m.club.name,
-            slug: m.club.slug,
-            tagBadgeColor: m.club.tagBadgeColor,
-            tagBadgeHighlightColor: m.club.tagBadgeHighlightColor,
-          },
-        } : null,
-        phone: club?.phone ?? null,
-        isAdmin: club?.isAdmin ?? false,
-      });
+      // Core identity first — if members-api is unreachable we can't render the
+      // shell safely (we need isAdmin for route protection).
+      const membersRes = await membersApi.getMe();
+      const c = membersRes.data;
+      const coreUser: User = {
+        id: c.id,
+        iDiscGolfId: c.iDiscGolfId,
+        email: c.email,
+        phone: c.phone,
+        isAdmin: c.isAdmin,
+        firstName: c.firstName,
+        lastName: c.lastName,
+        activeMember: c.activeMember,
+        displayName: buildDisplayName(c.firstName, c.lastName, null, c.email, c.iDiscGolfId),
+        tagovacka: null,
+        tagovackaLoaded: false,
+      };
+      setUser(coreUser);
+      setLoading(false);
+
+      // Tagovacka data arrives independently — ratings, dots, avatar, tag.
+      // A failure just leaves tagovacka=null with tagovackaLoaded=true so the
+      // UI can drop to neutral placeholders instead of skeletons.
+      api
+        .getMe()
+        .then((tagRes) => {
+          const d = tagRes.data;
+          const m = d.memberships?.[0] ?? null;
+          const tagovacka: TagovackaProfile = {
+            name: d.name,
+            pdgaNumber: d.pdgaNumber,
+            iDiscGolfRating: d.iDiscGolfRating ?? null,
+            pdgaRating: d.pdgaRating ?? null,
+            avatarUrl: d.avatarUrl ?? null,
+            cadgMembershipActive: d.cadgMembershipActive ?? null,
+            pdgaMembershipActive: d.pdgaMembershipActive ?? null,
+            membership: m
+              ? {
+                  tagNumber: m.tagNumber,
+                  role: m.role,
+                  active: m.active ?? true,
+                  club: {
+                    name: m.club.name,
+                    slug: m.club.slug,
+                    tagBadgeColor: m.club.tagBadgeColor,
+                    tagBadgeHighlightColor: m.club.tagBadgeHighlightColor,
+                  },
+                }
+              : null,
+          };
+          setUser((prev) =>
+            prev === null
+              ? prev
+              : {
+                  ...prev,
+                  tagovacka,
+                  tagovackaLoaded: true,
+                  displayName: buildDisplayName(
+                    prev.firstName,
+                    prev.lastName,
+                    tagovacka,
+                    prev.email,
+                    prev.iDiscGolfId,
+                  ),
+                },
+          );
+        })
+        .catch(() => {
+          setUser((prev) =>
+            prev === null ? prev : { ...prev, tagovacka: null, tagovackaLoaded: true },
+          );
+        });
     } catch {
       localStorage.removeItem('oauth_token');
       setToken(null);
       setUser(null);
-    } finally {
       setLoading(false);
     }
   }, []);
@@ -140,7 +203,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, isAuthenticated: !!user, loading, login, logout, setTokenFromCallback }}>
+    <AuthContext.Provider
+      value={{ token, user, isAuthenticated: !!user, loading, login, logout, setTokenFromCallback }}
+    >
       {children}
     </AuthContext.Provider>
   );

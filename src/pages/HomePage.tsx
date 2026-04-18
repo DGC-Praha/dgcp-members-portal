@@ -9,6 +9,7 @@ import {
   Grid,
   Chip,
   Avatar,
+  Skeleton,
   alpha,
 } from '@mui/material';
 import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
@@ -65,9 +66,19 @@ const HomePage: React.FC = () => {
 
   if (!user) return null;
 
-  const m = user.membership;
+  const tag = user.tagovacka;
+  const tagLoaded = user.tagovackaLoaded;
+  const m = tag?.membership ?? null;
   const badgeColor = m?.club.tagBadgeColor || '#1565c0';
   const highlightColor = m?.club.tagBadgeHighlightColor || '#0d47a1';
+  const displayName = user.displayName;
+  const avatarInitials = displayName
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
 
   return (
     <Box>
@@ -133,8 +144,8 @@ const HomePage: React.FC = () => {
               {/* Avatar + Name + Tag */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
                 <Avatar
-                  src={user.avatarUrl || undefined}
-                  alt={user.name}
+                  src={tag?.avatarUrl || undefined}
+                  alt={displayName}
                   sx={{
                     width: 48,
                     height: 48,
@@ -145,52 +156,66 @@ const HomePage: React.FC = () => {
                     boxShadow: `0 2px 8px ${alpha(badgeColor, 0.25)}`,
                   }}
                 >
-                  {user.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+                  {avatarInitials}
                 </Avatar>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
                   <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.2 }} noWrap>
-                    {user.name}
+                    {displayName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                    {m?.club.name}
+                    {tagLoaded ? (
+                      m?.club.name ?? ''
+                    ) : (
+                      <Skeleton variant="text" width={80} sx={{ display: 'inline-block' }} />
+                    )}
                   </Typography>
                 </Box>
-                <TagBadge
-                  number={m?.tagNumber ?? null}
-                  size="medium"
-                  badgeColor={badgeColor}
-                  highlightColor={highlightColor}
-                />
+                {tagLoaded ? (
+                  <TagBadge
+                    number={m?.tagNumber ?? null}
+                    size="medium"
+                    badgeColor={badgeColor}
+                    highlightColor={highlightColor}
+                  />
+                ) : (
+                  <Skeleton variant="rounded" width={36} height={36} />
+                )}
               </Box>
 
               {/* Ratings + Membership — single compact row */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
-                {user.iDiscGolfRating && (
+                {!tagLoaded && (
+                  <>
+                    <Skeleton variant="rounded" width={60} height={22} />
+                    <Skeleton variant="rounded" width={70} height={22} />
+                  </>
+                )}
+                {tagLoaded && tag?.iDiscGolfRating && (
                   <Chip
-                    label={`iDG ${user.iDiscGolfRating}`}
+                    label={`iDG ${tag.iDiscGolfRating}`}
                     size="small"
                     sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e8f5e9', color: '#2e7d32' }}
                   />
                 )}
-                {user.pdgaRating && (
+                {tagLoaded && tag?.pdgaRating && (
                   <Chip
-                    label={`PDGA ${user.pdgaRating}`}
+                    label={`PDGA ${tag.pdgaRating}`}
                     size="small"
                     sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
                   />
                 )}
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 'auto' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
-                    <StatusDot active={m?.active ?? null} />
+                    <StatusDot active={user.activeMember} />
                     <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>DGCP</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
-                    <StatusDot active={user.cadgMembershipActive} />
+                    <StatusDot active={tagLoaded ? tag?.cadgMembershipActive ?? null : null} />
                     <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>ČADG</Typography>
                   </Box>
-                  {user.pdgaNumber && (
+                  {(!tagLoaded || (tag?.pdgaNumber ?? null) !== null) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
-                      <StatusDot active={user.pdgaMembershipActive} />
+                      <StatusDot active={tagLoaded ? tag?.pdgaMembershipActive ?? null : null} />
                       <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>PDGA</Typography>
                     </Box>
                   )}
