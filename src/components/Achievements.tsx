@@ -63,6 +63,9 @@ type ArcBadgeProps = {
   bgColor: string;
   ringColor: string;
   nextTier: { tier: string; threshold: number } | null;
+  // Only the very next unearned tier animates its arc to avoid every locked
+  // badge looking "almost full" once progress exceeds a lower threshold.
+  showArcProgress: boolean;
 };
 
 const ArcBadge: React.FC<ArcBadgeProps> = ({
@@ -77,8 +80,13 @@ const ArcBadge: React.FC<ArcBadgeProps> = ({
   bgColor,
   ringColor,
   nextTier,
+  showArcProgress,
 }) => {
-  const pct = earned ? 100 : Math.min((progress / threshold) * 100, 100);
+  const arcPct = earned
+    ? 100
+    : showArcProgress
+      ? Math.min((progress / threshold) * 100, 100)
+      : 0;
   const glow = earned ? TIER_GLOW[tier] : undefined;
 
   return (
@@ -101,8 +109,8 @@ const ArcBadge: React.FC<ArcBadgeProps> = ({
           borderRadius: '50%',
           background: earned
             ? `conic-gradient(${ringColor} 0% 100%, #e0e0e0 100% 100%)`
-            : pct > 0
-              ? `conic-gradient(${ringColor} 0% ${pct}%, #e0e0e0 ${pct}% 100%)`
+            : showArcProgress
+              ? `conic-gradient(${ringColor} 0% ${arcPct}%, #e0e0e0 ${arcPct}% 100%)`
               : '#e0e0e0',
           transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
           cursor: 'default',
@@ -113,7 +121,7 @@ const ArcBadge: React.FC<ArcBadgeProps> = ({
               boxShadow: `0 6px 20px ${alpha(ringColor, 0.4)}`,
             },
           }),
-          ...(!earned && pct > 0 && {
+          ...(!earned && showArcProgress && {
             '&:hover': {
               transform: 'scale(1.1)',
             },
@@ -132,8 +140,8 @@ const ArcBadge: React.FC<ArcBadgeProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            filter: earned ? 'none' : pct > 0 ? 'none' : 'grayscale(1) brightness(0.9)',
-            opacity: earned ? 1 : pct > 0 ? 0.7 : 0.3,
+            filter: earned ? 'none' : showArcProgress ? 'none' : 'grayscale(1) brightness(0.9)',
+            opacity: earned ? 1 : showArcProgress ? 0.7 : 0.3,
           }}
         >
           <img
@@ -271,6 +279,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
     ringColor: string;
     tier: string;
     nextTier: { tier: string; threshold: number } | null;
+    showArcProgress: boolean;
   }> = [];
 
   for (const ach of achievements) {
@@ -295,7 +304,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
         emoji: ach.emoji,
         name: singleTier ? ach.name : `${ach.name} — ${tierLabel(t.tier)}`,
         description: ach.description,
-        progress: t.earned ? t.threshold : isNextTier ? t.progress : 0,
+        progress: t.earned ? t.threshold : t.progress,
         threshold: t.threshold,
         earned: t.earned,
         earnedAt: t.earnedAt,
@@ -303,6 +312,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
         ringColor: singleTier ? '#1565c0' : (TIER_COLORS[t.tier] ?? '#9ca3af'),
         tier: t.tier,
         nextTier: badgeNextTier,
+        showArcProgress: isNextTier,
       });
     }
   }
@@ -362,6 +372,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
             earned={b.earned}
             earnedAt={b.earnedAt}
             nextTier={b.nextTier}
+            showArcProgress={b.showArcProgress}
           />
         ))}
       </Box>
