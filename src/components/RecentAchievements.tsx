@@ -10,44 +10,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
-
-// --- Twemoji CDN helper (shared with Achievements.tsx) ---
-const TWEMOJI_BASE = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg';
-
-function twemoji(emoji: string): string {
-  const codePoint = [...emoji]
-    .map((c) => c.codePointAt(0)!.toString(16))
-    .filter((cp) => cp !== 'fe0f')
-    .join('-');
-  return `${TWEMOJI_BASE}/${codePoint}.svg`;
-}
-
-const TIER_COLORS: Record<string, string> = {
-  bronze: '#cd7f32',
-  silver: '#9ca3af',
-  gold: '#f59e0b',
-  diamond: '#7c3aed',
-  legend: '#dc2626',
-};
-
-const TIER_BG: Record<string, string> = {
-  bronze: '#f5e6d3',
-  silver: '#f3f4f6',
-  gold: '#fef9c3',
-  diamond: '#f5f3ff',
-  legend: '#fee2e2',
-};
-
-const TIER_GLOW: Record<string, string> = {
-  gold: '0 0 8px rgba(245, 158, 11, 0.4)',
-  diamond: '0 0 10px rgba(124, 58, 237, 0.45)',
-  legend: '0 0 12px rgba(220, 38, 38, 0.5)',
-};
+import BadgeTooltip from './achievements/BadgeTooltip';
+import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from './achievements/shared';
 
 interface AchievementItem {
   id: number;
   achievementName: string;
   achievementEmoji: string;
+  achievementDescription?: string;
   tier: string;
   threshold: number | null;
   year: number;
@@ -146,9 +116,6 @@ const RecentAchievements: React.FC = () => {
 
   if (items.length === 0) return null;
 
-  const tierLabel = (tier: string): string =>
-    tier.charAt(0).toUpperCase() + tier.slice(1);
-
   return (
     <Box>
       <Typography variant="overline" sx={{ mb: 1.5, display: 'block', letterSpacing: 1.5, color: 'text.secondary' }}>
@@ -173,7 +140,21 @@ const RecentAchievements: React.FC = () => {
                 '&:hover': { bgcolor: 'action.hover' },
               }}
             >
-              <AchievementBadge emoji={a.achievementEmoji || '🏆'} tier={a.tier} />
+              <Box onClick={(e) => e.stopPropagation()}>
+                <BadgeTooltip
+                  emoji={a.achievementEmoji || '🏆'}
+                  name={a.achievementName}
+                  tier={a.tier}
+                  threshold={a.threshold ?? 0}
+                  description={a.achievementDescription}
+                  earned
+                  earnedAt={a.earnedAt}
+                >
+                  <Box>
+                    <AchievementBadge emoji={a.achievementEmoji || '🏆'} tier={a.tier} />
+                  </Box>
+                </BadgeTooltip>
+              </Box>
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <Typography variant="body2" sx={{ fontWeight: 600, fontSize: '0.8rem', lineHeight: 1.3 }} noWrap>

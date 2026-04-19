@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
-  Tooltip,
   alpha,
   Skeleton,
   Dialog,
@@ -15,40 +14,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
-
-// --- Twemoji CDN helper ---
-const TWEMOJI_BASE = 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg';
-
-function twemoji(emoji: string): string {
-  const codePoint = [...emoji]
-    .map((c) => c.codePointAt(0)!.toString(16))
-    .filter((cp) => cp !== 'fe0f')
-    .join('-');
-  return `${TWEMOJI_BASE}/${codePoint}.svg`;
-}
-
-// --- Tier colors ---
-const TIER_COLORS: Record<string, string> = {
-  bronze: '#cd7f32',
-  silver: '#9ca3af',
-  gold: '#f59e0b',
-  diamond: '#7c3aed',
-  legend: '#dc2626',
-};
-
-const TIER_BG: Record<string, string> = {
-  bronze: '#f5e6d3',
-  silver: '#f3f4f6',
-  gold: '#fef9c3',
-  diamond: '#f5f3ff',
-  legend: '#fee2e2',
-};
-
-const TIER_GLOW: Record<string, string> = {
-  gold: '0 0 8px rgba(245, 158, 11, 0.4)',
-  diamond: '0 0 10px rgba(124, 58, 237, 0.45)',
-  legend: '0 0 12px rgba(220, 38, 38, 0.5)',
-};
+import BadgeTooltip from './achievements/BadgeTooltip';
+import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from './achievements/shared';
 
 // --- Types from API ---
 interface AchievementTier {
@@ -63,24 +30,11 @@ interface Achievement {
   key: string;
   name: string;
   emoji: string;
+  description: string;
   tiers: AchievementTier[];
 }
 
-// --- Achievement descriptions (frontend i18n) ---
-const ACHIEVEMENT_DESCRIPTIONS: Record<string, string> = {
-  tournaments_played: 'Počet odehraných turnajů s finalizovanými výsledky v daném roce.',
-  podium: 'Top 3 umístění v tvé divizi na turnaji.',
-  tag_tournament: 'Výměny tagů na turnaji v rámci klubu.',
-  casual_exchanges: 'Casualové výměny tagů v rámci klubu.',
-  regions_visited: 'Počet různých krajů, kde jsi hrál turnaj.',
-  above_rating: 'Nejlepší kolo nad tvůj PDGA rating. Pouze PDGA turnaje.',
-  below_rating: 'Kolo 50+ bodů pod tvým PDGA ratingem.',
-  ace: 'Hoď hole-in-one na turnaji.',
-  snowman: 'Zahraj jamku za 8 nebo více.',
-  jamkovka: 'Účast v jamkovce (ace liga).',
-  handicap_liga: 'Účast v handicap lize.',
-};
-
+// Subtle background tint per achievement key — purely decorative, kept in FE.
 const ACHIEVEMENT_BG: Record<string, string> = {
   tournaments_played: '#eff6ff',
   podium: '#fff7ed',
@@ -97,30 +51,48 @@ const ACHIEVEMENT_BG: Record<string, string> = {
 
 // --- Badge with circular arc progress ---
 
-const ArcBadge: React.FC<{
+type ArcBadgeProps = {
   emoji: string;
   name: string;
-  progress: number;
+  description: string;
+  tier: string;
   threshold: number;
+  progress: number;
   earned: boolean;
+  earnedAt: string | null;
   bgColor: string;
   ringColor: string;
-  tier: string;
-}> = ({ emoji, name, progress, threshold, earned, bgColor, ringColor, tier }) => {
+  nextTier: { tier: string; threshold: number } | null;
+};
+
+const ArcBadge: React.FC<ArcBadgeProps> = ({
+  emoji,
+  name,
+  description,
+  tier,
+  threshold,
+  progress,
+  earned,
+  earnedAt,
+  bgColor,
+  ringColor,
+  nextTier,
+}) => {
   const pct = earned ? 100 : Math.min((progress / threshold) * 100, 100);
   const glow = earned ? TIER_GLOW[tier] : undefined;
 
-  const tooltipContent = earned ? (
-    <Typography variant="body2" sx={{ fontWeight: 700 }}>{name}</Typography>
-  ) : (
-    <Box sx={{ textAlign: 'center' }}>
-      <Typography variant="body2" sx={{ fontWeight: 700 }}>{name}</Typography>
-      <Typography variant="caption" sx={{ opacity: 0.8 }}>{progress} / {threshold}</Typography>
-    </Box>
-  );
-
   return (
-    <Tooltip title={tooltipContent} arrow placement="top">
+    <BadgeTooltip
+      emoji={emoji}
+      name={name}
+      tier={tier}
+      threshold={threshold}
+      description={description}
+      earned={earned}
+      earnedAt={earnedAt}
+      progress={progress}
+      nextTier={nextTier}
+    >
       <Box
         sx={{
           position: 'relative',
@@ -173,7 +145,7 @@ const ArcBadge: React.FC<{
           />
         </Box>
       </Box>
-    </Tooltip>
+    </BadgeTooltip>
   );
 };
 
@@ -194,7 +166,6 @@ const AchievementDetailModal: React.FC<{
       </DialogTitle>
       <DialogContent dividers>
         {achievements.map((ach) => {
-          const desc = ACHIEVEMENT_DESCRIPTIONS[ach.key] ?? '';
           const singleTier = ach.tiers.length === 1;
 
           return (
@@ -205,9 +176,9 @@ const AchievementDetailModal: React.FC<{
                   <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                     {ach.name}
                   </Typography>
-                  {desc && (
+                  {ach.description && (
                     <Typography variant="caption" color="text.secondary">
-                      {desc}
+                      {ach.description}
                     </Typography>
                   )}
                 </Box>
@@ -218,7 +189,7 @@ const AchievementDetailModal: React.FC<{
                   {ach.tiers.map((t) => (
                     <Chip
                       key={t.tier}
-                      label={`${t.tier.charAt(0).toUpperCase() + t.tier.slice(1)}: ${t.threshold}`}
+                      label={`${tierLabel(t.tier)}: ${t.threshold}`}
                       size="small"
                       sx={{
                         height: 24,
@@ -285,36 +256,53 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
 
   if (achievements.length === 0) return null;
 
-  // Flatten all tiers into badges
+  // Flatten all tiers into badges, carrying the next (not-yet-earned) tier so the
+  // tooltip can hint at what's next for already-earned badges.
   const badges: Array<{
     key: string;
     emoji: string;
     name: string;
+    description: string;
     progress: number;
     threshold: number;
     earned: boolean;
+    earnedAt: string | null;
     bgColor: string;
     ringColor: string;
     tier: string;
+    nextTier: { tier: string; threshold: number } | null;
   }> = [];
 
   for (const ach of achievements) {
     const bgColor = ACHIEVEMENT_BG[ach.key] ?? '#f5f5f5';
     const singleTier = ach.tiers.length === 1;
     let foundNextTier = false;
-    for (const t of ach.tiers) {
+    for (let i = 0; i < ach.tiers.length; i++) {
+      const t = ach.tiers[i];
       const isNextTier = !t.earned && !foundNextTier;
       if (isNextTier) foundNextTier = true;
+
+      let badgeNextTier: { tier: string; threshold: number } | null = null;
+      if (t.earned) {
+        const upcoming = ach.tiers[i + 1];
+        if (upcoming && !upcoming.earned) {
+          badgeNextTier = { tier: upcoming.tier, threshold: upcoming.threshold };
+        }
+      }
+
       badges.push({
         key: `${ach.key}_${t.tier}`,
         emoji: ach.emoji,
-        name: singleTier ? ach.name : `${ach.name} — ${t.tier.charAt(0).toUpperCase() + t.tier.slice(1)}`,
+        name: singleTier ? ach.name : `${ach.name} — ${tierLabel(t.tier)}`,
+        description: ach.description,
         progress: t.earned ? t.threshold : isNextTier ? t.progress : 0,
         threshold: t.threshold,
         earned: t.earned,
+        earnedAt: t.earnedAt,
         bgColor,
         ringColor: singleTier ? '#1565c0' : (TIER_COLORS[t.tier] ?? '#9ca3af'),
         tier: t.tier,
+        nextTier: badgeNextTier,
       });
     }
   }
@@ -365,12 +353,15 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
             key={b.key}
             emoji={b.emoji}
             name={b.name}
+            description={b.description}
             progress={b.progress}
             threshold={b.threshold}
             tier={b.tier}
             ringColor={b.ringColor}
             bgColor={b.bgColor}
             earned={b.earned}
+            earnedAt={b.earnedAt}
+            nextTier={b.nextTier}
           />
         ))}
       </Box>
@@ -442,7 +433,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
                         flexShrink: 0,
                       }}
                     >
-                      {item.tier.charAt(0).toUpperCase() + item.tier.slice(1)}
+                      {tierLabel(item.tier)}
                     </Typography>
                   </Box>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
