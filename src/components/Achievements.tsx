@@ -140,8 +140,8 @@ const ArcBadge: React.FC<ArcBadgeProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            filter: earned ? 'none' : showArcProgress ? 'none' : 'grayscale(1) brightness(0.9)',
-            opacity: earned ? 1 : showArcProgress ? 0.7 : 0.3,
+            filter: earned ? 'none' : showArcProgress && progress > 0 ? 'none' : 'grayscale(1) brightness(0.9)',
+            opacity: earned ? 1 : showArcProgress && progress > 0 ? 0.7 : 0.3,
           }}
         >
           <img
