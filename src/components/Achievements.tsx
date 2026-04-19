@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { api } from '../api/client';
+import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 
 // --- Twemoji CDN helper ---
@@ -267,7 +267,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    api.getPlayerAchievements(iDiscGolfId)
+    membersApi.getPlayerAchievements(iDiscGolfId)
       .then((res) => setAchievements(res.data.achievements))
       .catch(() => {})
       .finally(() => setLoading(false));

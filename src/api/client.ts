@@ -138,10 +138,6 @@ export const api = {
   getMe: () => apiClient.get('/api/me'),
   getMembers: () => apiClient.get('/api/members'),
   getMemberDetail: (iDiscGolfId: number) => apiClient.get(`/api/members/${iDiscGolfId}`),
-  getPlayerAchievements: (iDiscGolfId: number, year?: number) =>
-    apiClient.get(`/api/members/${iDiscGolfId}/achievements`, { params: { year } }),
-  getRecentAchievements: (page?: number) =>
-    apiClient.get('/api/recent-achievements', { params: { page } }),
   getUpcomingTournaments: () => apiClient.get('/api/tournaments/upcoming'),
   getMyTournaments: () => apiClient.get('/api/tournaments/my'),
   getMyWatchdogSubscriptions: () => apiClient.get('/api/registration-watchdog/subscriptions'),
@@ -232,6 +228,10 @@ export const membersApi = {
     membersApiClient.post<{ total: number; created: number; untouched: number }>(
       '/api/admin/sync-members',
     ),
+  getPlayerAchievements: (iDiscGolfId: number, year?: number) =>
+    membersApiClient.get(`/api/members/${iDiscGolfId}/achievements`, { params: { year } }),
+  getRecentAchievements: (page?: number) =>
+    membersApiClient.get('/api/recent-achievements', { params: { page } }),
 };
 
 export default apiClient;

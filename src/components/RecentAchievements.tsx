@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { api } from '../api/client';
+import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 
 // --- Twemoji CDN helper (shared with Achievements.tsx) ---
@@ -110,7 +110,7 @@ const RecentAchievements: React.FC = () => {
   const load = useCallback(async (p: number) => {
     setLoading(true);
     try {
-      const res = await api.getRecentAchievements(p);
+      const res = await membersApi.getRecentAchievements(p);
       setItems(res.data.items);
       setTotalPages(res.data.totalPages);
       setPage(res.data.page);
