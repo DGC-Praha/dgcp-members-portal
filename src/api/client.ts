@@ -172,12 +172,23 @@ export const api = {
 
 export type Sex = 'male' | 'female';
 
+export type ClubRole = 'member' | 'admin';
+
+export interface ClubMembershipSummary {
+  clubSlug: string;
+  clubName: string;
+  role: ClubRole;
+  active: boolean;
+  joinedAt: string;
+}
+
 export interface ClubMember {
   id: number;
   iDiscGolfId: number;
   email: string | null;
   phone: string | null;
   isAdmin: boolean;
+  role?: ClubRole;
   firstName: string | null;
   lastName: string | null;
   sex: Sex | null;
@@ -186,6 +197,7 @@ export interface ClubMember {
   address: string | null;
   memberSince: string | null;
   activeMember: boolean;
+  clubMemberships?: ClubMembershipSummary[];
   createdAt: string;
   updatedAt: string;
 }
@@ -193,6 +205,7 @@ export interface ClubMember {
 export interface ClubMemberUpdate {
   phone?: string | null;
   isAdmin?: boolean;
+  role?: ClubRole;
   email?: string | null;
   firstName?: string | null;
   lastName?: string | null;
