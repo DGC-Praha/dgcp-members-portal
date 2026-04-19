@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
+  Avatar,
   Box,
+  Divider,
   Drawer,
   IconButton,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
   Toolbar,
   Typography,
   useMediaQuery,
@@ -21,14 +25,23 @@ import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 
 const DRAWER_WIDTH = 240;
 
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 const Layout: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user } = useAuth();
+  const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement | null>(null);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -43,7 +56,6 @@ const Layout: React.FC = () => {
     ...(user?.isAdmin
       ? [{ text: t('nav.admin'), icon: <AdminPanelSettingsIcon />, path: '/admin/members' }]
       : []),
-    { text: t('nav.account'), icon: <PersonIcon />, path: '/ucet' },
   ];
 
   const drawer = (
@@ -77,6 +89,8 @@ const Layout: React.FC = () => {
     </Box>
   );
 
+  const closeUserMenu = () => setUserMenuAnchor(null);
+
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar
@@ -102,7 +116,67 @@ const Layout: React.FC = () => {
             DGCP Members
           </Typography>
           {user && (
-            <Typography variant="body2" sx={{ opacity: 0.85 }}>{user.displayName}</Typography>
+            <>
+              <IconButton
+                size="small"
+                onClick={(e) => setUserMenuAnchor(e.currentTarget)}
+                sx={{ p: 0.5 }}
+                aria-label={t('nav.account')}
+              >
+                <Avatar
+                  src={user.tagovacka?.avatarUrl ?? undefined}
+                  alt={user.displayName}
+                  sx={{
+                    width: 36,
+                    height: 36,
+                    bgcolor: '#1565c0',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    border: '2px solid rgba(255,255,255,0.35)',
+                  }}
+                >
+                  {getInitials(user.displayName)}
+                </Avatar>
+              </IconButton>
+              <Menu
+                anchorEl={userMenuAnchor}
+                open={Boolean(userMenuAnchor)}
+                onClose={closeUserMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{ paper: { sx: { minWidth: 220, mt: 0.5 } } }}
+              >
+                <Box sx={{ px: 2, py: 1 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }} noWrap>
+                    {user.displayName}
+                  </Typography>
+                  {user.email && (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }} noWrap>
+                      {user.email}
+                    </Typography>
+                  )}
+                </Box>
+                <Divider />
+                <MenuItem
+                  onClick={() => {
+                    closeUserMenu();
+                    navigate('/ucet');
+                  }}
+                >
+                  <ListItemIcon><PersonIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>{t('nav.account')}</ListItemText>
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    closeUserMenu();
+                    logout();
+                  }}
+                >
+                  <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                  <ListItemText>{t('account.logout')}</ListItemText>
+                </MenuItem>
+              </Menu>
+            </>
           )}
         </Toolbar>
       </AppBar>
