@@ -32,7 +32,14 @@ const OAuthCallbackPage: React.FC = () => {
         return;
       }
 
+      const codeVerifier = sessionStorage.getItem('oauth_code_verifier');
       sessionStorage.removeItem('oauth_state');
+      sessionStorage.removeItem('oauth_code_verifier');
+
+      if (!codeVerifier) {
+        setError(t('callback.exchangeFailed'));
+        return;
+      }
 
       try {
         const apiUrl = import.meta.env.VITE_API_URL || '';
@@ -40,7 +47,7 @@ const OAuthCallbackPage: React.FC = () => {
           grant_type: 'authorization_code',
           code,
           client_id: import.meta.env.VITE_OAUTH_CLIENT_ID,
-          client_secret: import.meta.env.VITE_OAUTH_CLIENT_SECRET,
+          code_verifier: codeVerifier,
           redirect_uri: `${window.location.origin}/oauth/callback`,
         });
 

@@ -48,9 +48,15 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
-  login: () => void;
+  login: () => Promise<void>;
   logout: () => void;
   setTokenFromCallback: (token: string) => Promise<void>;
+}
+
+function base64UrlEncode(bytes: Uint8Array): string {
+  let str = '';
+  for (const b of bytes) str += String.fromCharCode(b);
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -179,13 +185,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => window.removeEventListener('auth:logout', handleLogout);
   }, []);
 
-  const login = () => {
+  const login = async () => {
     const state = crypto.randomUUID();
     sessionStorage.setItem('oauth_state', state);
+
+    const verifier = base64UrlEncode(crypto.getRandomValues(new Uint8Array(48)));
+    const challengeBuf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+    const challenge = base64UrlEncode(new Uint8Array(challengeBuf));
+    sessionStorage.setItem('oauth_code_verifier', verifier);
+
     const clientId = import.meta.env.VITE_OAUTH_CLIENT_ID;
     const authorizeUrl = import.meta.env.VITE_OAUTH_AUTHORIZE_URL;
     const redirectUri = `${window.location.origin}/oauth/callback`;
-    window.location.href = `${authorizeUrl}?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}`;
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      state,
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
+    });
+    window.location.href = `${authorizeUrl}?${params.toString()}`;
   };
 
   const logout = () => {
