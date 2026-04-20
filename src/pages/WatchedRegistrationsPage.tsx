@@ -10,6 +10,7 @@ import {
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 interface WatchdogSubscription {
   tournamentName: string;
@@ -25,6 +26,7 @@ const WatchedRegistrationsPage: React.FC = () => {
   const [subscriptions, setSubscriptions] = useState<WatchdogSubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
+  usePageTitle(t('pageTitle.watchedRegistrations'));
 
   useEffect(() => {
     api.getMyWatchdogSubscriptions()

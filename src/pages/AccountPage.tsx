@@ -3,10 +3,12 @@ import { Box, Typography, Card, CardContent, Button, Divider, Chip } from '@mui/
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const AccountPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
+  usePageTitle(t('pageTitle.account'));
 
   if (!user) return null;
 

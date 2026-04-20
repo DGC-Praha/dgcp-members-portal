@@ -46,6 +46,7 @@ import {
   type Sex,
 } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 interface Draft {
   firstName: string;
@@ -129,6 +130,7 @@ type SortDir = 'asc' | 'desc';
 const AdminMembersPage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  usePageTitle(t('pageTitle.admin'));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [members, setMembers] = useState<ClubMember[]>([]);

@@ -17,6 +17,7 @@ import AdjustOutlinedIcon from '@mui/icons-material/AdjustOutlined';
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 import TagBadge from '../components/TagBadge';
 import UpcomingTournaments from '../components/UpcomingTournaments';
 import MyTournaments from '../components/MyTournaments';
@@ -63,6 +64,7 @@ const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  usePageTitle(t('pageTitle.home'));
 
   if (!user) return null;
 

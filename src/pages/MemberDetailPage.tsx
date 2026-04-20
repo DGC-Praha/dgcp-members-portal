@@ -30,6 +30,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 import TagBadge from '../components/TagBadge';
 import Achievements from '../components/Achievements';
 import RatingChart from '../components/RatingChart';
@@ -127,6 +128,7 @@ const MemberDetailPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t: tr } = useTranslation();
+  usePageTitle(data?.player.name ?? tr('pageTitle.memberDetail'));
 
   const m = user?.tagovacka?.membership;
   const badgeColor = m?.club.tagBadgeColor || '#1565c0';

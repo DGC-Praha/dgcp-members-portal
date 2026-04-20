@@ -21,6 +21,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 import TagBadge from '../components/TagBadge';
 
 interface Member {
@@ -72,6 +73,7 @@ const MembersPage: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  usePageTitle(t('pageTitle.members'));
 
   const m = user?.tagovacka?.membership;
   const badgeColor = m?.club.tagBadgeColor || '#1565c0';

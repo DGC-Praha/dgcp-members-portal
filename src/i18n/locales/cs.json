@@ -1,4 +1,20 @@
 {
+  "pageTitle": {
+    "home": "Přehled",
+    "tournaments": "Turnaje",
+    "members": "Členové",
+    "memberDetail": "Profil hráče",
+    "watchedRegistrations": "Hlídané registrace",
+    "admin": "Správa členů",
+    "account": "Účet",
+    "login": "Přihlášení",
+    "callback": "Přihlašování…"
+  },
+  "devBanner": {
+    "text": "Aplikace je ve vývoji. Pokud najdeš chybu nebo máš nápad, napiš mi na WhatsApp.",
+    "cta": "Napsat na WhatsApp",
+    "dismiss": "Skrýt"
+  },
   "login": {
     "subtitle": "Portál pro členy Discgolf club Prague",
     "button": "Přihlásit se přes tagovacka.cz"

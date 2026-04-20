@@ -28,6 +28,7 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+import DevBanner from './DevBanner';
 
 const DRAWER_WIDTH = 240;
 
@@ -205,7 +206,10 @@ const Layout: React.FC = () => {
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <Outlet />
+        <DevBanner />
+        <Box sx={{ pt: 2 }}>
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );

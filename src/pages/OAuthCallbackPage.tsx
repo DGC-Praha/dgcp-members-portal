@@ -4,6 +4,7 @@ import { Box, CircularProgress, Alert, Button } from '@mui/material';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const OAuthCallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -11,6 +12,7 @@ const OAuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
   const { setTokenFromCallback } = useAuth();
   const { t } = useTranslation();
+  usePageTitle(t('pageTitle.callback'));
   const exchangedRef = useRef(false);
 
   useEffect(() => {

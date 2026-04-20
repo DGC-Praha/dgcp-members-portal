@@ -26,6 +26,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 import { formatDateRange } from '../components/UpcomingTournaments';
 import type { RegistrationPhase } from '../components/UpcomingTournaments';
 import RegistrationWatchdog from '../components/RegistrationWatchdog';
@@ -72,6 +73,7 @@ const TournamentsPage: React.FC = () => {
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const { t: tr } = useTranslation();
+  usePageTitle(tr('pageTitle.tournaments'));
 
   useEffect(() => {
     api.getTournamentFilterOptions()
