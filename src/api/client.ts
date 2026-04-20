@@ -196,6 +196,7 @@ export interface ClubMember {
   clubMemberships?: ClubMembershipSummary[];
   createdAt: string;
   updatedAt: string;
+  lastSeenAt: string | null;
 }
 
 export interface ClubMemberUpdate {
@@ -239,6 +240,8 @@ export const membersApi = {
       `/api/admin/club-members/${iDiscGolfId}/achievements`,
       { params: { year } },
     ),
+  getAchievementsLeaderboard: (year?: number) =>
+    membersApiClient.get<LeaderboardResponse>('/api/achievements/leaderboard', { params: { year } }),
   setAdminMemberAchievement: (
     iDiscGolfId: number,
     key: string,
@@ -271,6 +274,31 @@ export interface AdminMemberAchievement {
 export interface AdminMemberAchievementsResponse {
   year: number;
   achievements: AdminMemberAchievement[];
+}
+
+export interface LeaderboardEarner {
+  iDiscGolfId: number;
+  name: string;
+  earnedAt: string;
+}
+
+export interface LeaderboardItem {
+  achievementKey: string;
+  achievementName: string;
+  achievementEmoji: string;
+  achievementDescription: string;
+  manual: boolean;
+  tier: string;
+  threshold: number;
+  earnedCount: number;
+  rarityPercent: number;
+  earners: LeaderboardEarner[];
+}
+
+export interface LeaderboardResponse {
+  year: number;
+  totalMembers: number;
+  items: LeaderboardItem[];
 }
 
 export default apiClient;

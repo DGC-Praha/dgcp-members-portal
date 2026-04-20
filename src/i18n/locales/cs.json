@@ -5,6 +5,7 @@
     "members": "Členové",
     "memberDetail": "Profil hráče",
     "watchedRegistrations": "Hlídané registrace",
+    "achievements": "Achievementy",
     "admin": "Správa členů",
     "account": "Účet",
     "login": "Přihlášení",
@@ -31,7 +32,8 @@
     "members": "Členové",
     "admin": "Administrace",
     "account": "Účet",
-    "watchedRegistrations": "Hlídané registrace"
+    "watchedRegistrations": "Hlídané registrace",
+    "achievements": "Achievementy"
   },
   "admin": {
     "members": {
@@ -56,6 +58,7 @@
       "email": "E-mail",
       "phone": "Telefon",
       "memberSince": "Členem od",
+      "lastSeenAt": "Naposledy viděn",
       "status": "Stav",
       "role": "Role",
       "actions": "Akce",
@@ -114,6 +117,19 @@
     "search": "Hledat člena...",
     "empty": "Žádní členové.",
     "loadError": "Nepodařilo se načíst seznam členů."
+  },
+  "achievements": {
+    "title": "Achievementy",
+    "subtitle": "Přehled všech odznaků a jak vzácné jsou v sezóně {{year}}.",
+    "empty": "Zatím žádné achievementy v katalogu.",
+    "loadError": "Nepodařilo se načíst achievementy.",
+    "colBadge": "Odznak",
+    "colTier": "Stupeň",
+    "colRarity": "Drží",
+    "colBucket": "Vzácnost",
+    "statBadges": "Odznaků",
+    "statAwarded": "Uděleno",
+    "statMembers": "Členů"
   },
   "tournaments": {
     "upcoming": "Nadcházející turnaje",

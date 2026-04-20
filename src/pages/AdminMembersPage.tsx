@@ -61,6 +61,13 @@ function ageFromDob(dob: string | null): number | null {
   return age;
 }
 
+function formatLastSeen(value: string | null | undefined): string {
+  if (!value) return '—';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'short' });
+}
+
 type SortKey = 'name' | 'age' | 'status';
 type SortDir = 'asc' | 'desc';
 
@@ -283,6 +290,7 @@ const AdminMembersPage: React.FC = () => {
                   {t('admin.members.status')}
                 </TableSortLabel>
               </TableCell>
+              <TableCell sx={{ width: 160 }}>{t('admin.members.lastSeenAt')}</TableCell>
               <TableCell sx={{ width: 48 }} />
             </TableRow>
           </TableHead>
@@ -388,6 +396,11 @@ const AdminMembersPage: React.FC = () => {
                       }
                     />
                   </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color={m.lastSeenAt ? 'text.primary' : 'text.disabled'}>
+                      {formatLastSeen(m.lastSeenAt)}
+                    </Typography>
+                  </TableCell>
                   <TableCell align="right" sx={{ width: 48, color: 'text.disabled' }}>
                     <IconButton size="small" tabIndex={-1} sx={{ pointerEvents: 'none' }}>
                       <ChevronRightIcon fontSize="small" />
@@ -398,7 +411,7 @@ const AdminMembersPage: React.FC = () => {
             })}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center">
+                <TableCell colSpan={8} align="center">
                   <Typography variant="body2" color="text.secondary" sx={{ py: 3 }}>
                     {t('admin.members.empty')}
                   </Typography>

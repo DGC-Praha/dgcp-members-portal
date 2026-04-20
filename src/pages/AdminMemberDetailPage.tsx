@@ -300,6 +300,16 @@ const AdminMemberDetailPage: React.FC = () => {
             fullWidth
             InputLabelProps={{ shrink: true }}
           />
+          <TextField
+            label={t('admin.members.lastSeenAt')}
+            value={
+              member.lastSeenAt
+                ? new Date(member.lastSeenAt).toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'short' })
+                : '—'
+            }
+            fullWidth
+            disabled
+          />
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
             <FormControlLabel
               control={
