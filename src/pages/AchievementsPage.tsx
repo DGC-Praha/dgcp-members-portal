@@ -22,7 +22,7 @@ import {
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
-import { membersApi, type LeaderboardItem } from '../api/client';
+import { api, membersApi, type LeaderboardItem } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from '../components/achievements/shared';
@@ -87,8 +87,10 @@ const LeaderboardRow: React.FC<{
   item: LeaderboardItem;
   totalMembers: number;
   rank: number;
+  avatarMap: Map<number, string | null>;
   onEarnerClick: (iDiscGolfId: number) => void;
-}> = ({ item, totalMembers, rank, onEarnerClick }) => {
+}> = ({ item, totalMembers, rank, avatarMap, onEarnerClick }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const tierColor = TIER_COLORS[item.tier] ?? '#9ca3af';
   const bucket = rarityBucket(item.rarityPercent);
@@ -101,7 +103,7 @@ const LeaderboardRow: React.FC<{
         onClick={() => hasEarners && setOpen((o) => !o)}
         sx={{
           cursor: hasEarners ? 'pointer' : 'default',
-          '& > *': { borderBottom: 'unset' },
+          ...(hasEarners && { '& > *': { borderBottom: 'unset' } }),
         }}
       >
         <TableCell sx={{ width: 40, color: 'text.disabled', fontSize: '0.75rem', fontWeight: 600 }}>
@@ -195,45 +197,53 @@ const LeaderboardRow: React.FC<{
         <TableRow>
           <TableCell colSpan={7} sx={{ p: 0, borderBottom: open ? '1px solid rgba(224,224,224,1)' : 'none' }}>
             <Collapse in={open} unmountOnExit>
-              <Box sx={{ p: 2, pl: 7, bgcolor: '#fafbfc' }}>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {item.earners.map((earner) => (
-                    <Chip
-                      key={earner.iDiscGolfId}
-                      avatar={
-                        <Avatar sx={{ bgcolor: tierColor, color: '#fff', fontSize: '0.65rem', fontWeight: 700 }}>
-                          {earner.name
-                            .split(' ')
-                            .filter(Boolean)
-                            .map((w) => w[0])
-                            .slice(0, 2)
-                            .join('')
-                            .toUpperCase() || '?'}
-                        </Avatar>
-                      }
-                      label={
-                        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
-                          <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                            {earner.name}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-                            {new Date(earner.earnedAt).toLocaleDateString('cs-CZ')}
-                          </Typography>
-                        </Box>
-                      }
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEarnerClick(earner.iDiscGolfId);
-                      }}
-                      sx={{
-                        bgcolor: '#fff',
-                        border: '1px solid',
-                        borderColor: 'divider',
-                        '&:hover': { borderColor: tierColor, bgcolor: TIER_BG[item.tier] ?? '#fafafa' },
-                      }}
-                    />
-                  ))}
-                </Box>
+              <Box sx={{ pl: 7, pr: 2, py: 1.5, bgcolor: '#fafbfc' }}>
+                <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.75rem', border: 0 } }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ width: 40 }} />
+                      <TableCell sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 0.5 }}>
+                        {t('members.name')}
+                      </TableCell>
+                      <TableCell align="right" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 0.5, width: 120 }}>
+                        {t('achievements.colEarnedAt')}
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {item.earners.map((earner) => (
+                      <TableRow
+                        key={earner.iDiscGolfId}
+                        hover
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEarnerClick(earner.iDiscGolfId);
+                        }}
+                        sx={{ cursor: 'pointer' }}
+                      >
+                        <TableCell sx={{ width: 40 }}>
+                          <Avatar
+                            src={avatarMap.get(earner.iDiscGolfId) ?? undefined}
+                            alt={earner.name}
+                            sx={{ width: 28, height: 28, bgcolor: tierColor, color: '#fff', fontSize: '0.7rem', fontWeight: 700 }}
+                          >
+                            {earner.name
+                              .split(' ')
+                              .filter(Boolean)
+                              .map((w) => w[0])
+                              .slice(0, 2)
+                              .join('')
+                              .toUpperCase() || '?'}
+                          </Avatar>
+                        </TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>{earner.name}</TableCell>
+                        <TableCell align="right" sx={{ color: 'text.secondary' }}>
+                          {new Date(earner.earnedAt).toLocaleDateString('cs-CZ')}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </Box>
             </Collapse>
           </TableCell>
@@ -247,10 +257,11 @@ const AchievementsPage: React.FC = () => {
   const [items, setItems] = useState<LeaderboardItem[]>([]);
   const [totalMembers, setTotalMembers] = useState(0);
   const [year, setYear] = useState(0);
+  const [avatarMap, setAvatarMap] = useState<Map<number, string | null>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortColumn>('rarity');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const { t } = useTranslation();
   const navigate = useNavigate();
   usePageTitle(t('pageTitle.achievements'));
@@ -258,12 +269,26 @@ const AchievementsPage: React.FC = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await membersApi.getAchievementsLeaderboard();
-        setItems(res.data.items);
-        setTotalMembers(res.data.totalMembers);
-        setYear(res.data.year);
-      } catch {
-        setError(t('achievements.loadError'));
+        // Leaderboard is the hard blocker; avatars are cosmetic — if tagovacka
+        // is slow/down we still render initials-only chips.
+        const [leaderboardRes, membersRes] = await Promise.allSettled([
+          membersApi.getAchievementsLeaderboard(),
+          api.getMembers(),
+        ]);
+        if (leaderboardRes.status === 'rejected') {
+          setError(t('achievements.loadError'));
+          return;
+        }
+        setItems(leaderboardRes.value.data.items);
+        setTotalMembers(leaderboardRes.value.data.totalMembers);
+        setYear(leaderboardRes.value.data.year);
+        if (membersRes.status === 'fulfilled') {
+          const map = new Map<number, string | null>();
+          for (const member of membersRes.value.data as Array<{ iDiscGolfId: number; avatarUrl: string | null }>) {
+            map.set(member.iDiscGolfId, member.avatarUrl);
+          }
+          setAvatarMap(map);
+        }
       } finally {
         setLoading(false);
       }
@@ -390,6 +415,7 @@ const AchievementsPage: React.FC = () => {
                   item={item}
                   totalMembers={totalMembers}
                   rank={idx + 1}
+                  avatarMap={avatarMap}
                   onEarnerClick={(id) => navigate(`/clenove/${id}`)}
                 />
               ))}

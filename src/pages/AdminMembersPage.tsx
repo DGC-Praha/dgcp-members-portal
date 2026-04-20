@@ -4,7 +4,6 @@ import {
   Alert,
   Avatar,
   Box,
-  Button,
   Chip,
   CircularProgress,
   IconButton,
@@ -23,7 +22,6 @@ import {
 } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SearchIcon from '@mui/icons-material/Search';
-import SyncIcon from '@mui/icons-material/Sync';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
@@ -82,8 +80,6 @@ const AdminMembersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
-  const [syncing, setSyncing] = useState(false);
-  const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
   const load = async () => {
     const res = await membersApi.listClubMembers();
@@ -99,26 +95,6 @@ const AdminMembersPage: React.FC = () => {
       })
       .finally(() => setLoading(false));
   }, [user?.isAdmin, t]);
-
-  const handleSync = async () => {
-    setSyncing(true);
-    setSyncMessage(null);
-    try {
-      const res = await membersApi.syncMembers();
-      setSyncMessage(
-        t('admin.members.syncSuccess', {
-          total: res.data.total,
-          created: res.data.created,
-        }),
-      );
-      await load();
-    } catch (e) {
-      console.error(e);
-      setError(t('admin.members.syncError'));
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -217,12 +193,6 @@ const AdminMembersPage: React.FC = () => {
         </Alert>
       )}
 
-      {syncMessage && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSyncMessage(null)}>
-          {syncMessage}
-        </Alert>
-      )}
-
       <Stack
         direction={{ xs: 'column', sm: 'row' }}
         spacing={2}
@@ -243,14 +213,6 @@ const AdminMembersPage: React.FC = () => {
             ),
           }}
         />
-        <Button
-          variant="outlined"
-          startIcon={syncing ? <CircularProgress size={16} /> : <SyncIcon />}
-          onClick={handleSync}
-          disabled={syncing}
-        >
-          {t('admin.members.sync')}
-        </Button>
       </Stack>
 
       <TableContainer sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>

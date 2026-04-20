@@ -76,9 +76,6 @@
       "empty": "Žádní členové neodpovídají vyhledávání.",
       "loadError": "Nepodařilo se načíst seznam členů.",
       "saveError": "Uložení se nezdařilo. Zkuste to znovu.",
-      "sync": "Synchronizovat",
-      "syncSuccess": "Synchronizace dokončena — {{total}} členů celkem, {{created}} nově přidáno.",
-      "syncError": "Synchronizace se nezdařila. Zkuste to znovu.",
       "detail": {
         "back": "Zpět na seznam",
         "saved": "Změny uloženy.",
@@ -127,6 +124,7 @@
     "colTier": "Stupeň",
     "colRarity": "Drží",
     "colBucket": "Vzácnost",
+    "colEarnedAt": "Získáno",
     "statBadges": "Odznaků",
     "statAwarded": "Uděleno",
     "statMembers": "Členů"

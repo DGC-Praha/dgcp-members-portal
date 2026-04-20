@@ -227,10 +227,6 @@ export const membersApi = {
       `/api/admin/club-members/${iDiscGolfId}`,
       data,
     ),
-  syncMembers: () =>
-    membersApiClient.post<{ total: number; created: number; untouched: number }>(
-      '/api/admin/sync-members',
-    ),
   getPlayerAchievements: (iDiscGolfId: number, year?: number) =>
     membersApiClient.get(`/api/members/${iDiscGolfId}/achievements`, { params: { year } }),
   getRecentAchievements: (page?: number, year?: number) =>
