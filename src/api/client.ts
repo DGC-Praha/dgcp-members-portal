@@ -230,8 +230,8 @@ export const membersApi = {
     ),
   getPlayerAchievements: (iDiscGolfId: number, year?: number) =>
     membersApiClient.get(`/api/members/${iDiscGolfId}/achievements`, { params: { year } }),
-  getRecentAchievements: (page?: number) =>
-    membersApiClient.get('/api/recent-achievements', { params: { page } }),
+  getRecentAchievements: (page?: number, year?: number) =>
+    membersApiClient.get('/api/recent-achievements', { params: { page, year } }),
 };
 
 export default apiClient;
