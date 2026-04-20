@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import OAuthCallbackPage from './pages/OAuthCallbackPage';
 import HomePage from './pages/HomePage';
 import MembersPage from './pages/MembersPage';
+import AchievementsPage from './pages/AchievementsPage';
 import AccountPage from './pages/AccountPage';
 import TournamentsPage from './pages/TournamentsPage';
 import MemberDetailPage from './pages/MemberDetailPage';
@@ -39,6 +40,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/turnaje" element={<TournamentsPage />} />
               <Route path="/members" element={<MembersPage />} />
+              <Route path="/achievements" element={<AchievementsPage />} />
               <Route path="/clenove/:id" element={<MemberDetailPage />} />
               <Route path="/hlidane-registrace" element={<WatchedRegistrationsPage />} />
               <Route path="/admin/members" element={<AdminMembersPage />} />
