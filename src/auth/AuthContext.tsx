@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { api, membersApi } from '../api/client';
+import { api, membersApi, refreshAccessToken } from '../api/client';
 
 interface Membership {
   tagNumber: number | null;
@@ -84,10 +84,25 @@ function buildDisplayName(
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [token, setToken] = useState<string | null>(localStorage.getItem('oauth_token'));
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(!!localStorage.getItem('oauth_token'));
+  const [loading, setLoading] = useState(
+    !!localStorage.getItem('oauth_token') || !!localStorage.getItem('oauth_refresh_token'),
+  );
 
   const fetchUser = useCallback(async () => {
     try {
+      // If access token is gone (expired/cleared) but we still have a refresh
+      // token, exchange it first so a returning user isn't bounced to login.
+      if (!localStorage.getItem('oauth_token') && localStorage.getItem('oauth_refresh_token')) {
+        try {
+          const newToken = await refreshAccessToken();
+          setToken(newToken);
+        } catch {
+          localStorage.removeItem('oauth_refresh_token');
+          setLoading(false);
+          return;
+        }
+      }
+
       // Core identity first — if members-api is unreachable we can't render the
       // shell safely (we need isAdmin for route protection).
       const membersRes = await membersApi.getMe();
@@ -169,7 +184,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    if (token) {
+    if (token || localStorage.getItem('oauth_refresh_token')) {
       fetchUser();
     } else {
       setLoading(false);
