@@ -75,7 +75,23 @@
       "saveError": "Uložení se nezdařilo. Zkuste to znovu.",
       "sync": "Synchronizovat",
       "syncSuccess": "Synchronizace dokončena — {{total}} členů celkem, {{created}} nově přidáno.",
-      "syncError": "Synchronizace se nezdařila. Zkuste to znovu."
+      "syncError": "Synchronizace se nezdařila. Zkuste to znovu.",
+      "detail": {
+        "back": "Zpět na seznam",
+        "saved": "Změny uloženy.",
+        "loadError": "Nepodařilo se načíst člena.",
+        "sectionIdentity": "Osobní údaje",
+        "sectionContact": "Kontakt",
+        "sectionMembership": "Členství"
+      },
+      "achievements": {
+        "title": "Achievementy",
+        "subtitle": "Ručně udělované achievementy. Automatické se přepočítávají z turnajové historie.",
+        "season": "Sezóna {{year}}",
+        "noManual": "Žádné ručně udělované achievementy.",
+        "loadError": "Nepodařilo se načíst achievementy.",
+        "saveError": "Uložení achievementu se nezdařilo."
+      }
     }
   },
   "home": {

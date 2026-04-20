@@ -219,6 +219,8 @@ export const membersApi = {
     membersApiClient.patch<ClubMember>('/api/me', data),
   listClubMembers: () =>
     membersApiClient.get<ClubMember[]>('/api/admin/club-members'),
+  getClubMember: (iDiscGolfId: number) =>
+    membersApiClient.get<ClubMember>(`/api/admin/club-members/${iDiscGolfId}`),
   updateClubMember: (iDiscGolfId: number, data: ClubMemberUpdate) =>
     membersApiClient.patch<ClubMember>(
       `/api/admin/club-members/${iDiscGolfId}`,
@@ -232,6 +234,43 @@ export const membersApi = {
     membersApiClient.get(`/api/members/${iDiscGolfId}/achievements`, { params: { year } }),
   getRecentAchievements: (page?: number, year?: number) =>
     membersApiClient.get('/api/recent-achievements', { params: { page, year } }),
+  getAdminMemberAchievements: (iDiscGolfId: number, year?: number) =>
+    membersApiClient.get<AdminMemberAchievementsResponse>(
+      `/api/admin/club-members/${iDiscGolfId}/achievements`,
+      { params: { year } },
+    ),
+  setAdminMemberAchievement: (
+    iDiscGolfId: number,
+    key: string,
+    data: { progress: number; year?: number },
+  ) =>
+    membersApiClient.put<AdminMemberAchievement>(
+      `/api/admin/club-members/${iDiscGolfId}/achievements/${key}`,
+      { progress: data.progress },
+      { params: { year: data.year } },
+    ),
 };
+
+export interface AdminAchievementTier {
+  tier: string;
+  threshold: number;
+  earned: boolean;
+  earnedAt: string | null;
+}
+
+export interface AdminMemberAchievement {
+  key: string;
+  name: string;
+  emoji: string;
+  description: string;
+  manual: boolean;
+  progress: number;
+  tiers: AdminAchievementTier[];
+}
+
+export interface AdminMemberAchievementsResponse {
+  year: number;
+  achievements: AdminMemberAchievement[];
+}
 
 export default apiClient;

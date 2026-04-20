@@ -309,7 +309,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
         earned: t.earned,
         earnedAt: t.earnedAt,
         bgColor,
-        ringColor: singleTier ? '#1565c0' : (TIER_COLORS[t.tier] ?? '#9ca3af'),
+        ringColor: TIER_COLORS[t.tier] ?? '#9ca3af',
         tier: t.tier,
         nextTier: badgeNextTier,
         showArcProgress: isNextTier,

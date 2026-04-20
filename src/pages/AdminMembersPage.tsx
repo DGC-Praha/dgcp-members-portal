@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import {
   Alert,
   Avatar,
@@ -7,19 +7,9 @@ import {
   Button,
   Chip,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
   IconButton,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
-  Switch,
   Table,
   TableBody,
   TableCell,
@@ -31,7 +21,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import SearchIcon from '@mui/icons-material/Search';
 import SyncIcon from '@mui/icons-material/Sync';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -39,57 +29,9 @@ import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
 import { useTranslation } from 'react-i18next';
-import {
-  membersApi,
-  type ClubMember,
-  type ClubMemberUpdate,
-  type Sex,
-} from '../api/client';
+import { membersApi, type ClubMember } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
-
-interface Draft {
-  firstName: string;
-  lastName: string;
-  sex: Sex | '';
-  dateOfBirth: string;
-  identificationNumber: string;
-  address: string;
-  phone: string;
-  memberSince: string;
-  activeMember: boolean;
-  isAdmin: boolean;
-}
-
-function emptyDraft(): Draft {
-  return {
-    firstName: '',
-    lastName: '',
-    sex: '',
-    dateOfBirth: '',
-    identificationNumber: '',
-    address: '',
-    phone: '',
-    memberSince: '',
-    activeMember: false,
-    isAdmin: false,
-  };
-}
-
-function draftFromMember(m: ClubMember): Draft {
-  return {
-    firstName: m.firstName ?? '',
-    lastName: m.lastName ?? '',
-    sex: (m.sex ?? '') as Sex | '',
-    dateOfBirth: m.dateOfBirth ?? '',
-    identificationNumber: m.identificationNumber ?? '',
-    address: m.address ?? '',
-    phone: m.phone ?? '',
-    memberSince: m.memberSince ?? '',
-    activeMember: m.activeMember,
-    isAdmin: m.isAdmin,
-  };
-}
 
 function displayName(m: ClubMember): string {
   const full = [m.firstName, m.lastName].filter(Boolean).join(' ').trim();
@@ -106,11 +48,6 @@ function getInitials(name: string): string {
     .slice(0, 2)
     .join('')
     .toUpperCase();
-}
-
-function normalize(value: string): string | null {
-  const trimmed = value.trim();
-  return trimmed === '' ? null : trimmed;
 }
 
 function ageFromDob(dob: string | null): number | null {
@@ -130,6 +67,7 @@ type SortDir = 'asc' | 'desc';
 const AdminMembersPage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
   usePageTitle(t('pageTitle.admin'));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -137,9 +75,6 @@ const AdminMembersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
-  const [editing, setEditing] = useState<ClubMember | null>(null);
-  const [draft, setDraft] = useState<Draft>(emptyDraft());
-  const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
@@ -156,7 +91,6 @@ const AdminMembersPage: React.FC = () => {
         setError(t('admin.members.loadError'));
       })
       .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.isAdmin, t]);
 
   const handleSync = async () => {
@@ -205,7 +139,6 @@ const AdminMembersPage: React.FC = () => {
         if (bx === null) return -1;
         return (ax - bx) * dir;
       }
-      // status: active first when asc
       const as = (a.activeMember ? 1 : 0) + (a.isAdmin ? 2 : 0);
       const bs = (b.activeMember ? 1 : 0) + (b.isAdmin ? 2 : 0);
       return (bs - as) * dir;
@@ -231,50 +164,9 @@ const AdminMembersPage: React.FC = () => {
     [members],
   );
 
-  // Belt-and-braces: if user somehow lands here as non-admin, bounce.
   if (user && !user.isAdmin) {
     return <Navigate to="/" replace />;
   }
-
-  const openEdit = (member: ClubMember) => {
-    setEditing(member);
-    setDraft(draftFromMember(member));
-  };
-
-  const closeEdit = () => {
-    if (saving) return;
-    setEditing(null);
-  };
-
-  const saveEdit = async () => {
-    if (!editing) return;
-    setSaving(true);
-    try {
-      const update: ClubMemberUpdate = {
-        firstName: normalize(draft.firstName),
-        lastName: normalize(draft.lastName),
-        sex: draft.sex === '' ? null : draft.sex,
-        dateOfBirth: normalize(draft.dateOfBirth),
-        identificationNumber: normalize(draft.identificationNumber),
-        address: normalize(draft.address),
-        phone: normalize(draft.phone),
-        memberSince: normalize(draft.memberSince),
-        activeMember: draft.activeMember,
-        isAdmin: draft.isAdmin,
-      };
-      const res = await membersApi.updateClubMember(editing.iDiscGolfId, update);
-      const updated = res.data;
-      setMembers((prev) =>
-        prev.map((m) => (m.iDiscGolfId === editing.iDiscGolfId ? updated : m)),
-      );
-      setEditing(null);
-    } catch (e) {
-      console.error(e);
-      setError(t('admin.members.saveError'));
-    } finally {
-      setSaving(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -391,9 +283,7 @@ const AdminMembersPage: React.FC = () => {
                   {t('admin.members.status')}
                 </TableSortLabel>
               </TableCell>
-              <TableCell align="right" sx={{ width: 64 }}>
-                {t('admin.members.actions')}
-              </TableCell>
+              <TableCell sx={{ width: 48 }} />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -407,7 +297,8 @@ const AdminMembersPage: React.FC = () => {
                 <TableRow
                   key={m.iDiscGolfId}
                   hover
-                  sx={{ opacity: m.activeMember ? 1 : 0.6 }}
+                  onClick={() => navigate(`/admin/members/${m.iDiscGolfId}`)}
+                  sx={{ opacity: m.activeMember ? 1 : 0.6, cursor: 'pointer' }}
                 >
                   <TableCell sx={{ width: 48 }}>
                     <Avatar sx={{ width: 32, height: 32, fontSize: '0.8rem' }}>
@@ -497,13 +388,9 @@ const AdminMembersPage: React.FC = () => {
                       }
                     />
                   </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      onClick={() => openEdit(m)}
-                      aria-label={t('admin.members.edit')}
-                    >
-                      <EditIcon fontSize="small" />
+                  <TableCell align="right" sx={{ width: 48, color: 'text.disabled' }}>
+                    <IconButton size="small" tabIndex={-1} sx={{ pointerEvents: 'none' }}>
+                      <ChevronRightIcon fontSize="small" />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -521,128 +408,6 @@ const AdminMembersPage: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      <Dialog open={!!editing} onClose={closeEdit} fullWidth maxWidth="sm">
-        {editing && (
-          <>
-            <DialogTitle>
-              {t('admin.members.editTitle', { name: displayName(editing) })}
-            </DialogTitle>
-            <DialogContent>
-              <Stack spacing={2} sx={{ mt: 1 }}>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <TextField
-                    label={t('admin.members.firstName')}
-                    value={draft.firstName}
-                    onChange={(e) => setDraft((d) => ({ ...d, firstName: e.target.value }))}
-                    fullWidth
-                  />
-                  <TextField
-                    label={t('admin.members.lastName')}
-                    value={draft.lastName}
-                    onChange={(e) => setDraft((d) => ({ ...d, lastName: e.target.value }))}
-                    fullWidth
-                  />
-                </Stack>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <FormControl fullWidth>
-                    <InputLabel id="admin-members-sex-label">
-                      {t('admin.members.sex')}
-                    </InputLabel>
-                    <Select
-                      labelId="admin-members-sex-label"
-                      label={t('admin.members.sex')}
-                      value={draft.sex}
-                      onChange={(e) =>
-                        setDraft((d) => ({ ...d, sex: e.target.value as Sex | '' }))
-                      }
-                    >
-                      <MenuItem value="">—</MenuItem>
-                      <MenuItem value="male">{t('admin.members.sexMale')}</MenuItem>
-                      <MenuItem value="female">{t('admin.members.sexFemale')}</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <TextField
-                    label={t('admin.members.dateOfBirth')}
-                    type="date"
-                    value={draft.dateOfBirth}
-                    onChange={(e) => setDraft((d) => ({ ...d, dateOfBirth: e.target.value }))}
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Stack>
-                <TextField
-                  label={t('admin.members.identificationNumber')}
-                  value={draft.identificationNumber}
-                  onChange={(e) =>
-                    setDraft((d) => ({ ...d, identificationNumber: e.target.value }))
-                  }
-                  fullWidth
-                />
-                <TextField
-                  label={t('admin.members.address')}
-                  value={draft.address}
-                  onChange={(e) => setDraft((d) => ({ ...d, address: e.target.value }))}
-                  fullWidth
-                  multiline
-                  minRows={2}
-                />
-                <TextField
-                  label={t('admin.members.email')}
-                  value={editing.email ?? ''}
-                  fullWidth
-                  disabled
-                  helperText={t('admin.members.emailReadonlyHint')}
-                />
-                <TextField
-                  label={t('admin.members.phone')}
-                  value={draft.phone}
-                  onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))}
-                  fullWidth
-                />
-                <TextField
-                  label={t('admin.members.memberSince')}
-                  type="date"
-                  value={draft.memberSince}
-                  onChange={(e) => setDraft((d) => ({ ...d, memberSince: e.target.value }))}
-                  fullWidth
-                  InputLabelProps={{ shrink: true }}
-                />
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={draft.activeMember}
-                        onChange={(e) =>
-                          setDraft((d) => ({ ...d, activeMember: e.target.checked }))
-                        }
-                      />
-                    }
-                    label={t('admin.members.activeMember')}
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={draft.isAdmin}
-                        onChange={(e) => setDraft((d) => ({ ...d, isAdmin: e.target.checked }))}
-                      />
-                    }
-                    label={t('admin.members.isAdmin')}
-                  />
-                </Stack>
-              </Stack>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={closeEdit} disabled={saving}>
-                {t('admin.members.cancel')}
-              </Button>
-              <Button variant="contained" onClick={saveEdit} disabled={saving}>
-                {saving ? <CircularProgress size={20} /> : t('admin.members.save')}
-              </Button>
-            </DialogActions>
-          </>
-        )}
-      </Dialog>
     </Box>
   );
 };
