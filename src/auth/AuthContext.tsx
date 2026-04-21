@@ -30,7 +30,7 @@ export interface TagovackaProfile {
 // is exposed via `user.tagovacka` + `tagovackaLoaded`.
 export interface User {
   id: number;
-  iDiscGolfId: number;
+  iDiscGolfId: number | null;
   email: string | null;
   phone: string | null;
   isAdmin: boolean;
@@ -72,13 +72,13 @@ function buildDisplayName(
   lastName: string | null,
   tagovacka: TagovackaProfile | null,
   email: string | null,
-  iDiscGolfId: number,
+  iDiscGolfId: number | null,
 ): string {
   const full = [firstName, lastName].filter(Boolean).join(' ').trim();
   if (full !== '') return full;
   if (tagovacka?.name) return tagovacka.name;
   if (email) return email;
-  return `#${iDiscGolfId}`;
+  return iDiscGolfId != null ? `#${iDiscGolfId}` : 'anonymous';
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

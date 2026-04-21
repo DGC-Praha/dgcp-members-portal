@@ -140,7 +140,11 @@ const HomePage: React.FC = () => {
                 boxShadow: `0 4px 16px ${alpha(badgeColor, 0.12)}`,
               },
             }}
-            onClick={() => navigate(`/clenove/${user.iDiscGolfId}`)}
+            onClick={
+              user.iDiscGolfId != null
+                ? () => navigate(`/clenove/${user.iDiscGolfId}`)
+                : undefined
+            }
           >
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
               {/* Avatar + Name + Tag */}
