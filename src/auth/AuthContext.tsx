@@ -50,7 +50,7 @@ interface AuthContextType {
   loading: boolean;
   login: () => Promise<void>;
   logout: () => void;
-  setTokenFromCallback: (token: string) => Promise<void>;
+  setTokenFromCallback: (token: string) => Promise<boolean>;
 }
 
 function base64UrlEncode(bytes: Uint8Array): string {
@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     !!localStorage.getItem('oauth_token') || !!localStorage.getItem('oauth_refresh_token'),
   );
 
-  const fetchUser = useCallback(async () => {
+  const fetchUser = useCallback(async (): Promise<boolean> => {
     try {
       // If access token is gone (expired/cleared) but we still have a refresh
       // token, exchange it first so a returning user isn't bounced to login.
@@ -99,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } catch {
           localStorage.removeItem('oauth_refresh_token');
           setLoading(false);
-          return;
+          return false;
         }
       }
 
@@ -175,11 +175,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             prev === null ? prev : { ...prev, tagovacka: null, tagovackaLoaded: true },
           );
         });
+
+      return true;
     } catch {
+      // Clear BOTH tokens — otherwise the useEffect re-fires, refresh_token
+      // gets a fresh access token that also fails verification, and we loop.
       localStorage.removeItem('oauth_token');
+      localStorage.removeItem('oauth_refresh_token');
       setToken(null);
       setUser(null);
       setLoading(false);
+      return false;
     }
   }, []);
 
@@ -229,11 +235,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-  const setTokenFromCallback = async (accessToken: string) => {
+  const setTokenFromCallback = async (accessToken: string): Promise<boolean> => {
     localStorage.setItem('oauth_token', accessToken);
     setToken(accessToken);
     setLoading(true);
-    await fetchUser();
+    return fetchUser();
   };
 
   return (

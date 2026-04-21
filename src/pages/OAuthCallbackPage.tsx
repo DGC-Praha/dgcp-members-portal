@@ -56,8 +56,15 @@ const OAuthCallbackPage: React.FC = () => {
         if (res.data.refresh_token) {
           localStorage.setItem('oauth_refresh_token', res.data.refresh_token);
         }
-        await setTokenFromCallback(res.data.access_token);
-        navigate('/', { replace: true });
+        const success = await setTokenFromCallback(res.data.access_token);
+        if (success) {
+          navigate('/', { replace: true });
+        } else {
+          // Token exchange succeeded but /api/me rejected it (key mismatch,
+          // backend down, etc.). Show error instead of redirecting — otherwise
+          // the user gets bounced back to /login and into a loop.
+          setError(t('callback.exchangeFailed'));
+        }
       } catch {
         setError(t('callback.exchangeFailed'));
       }
