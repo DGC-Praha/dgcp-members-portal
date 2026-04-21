@@ -40,6 +40,8 @@ interface Draft {
   identificationNumber: string;
   address: string;
   phone: string;
+  email: string;
+  iDiscGolfId: string;
   memberSince: string;
   activeMember: boolean;
   isAdmin: boolean;
@@ -54,6 +56,8 @@ function draftFromMember(m: ClubMember): Draft {
     identificationNumber: m.identificationNumber ?? '',
     address: m.address ?? '',
     phone: m.phone ?? '',
+    email: m.email ?? '',
+    iDiscGolfId: m.iDiscGolfId == null ? '' : String(m.iDiscGolfId),
     memberSince: m.memberSince ?? '',
     activeMember: m.activeMember,
     isAdmin: m.isAdmin,
@@ -73,11 +77,13 @@ function normalize(value: string): string | null {
 }
 
 const AdminMemberDetailPage: React.FC = () => {
-  const { iDiscGolfId } = useParams<{ iDiscGolfId: string }>();
+  // Route param is the DB primary key so members without an iDiscGolfId
+  // (juniors, spouses) remain reachable from the admin UI.
+  const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const memberId = iDiscGolfId ? parseInt(iDiscGolfId, 10) : NaN;
+  const memberId = id ? parseInt(id, 10) : NaN;
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -96,7 +102,7 @@ const AdminMemberDetailPage: React.FC = () => {
       return;
     }
     membersApi
-      .getClubMember(memberId)
+      .getClubMemberById(memberId)
       .then((res) => {
         setMember(res.data);
         setDraft(draftFromMember(res.data));
@@ -118,6 +124,19 @@ const AdminMemberDetailPage: React.FC = () => {
     setSaved(false);
     setError(null);
     try {
+      const trimmedIdg = draft.iDiscGolfId.trim();
+      let parsedIdg: number | null;
+      if (trimmedIdg === '') {
+        parsedIdg = null;
+      } else {
+        const n = parseInt(trimmedIdg, 10);
+        if (!Number.isInteger(n) || n <= 0) {
+          setError(t('admin.members.iDiscGolfIdInvalid'));
+          setSaving(false);
+          return;
+        }
+        parsedIdg = n;
+      }
       const update: ClubMemberUpdate = {
         firstName: normalize(draft.firstName),
         lastName: normalize(draft.lastName),
@@ -126,11 +145,13 @@ const AdminMemberDetailPage: React.FC = () => {
         identificationNumber: normalize(draft.identificationNumber),
         address: normalize(draft.address),
         phone: normalize(draft.phone),
+        email: normalize(draft.email),
+        iDiscGolfId: parsedIdg,
         memberSince: normalize(draft.memberSince),
         activeMember: draft.activeMember,
         isAdmin: draft.isAdmin,
       };
-      const res = await membersApi.updateClubMember(member.iDiscGolfId, update);
+      const res = await membersApi.updateClubMemberById(member.id, update);
       setMember(res.data);
       setDraft(draftFromMember(res.data));
       setSaved(true);
@@ -273,16 +294,24 @@ const AdminMemberDetailPage: React.FC = () => {
         <Stack spacing={2}>
           <TextField
             label={t('admin.members.email')}
-            value={member.email ?? ''}
+            type="email"
+            value={draft.email}
+            onChange={(e) => setDraft({ ...draft, email: e.target.value })}
             fullWidth
-            disabled
-            helperText={t('admin.members.emailReadonlyHint')}
           />
           <TextField
             label={t('admin.members.phone')}
             value={draft.phone}
             onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
             fullWidth
+          />
+          <TextField
+            label={t('admin.members.iDiscGolfId')}
+            type="number"
+            value={draft.iDiscGolfId}
+            onChange={(e) => setDraft({ ...draft, iDiscGolfId: e.target.value })}
+            fullWidth
+            helperText={t('admin.members.iDiscGolfIdHint')}
           />
         </Stack>
       </Paper>
@@ -335,7 +364,7 @@ const AdminMemberDetailPage: React.FC = () => {
         </Stack>
       </Paper>
 
-      <AdminMemberAchievements iDiscGolfId={member.iDiscGolfId} />
+      <AdminMemberAchievements memberId={member.id} />
 
       <Divider sx={{ mb: 3 }} />
 

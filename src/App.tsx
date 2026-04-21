@@ -44,7 +44,7 @@ function App() {
               <Route path="/clenove/:id" element={<MemberDetailPage />} />
               <Route path="/hlidane-registrace" element={<WatchedRegistrationsPage />} />
               <Route path="/admin/members" element={<AdminMembersPage />} />
-              <Route path="/admin/members/:iDiscGolfId" element={<AdminMemberDetailPage />} />
+              <Route path="/admin/members/:id" element={<AdminMemberDetailPage />} />
               <Route path="/ucet" element={<AccountPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

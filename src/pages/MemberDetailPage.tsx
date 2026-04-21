@@ -86,6 +86,8 @@ interface MemberDetail {
     division: string;
     totalScore: number | null;
     finishPosition: number | null;
+    tournamentRating: number | null;
+    pdgaTournamentId: number | null;
     cadgTier: string | null;
     iDiscGolfTournamentId: number;
   }>;
@@ -350,7 +352,7 @@ const MemberDetailPage: React.FC = () => {
                       <TableCell sx={{ fontWeight: 600 }}>{tr('tournaments.date')}</TableCell>
                       <TableCell sx={{ fontWeight: 600 }}>{tr('tournaments.division')}</TableCell>
                       <TableCell align="center" sx={{ fontWeight: 600 }}>#</TableCell>
-                      <TableCell align="center" sx={{ fontWeight: 600 }}>{tr('playerCard.score')}</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 600 }}>{tr('playerCard.rating')}</TableCell>
                       <TableCell sx={{ width: 36 }} />
                     </TableRow>
                   </TableHead>
@@ -380,8 +382,20 @@ const MemberDetailPage: React.FC = () => {
                         <TableCell align="center" sx={{ fontWeight: 700, color: t.finishPosition && t.finishPosition <= 3 ? ACCENT : 'text.primary' }}>
                           {t.finishPosition ?? '–'}
                         </TableCell>
-                        <TableCell align="center" sx={{ color: 'text.secondary' }}>
-                          {t.totalScore && t.totalScore > 0 ? t.totalScore : '–'}
+                        <TableCell align="center">
+                          {t.tournamentRating == null ? (
+                            <Typography component="span" sx={{ color: 'text.secondary' }}>–</Typography>
+                          ) : (
+                            <Chip
+                              label={t.tournamentRating}
+                              size="small"
+                              sx={
+                                t.pdgaTournamentId != null
+                                  ? { fontWeight: 600, fontSize: '0.75rem', bgcolor: '#e3f2fd', color: '#1565c0' }
+                                  : { fontWeight: 600, fontSize: '0.75rem', bgcolor: '#e8f5e9', color: '#2e7d32' }
+                              }
+                            />
+                          )}
                         </TableCell>
                         <TableCell sx={{ px: 0 }}>
                           <Tooltip title="iDiscGolf" arrow>

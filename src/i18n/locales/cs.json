@@ -47,6 +47,7 @@
       "countActive": "{{count}} aktivních",
       "countAdmins": "{{count}} administrátorů",
       "missingPii": "Chybí rodné číslo",
+      "missingFields": "Chybí údaje",
       "firstName": "Jméno",
       "lastName": "Příjmení",
       "sex": "Pohlaví",
@@ -73,6 +74,9 @@
       "cancel": "Zrušit",
       "editTitle": "Upravit člena: {{name}}",
       "emailReadonlyHint": "E-mail spravuje tagovacka.cz",
+      "iDiscGolfId": "iDiscGolf ID",
+      "iDiscGolfIdHint": "Unikátní ID hráče na iDiscGolf.cz. Změňte pouze pokud víte, co děláte.",
+      "iDiscGolfIdInvalid": "iDiscGolf ID musí být kladné celé číslo.",
       "empty": "Žádní členové neodpovídají vyhledávání.",
       "loadError": "Nepodařilo se načíst seznam členů.",
       "saveError": "Uložení se nezdařilo. Zkuste to znovu.",
@@ -210,6 +214,7 @@
     "sharedTournaments": "Hrajeme spolu",
     "tagHistory": "Historie tagů",
     "score": "Skóre",
+    "rating": "Rating",
     "achievements": "Achievementy"
   }
 }

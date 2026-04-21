@@ -20,7 +20,7 @@ import {
 import { TIER_BG, TIER_COLORS, tierLabel, twemoji } from '../achievements/shared';
 
 interface Props {
-  iDiscGolfId: number;
+  memberId: number;
 }
 
 function earnedTierFor(ach: AdminMemberAchievement): string | null {
@@ -157,7 +157,7 @@ const ManualRow: React.FC<{
   );
 };
 
-const AdminMemberAchievements: React.FC<Props> = ({ iDiscGolfId }) => {
+const AdminMemberAchievements: React.FC<Props> = ({ memberId }) => {
   const { t } = useTranslation();
   const [year] = useState(new Date().getFullYear());
   const [loading, setLoading] = useState(true);
@@ -167,7 +167,7 @@ const AdminMemberAchievements: React.FC<Props> = ({ iDiscGolfId }) => {
   useEffect(() => {
     let cancelled = false;
     membersApi
-      .getAdminMemberAchievements(iDiscGolfId, year)
+      .getAdminMemberAchievementsById(memberId, year)
       .then((res) => {
         if (!cancelled) setAchievements(res.data.achievements);
       })
@@ -181,11 +181,11 @@ const AdminMemberAchievements: React.FC<Props> = ({ iDiscGolfId }) => {
     return () => {
       cancelled = true;
     };
-  }, [iDiscGolfId, year, t]);
+  }, [memberId, year, t]);
 
   const handleChange = async (key: string, progress: number) => {
     try {
-      const res = await membersApi.setAdminMemberAchievement(iDiscGolfId, key, { progress, year });
+      const res = await membersApi.setAdminMemberAchievementById(memberId, key, { progress, year });
       setAchievements((prev) =>
         prev.map((a) => (a.key === res.data.key ? res.data : a)),
       );

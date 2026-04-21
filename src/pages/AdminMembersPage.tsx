@@ -35,7 +35,7 @@ function displayName(m: ClubMember): string {
   const full = [m.firstName, m.lastName].filter(Boolean).join(' ').trim();
   if (full !== '') return full;
   if (m.email) return m.email;
-  return `#${m.iDiscGolfId}`;
+  return m.iDiscGolfId != null ? `#${m.iDiscGolfId}` : `(member ${m.id})`;
 }
 
 function getInitials(name: string): string {
@@ -262,12 +262,18 @@ const AdminMembersPage: React.FC = () => {
               const age = ageFromDob(m.dateOfBirth);
               const SexIcon = m.sex === 'male' ? MaleIcon : m.sex === 'female' ? FemaleIcon : null;
               const sexColor = m.sex === 'male' ? '#1565c0' : m.sex === 'female' ? '#c2185b' : 'text.disabled';
-              const rcMissing = !m.identificationNumber;
+              const missingLabels: string[] = [];
+              if (m.iDiscGolfId == null) missingLabels.push(t('admin.members.iDiscGolfId'));
+              if (!m.email) missingLabels.push(t('admin.members.email'));
+              if (!m.phone) missingLabels.push(t('admin.members.phone'));
+              if (!m.sex) missingLabels.push(t('admin.members.sex'));
+              if (!m.identificationNumber) missingLabels.push(t('admin.members.identificationNumber'));
+              if (!m.address) missingLabels.push(t('admin.members.address'));
               return (
                 <TableRow
-                  key={m.iDiscGolfId}
+                  key={m.id}
                   hover
-                  onClick={() => navigate(`/admin/members/${m.iDiscGolfId}`)}
+                  onClick={() => navigate(`/admin/members/${m.id}`)}
                   sx={{ opacity: m.activeMember ? 1 : 0.6, cursor: 'pointer' }}
                 >
                   <TableCell sx={{ width: 48 }}>
@@ -285,19 +291,22 @@ const AdminMembersPage: React.FC = () => {
                           <AdminPanelSettingsIcon sx={{ fontSize: 16, color: 'primary.main' }} />
                         </Tooltip>
                       )}
-                      {rcMissing && (
-                        <Tooltip title={t('admin.members.missingPii')} arrow>
+                      {missingLabels.length > 0 && (
+                        <Tooltip
+                          title={`${t('admin.members.missingFields')}: ${missingLabels.join(', ')}`}
+                          arrow
+                        >
                           <Chip
-                            label="!"
+                            label={`! ${missingLabels.length}`}
                             size="small"
                             color="warning"
-                            sx={{ height: 16, minWidth: 16, '& .MuiChip-label': { px: 0.5, fontSize: '0.65rem', fontWeight: 700 } }}
+                            sx={{ height: 16, '& .MuiChip-label': { px: 0.5, fontSize: '0.65rem', fontWeight: 700 } }}
                           />
                         </Tooltip>
                       )}
                     </Stack>
                     <Typography variant="caption" color="text.secondary">
-                      iDG #{m.iDiscGolfId}
+                      {m.iDiscGolfId != null ? `iDG #${m.iDiscGolfId}` : 'iDG —'}
                     </Typography>
                   </TableCell>
                   <TableCell>

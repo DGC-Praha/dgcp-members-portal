@@ -18,24 +18,62 @@ import {
   TableSortLabel,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { api } from '../api/client';
+import { api, membersApi, type ClubMemberBasic } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import TagBadge from '../components/TagBadge';
 
+/** Tagovacka-enriched member row, sourced client-side by joining members-api
+ *  (canonical DGCP roster) with tagovacka's /api/members payload on iDiscGolfId.
+ *  Fields from tagovacka are null when either iDiscGolfId is unset on the
+ *  members-api row, or tagovacka doesn't have that player. */
 interface Member {
+  id: number;
+  iDiscGolfId: number | null;
   name: string;
-  iDiscGolfId: number;
   pdgaNumber: number | null;
   tagNumber: number | null;
   avatarUrl: string | null;
   iDiscGolfRating: number | null;
   pdgaRating: number | null;
-  role: string;
-  joinedAt: string;
+  dgcpMembershipActive: boolean;
   cadgMembershipActive: boolean | null;
   pdgaMembershipActive: boolean | null;
+}
+
+interface TagovackaMember {
+  iDiscGolfId: number;
+  name: string;
+  pdgaNumber: number | null;
+  tagNumber: number | null;
+  avatarUrl: string | null;
+  iDiscGolfRating: number | null;
+  pdgaRating: number | null;
+  cadgMembershipActive: boolean | null;
+  pdgaMembershipActive: boolean | null;
+}
+
+function mergeMembers(clubMembers: ClubMemberBasic[], tagovackaMembers: TagovackaMember[]): Member[] {
+  const byIdg = new Map<number, TagovackaMember>();
+  for (const tm of tagovackaMembers) byIdg.set(tm.iDiscGolfId, tm);
+  return clubMembers.map((cm) => {
+    const tm = cm.iDiscGolfId != null ? byIdg.get(cm.iDiscGolfId) : undefined;
+    const fullName = [cm.firstName, cm.lastName].filter(Boolean).join(' ').trim();
+    return {
+      id: cm.id,
+      iDiscGolfId: cm.iDiscGolfId,
+      name: fullName || tm?.name || `#${cm.id}`,
+      pdgaNumber: tm?.pdgaNumber ?? null,
+      tagNumber: tm?.tagNumber ?? null,
+      avatarUrl: tm?.avatarUrl ?? null,
+      iDiscGolfRating: tm?.iDiscGolfRating ?? null,
+      pdgaRating: tm?.pdgaRating ?? null,
+      dgcpMembershipActive: cm.membershipActive,
+      cadgMembershipActive: tm?.cadgMembershipActive ?? null,
+      pdgaMembershipActive: tm?.pdgaMembershipActive ?? null,
+    };
+  });
 }
 
 const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
@@ -82,8 +120,19 @@ const MembersPage: React.FC = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await api.getMembers();
-        setMembers(res.data);
+        // Canonical DGCP roster from members-api (public endpoint; name + iDG
+        // only) joined with tagovacka enrichment (avatar/ratings/tag/…) by iDG.
+        // Tagovacka failure is non-fatal — we still render names from members-api.
+        const [clubRes, tagRes] = await Promise.allSettled([
+          membersApi.listMembersBasic(),
+          api.getMembers(),
+        ]);
+        if (clubRes.status === 'rejected') {
+          setError(t('members.loadError'));
+          return;
+        }
+        const tagovacka = tagRes.status === 'fulfilled' ? (tagRes.value.data as TagovackaMember[]) : [];
+        setMembers(mergeMembers(clubRes.value.data, tagovacka));
       } catch {
         setError(t('members.loadError'));
       } finally {
@@ -108,7 +157,10 @@ const MembersPage: React.FC = () => {
       const q = search.toLowerCase();
       result = result.filter((m) => m.name.toLowerCase().includes(q));
     }
-    if (sortBy) {
+    if (!sortBy) {
+      // Default: alphabetical by name, Czech-locale aware (á, č, ř, š, …).
+      result = [...result].sort((a, b) => a.name.localeCompare(b.name, 'cs'));
+    } else {
       result = [...result].sort((a, b) => {
         let valA: number;
         let valB: number;
@@ -193,6 +245,7 @@ const MembersPage: React.FC = () => {
                       {t('tournaments.rating')}
                     </TableSortLabel>
                   </TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600 }}>DGCP</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600 }}>ČADG</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600 }}>PDGA</TableCell>
                 </TableRow>
@@ -200,13 +253,18 @@ const MembersPage: React.FC = () => {
               <TableBody>
                 {filtered.map((member) => (
                   <TableRow
-                    key={member.iDiscGolfId}
-                    hover
+                    key={member.id}
+                    hover={member.iDiscGolfId != null}
                     sx={{
-                      cursor: 'pointer',
+                      cursor: member.iDiscGolfId != null ? 'pointer' : 'default',
+                      opacity: member.iDiscGolfId != null ? 1 : 0.7,
                       '&:last-child td': { border: 0 },
                     }}
-                    onClick={() => navigate(`/clenove/${member.iDiscGolfId}`)}
+                    onClick={
+                      member.iDiscGolfId != null
+                        ? () => navigate(`/clenove/${member.iDiscGolfId}`)
+                        : undefined
+                    }
                   >
                     <TableCell sx={{ px: 1 }}>
                       <Avatar
@@ -249,6 +307,9 @@ const MembersPage: React.FC = () => {
                           />
                         )}
                       </Box>
+                    </TableCell>
+                    <TableCell align="center">
+                      <StatusDot active={member.dgcpMembershipActive} />
                     </TableCell>
                     <TableCell align="center">
                       <StatusDot active={member.cadgMembershipActive} />
