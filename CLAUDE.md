@@ -21,6 +21,29 @@ Czech-only. Authenticates via OAuth against `disc-golf-tags`
 **All three deploy together.** No backwards-compatibility shims across
 repos — if a contract changes, update all three in lock-step and push.
 
+## Deployment
+
+Fully automated: push to `main` and GitHub Actions
+(`.github/workflows/deploy.yml`) builds the SPA and publishes it to
+GitHub Pages. The `public/CNAME` routes it to `members.dgcp.cz`.
+
+No shell, no `deploy.sh`. Env values come from GitHub Actions secrets
+(`VITE_OAUTH_CLIENT_ID`, `VITE_OAUTH_CLIENT_SECRET`,
+`VITE_OAUTH_AUTHORIZE_URL`, `VITE_API_URL`);
+`VITE_MEMBERS_API_URL` is hardcoded in the workflow to
+`https://api-members-dgcp.dominikvoda.com`.
+
+Coordinated deploys: the two backends (`disc-golf-tags`,
+`dgcp-members-api`) are deployed via SSH to a Websupport shell account
+— see each repo's own CLAUDE.md § Deployment. When a cross-repo
+contract changes, **deploy the backends first**, then push here (CI
+picks it up automatically).
+
+Check the last workflow run:
+```bash
+gh run list --repo DGC-Praha/dgcp-members-portal --limit 3
+```
+
 ## Tech Stack
 - React 19, Vite 8, MUI, react-router 7, TypeScript 5.9, i18next (cs-only)
 - **Two** HTTP clients in `src/api/client.ts` — `apiClient` → tagovacka,
