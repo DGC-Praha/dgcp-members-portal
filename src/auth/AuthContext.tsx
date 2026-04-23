@@ -34,6 +34,7 @@ export interface User {
   email: string | null;
   phone: string | null;
   isAdmin: boolean;
+  isSystemAdmin: boolean;
   firstName: string | null;
   lastName: string | null;
   activeMember: boolean;
@@ -113,6 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: c.email,
         phone: c.phone,
         isAdmin: c.isAdmin,
+        isSystemAdmin: c.isSystemAdmin === true,
         firstName: c.firstName,
         lastName: c.lastName,
         activeMember: c.activeMember,

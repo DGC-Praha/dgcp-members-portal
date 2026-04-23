@@ -26,6 +26,7 @@ import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +59,9 @@ const Layout: React.FC = () => {
     { text: t('nav.watchedRegistrations'), icon: <NotificationsActiveIcon />, path: '/hlidane-registrace' },
     ...(user?.isAdmin
       ? [{ text: t('nav.admin'), icon: <AdminPanelSettingsIcon />, path: '/admin/members' }]
+      : []),
+    ...(user?.isSystemAdmin
+      ? [{ text: t('nav.system'), icon: <SettingsSuggestIcon />, path: '/system' }]
       : []),
   ];
 

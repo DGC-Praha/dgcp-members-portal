@@ -14,6 +14,8 @@ import MemberDetailPage from './pages/MemberDetailPage';
 import AdminMembersPage from './pages/AdminMembersPage';
 import AdminMemberDetailPage from './pages/AdminMemberDetailPage';
 import WatchedRegistrationsPage from './pages/WatchedRegistrationsPage';
+import SystemPage from './pages/SystemPage';
+import SystemProtectedRoute from './components/SystemProtectedRoute';
 import './i18n';
 
 const theme = createTheme({
@@ -45,6 +47,10 @@ function App() {
               <Route path="/hlidane-registrace" element={<WatchedRegistrationsPage />} />
               <Route path="/admin/members" element={<AdminMembersPage />} />
               <Route path="/admin/members/:id" element={<AdminMemberDetailPage />} />
+              <Route
+                path="/system"
+                element={<SystemProtectedRoute><SystemPage /></SystemProtectedRoute>}
+              />
               <Route path="/ucet" element={<AccountPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

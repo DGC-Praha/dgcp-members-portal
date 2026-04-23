@@ -8,6 +8,7 @@
     "achievements": "Achievementy",
     "admin": "Správa členů",
     "account": "Účet",
+    "system": "Systémová administrace",
     "login": "Přihlášení",
     "callback": "Přihlašování…"
   },
@@ -33,7 +34,116 @@
     "admin": "Administrace",
     "account": "Účet",
     "watchedRegistrations": "Hlídané registrace",
-    "achievements": "Achievementy"
+    "achievements": "Achievementy",
+    "system": "Systém"
+  },
+  "system": {
+    "title": "Systémová administrace",
+    "subtitle": "Debug nástroje — viditelné pouze pro systémové administrátory.",
+    "tabs": {
+      "webhooks": "Přijaté webhooky",
+      "queue": "Fronta úloh",
+      "recompute": "Přepočet achievementů"
+    },
+    "placeholder": {
+      "comingSoon": "Zatím neimplementováno."
+    },
+    "recompute": {
+      "player": {
+        "title": "Jeden hráč",
+        "desc": "Spustí synchronní přepočet achievementů pro jednoho hráče a sezónu. Reálný výsledek v DB během okamžiku.",
+        "fieldPlayer": "Hráč",
+        "fieldYear": "Rok",
+        "yearCurrent": "Aktuální sezóna",
+        "action": "Přepočítat",
+        "success": "Achievementy hráče {{name}} ({{year}}) přepočteny."
+      },
+      "season": {
+        "title": "Celá sezóna",
+        "desc": "Rozešle asynchronní úlohu do fronty pro každého člena klubu pro vybranou sezónu. Průběh vidíš v záložce Fronta úloh.",
+        "action": "Přepočítat sezónu",
+        "confirm": "Opravdu přepočítat sezónu {{year}} pro všechny členy?",
+        "success": "Rozesláno {{dispatched}} úloh pro sezónu {{year}}."
+      },
+      "all": {
+        "title": "Plný rebuild (všechny sezóny)",
+        "desc": "Rozešle úlohy pro kombinaci (každý člen × každá známá sezóna). Používej jen po změně definice achievementu nebo výpadku webhooku.",
+        "action": "Přepočítat vše",
+        "confirm": "Opravdu přepočítat VŠECHNY sezóny pro všechny členy?",
+        "success": "Rozesláno {{dispatched}} úloh ({{seasons}} sezón)."
+      }
+    },
+    "webhooks": {
+      "empty": "Žádné webhooky k zobrazení.",
+      "loadMore": "Načíst další",
+      "refresh": "Obnovit",
+      "filter": {
+        "outcome": "Výsledek",
+        "eventType": "Typ události",
+        "any": "Vše"
+      },
+      "outcome": {
+        "accepted": "Přijato",
+        "duplicate": "Duplicitní",
+        "invalid_signature": "Neplatný podpis",
+        "malformed": "Poškozený payload",
+        "processing_error": "Chyba zpracování"
+      },
+      "col": {
+        "receivedAt": "Přijato",
+        "eventType": "Typ události",
+        "outcome": "Výsledek",
+        "httpStatus": "HTTP",
+        "processingMs": "Doba (ms)",
+        "sourceIp": "IP"
+      },
+      "detail": {
+        "title": "Detail webhooku",
+        "signature": "Podpis",
+        "signatureOk": "Platný",
+        "signatureBad": "Neplatný",
+        "processingError": "Chyba zpracování",
+        "payload": "Payload"
+      }
+    },
+    "queue": {
+      "refresh": "Obnovit",
+      "counts": {
+        "pending": "Čeká",
+        "scheduled": "Naplánováno",
+        "inFlight": "Zpracovává se",
+        "failed": "Selhalo"
+      },
+      "pendingHint": "zprávy čekající na zpracování",
+      "scheduledHint": "zprávy s odloženým doručením (retry)",
+      "inFlightHint": "zprávy, které consumer právě zpracovává",
+      "failedHint": "zprávy po vyčerpání pokusů",
+      "oldestPending": "Nejstarší čekající:",
+      "oldestPendingNone": "Žádné čekající zprávy.",
+      "failedTitle": "Selhané zprávy",
+      "failedEmpty": "Žádné selhané zprávy.",
+      "queuedTitle": "Zprávy ve frontě",
+      "queuedEmpty": "Žádné zprávy ve frontě.",
+      "col": {
+        "id": "ID",
+        "messageType": "Typ",
+        "messagePreview": "Zpráva",
+        "errorClass": "Chyba",
+        "errorMessage": "Detail",
+        "failedAt": "Selhalo",
+        "actions": "Akce",
+        "retryCount": "Pokus č.",
+        "redeliveredAt": "Retry",
+        "availableAt": "Dostupné"
+      },
+      "action": {
+        "retry": "Zkusit znovu",
+        "remove": "Smazat",
+        "confirmRemove": "Opravdu smazat tuto zprávu z fronty?",
+        "retrySuccess": "Zpráva zařazena zpět do fronty.",
+        "removeSuccess": "Zpráva smazána."
+      }
+    }
   },
   "admin": {
     "members": {

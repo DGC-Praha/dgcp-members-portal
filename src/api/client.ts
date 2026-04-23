@@ -192,6 +192,7 @@ export interface ClubMember {
   email: string | null;
   phone: string | null;
   isAdmin: boolean;
+  isSystemAdmin?: boolean;
   role?: ClubRole;
   firstName: string | null;
   lastName: string | null;
@@ -205,6 +206,80 @@ export interface ClubMember {
   createdAt: string;
   updatedAt: string;
   lastSeenAt: string | null;
+}
+
+export type WebhookOutcome =
+  | 'accepted'
+  | 'duplicate'
+  | 'invalid_signature'
+  | 'malformed'
+  | 'processing_error';
+
+export interface WebhookLogSummary {
+  id: number;
+  receivedAt: string;
+  eventId: string | null;
+  eventType: string | null;
+  outcome: WebhookOutcome;
+  httpStatus: number;
+  signatureValid: boolean;
+  sourceIp: string | null;
+  processingMs: number | null;
+}
+
+export interface WebhookLogDetail extends WebhookLogSummary {
+  signatureFailureReason: string | null;
+  processingError: string | null;
+  payloadRaw: string;
+  payloadJson: Record<string, unknown> | null;
+}
+
+export interface WebhookLogPage {
+  items: WebhookLogSummary[];
+  nextCursor: number | null;
+}
+
+export interface QueueCounts {
+  pending: number;
+  scheduled: number;
+  inFlight: number;
+  failed: number;
+}
+
+export interface FailedMessage {
+  id: string | null;
+  messageClass: string;
+  messagePreview: string;
+  bus: string | null;
+  failedAt: string | null;
+  errorClass: string | null;
+  errorMessage: string | null;
+  errorCode: number | null;
+}
+
+export interface QueuedMessage {
+  id: string | null;
+  messageClass: string;
+  messagePreview: string;
+  bus: string | null;
+  retryCount: number;
+  redeliveredAt: string | null;
+  availableAt: string | null;
+}
+
+export interface QueueSummary {
+  counts: QueueCounts;
+  oldestPendingAt: string | null;
+  failed: FailedMessage[];
+  queued: QueuedMessage[];
+}
+
+export interface RecomputeResult {
+  status: 'done' | 'dispatched';
+  iDiscGolfId?: number;
+  year?: number;
+  dispatched?: number;
+  seasons?: number[];
 }
 
 export interface ClubMemberUpdate {
@@ -261,6 +336,43 @@ export const membersApi = {
     ),
   getAchievementsLeaderboard: (year?: number) =>
     membersApiClient.get<LeaderboardResponse>('/api/achievements/leaderboard', { params: { year } }),
+  listWebhookLog: (params: {
+    cursor?: number | null;
+    limit?: number;
+    eventType?: string;
+    outcome?: WebhookOutcome | '';
+  } = {}) =>
+    membersApiClient.get<WebhookLogPage>('/api/admin/system/webhook-log', {
+      params: {
+        cursor: params.cursor ?? undefined,
+        limit: params.limit,
+        eventType: params.eventType || undefined,
+        outcome: params.outcome || undefined,
+      },
+    }),
+  getWebhookLogEntry: (id: number) =>
+    membersApiClient.get<WebhookLogDetail>(`/api/admin/system/webhook-log/${id}`),
+  getQueueSummary: () =>
+    membersApiClient.get<QueueSummary>('/api/admin/system/queue'),
+  retryFailedMessage: (id: string) =>
+    membersApiClient.post(`/api/admin/system/queue/failed/${id}/retry`),
+  removeFailedMessage: (id: string) =>
+    membersApiClient.delete(`/api/admin/system/queue/failed/${id}`),
+  recomputePlayer: (iDiscGolfId: number, year?: number) =>
+    membersApiClient.post<RecomputeResult>('/api/admin/system/recompute', {
+      target: 'player',
+      iDiscGolfId,
+      year,
+    }),
+  recomputeSeason: (year: number) =>
+    membersApiClient.post<RecomputeResult>('/api/admin/system/recompute', {
+      target: 'season',
+      year,
+    }),
+  recomputeAll: () =>
+    membersApiClient.post<RecomputeResult>('/api/admin/system/recompute', {
+      target: 'all',
+    }),
   setAdminMemberAchievement: (
     iDiscGolfId: number,
     key: string,
