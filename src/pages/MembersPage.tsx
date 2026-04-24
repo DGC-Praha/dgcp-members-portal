@@ -297,37 +297,47 @@ const MembersPage: React.FC = () => {
         <Alert severity="info">{t('members.empty')}</Alert>
       ) : (
         <>
-          <TextField
-            size="small"
-            placeholder={t('members.search')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" color="action" />
-                  </InputAdornment>
-                ),
-              },
+          <Box
+            sx={{
+              mb: 2,
+              display: 'flex',
+              gap: 1,
+              alignItems: 'center',
+              maxWidth: { xs: '100%', sm: 480 },
             }}
-            sx={{ mb: 2, maxWidth: 320 }}
-            fullWidth
-          />
+          >
+            <TextField
+              size="small"
+              placeholder={t('members.search')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" color="action" />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ flex: 1 }}
+              fullWidth
+            />
+            {isMobile && (
+              <SortMenu<MobileSortKey>
+                options={[
+                  { key: 'name', label: t('members.sortByName') },
+                  { key: 'tag', label: t('members.sortByTag') },
+                  { key: 'rating', label: t('members.sortByRating'), defaultDir: 'desc' },
+                ] as SortOption<MobileSortKey>[]}
+                value={mobileSortKey}
+                direction={mobileSortDir}
+                onChange={(k, d) => { setMobileSortKey(k); setMobileSortDir(d); }}
+              />
+            )}
+          </Box>
           {isMobile ? (
             <>
-              <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
-                <SortMenu<MobileSortKey>
-                  options={[
-                    { key: 'name', label: t('members.sortByName') },
-                    { key: 'tag', label: t('members.sortByTag') },
-                    { key: 'rating', label: t('members.sortByRating'), defaultDir: 'desc' },
-                  ] as SortOption<MobileSortKey>[]}
-                  value={mobileSortKey}
-                  direction={mobileSortDir}
-                  onChange={(k, d) => { setMobileSortKey(k); setMobileSortDir(d); }}
-                />
-              </Box>
               <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
                 {filtered.map((member) => (
                   <MobileMemberCard

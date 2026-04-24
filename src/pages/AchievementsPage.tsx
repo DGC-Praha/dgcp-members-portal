@@ -533,7 +533,7 @@ const AchievementsPage: React.FC = () => {
             {t('achievements.subtitle', { year })}
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', gap: isMobile ? 0.5 : 1.5, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', gap: isMobile ? 0.5 : 1.5, flexWrap: 'wrap', alignItems: 'center' }}>
           <Box sx={{ textAlign: 'center', px: isMobile ? 1 : 2 }}>
             <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? '0.6rem' : '0.65rem', letterSpacing: 1 }}>
               {t('achievements.statBadges')}
@@ -558,6 +558,19 @@ const AchievementsPage: React.FC = () => {
               {totalMembers}
             </Typography>
           </Box>
+          {isMobile && (
+            <Box sx={{ ml: 'auto' }}>
+              <SortMenu<SortColumn>
+                options={[
+                  { key: 'rarity', label: t('achievements.sortByRarity'), defaultDir: 'desc' },
+                  { key: 'name', label: t('achievements.sortByName') },
+                ]}
+                value={sortBy}
+                direction={sortDir}
+                onChange={(k, d) => { setSortBy(k); setSortDir(d); }}
+              />
+            </Box>
+          )}
         </Box>
       </Box>
 
@@ -565,17 +578,6 @@ const AchievementsPage: React.FC = () => {
         <Alert severity="info">{t('achievements.empty')}</Alert>
       ) : isMobile ? (
         <>
-          <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
-            <SortMenu<SortColumn>
-              options={[
-                { key: 'rarity', label: t('achievements.sortByRarity'), defaultDir: 'desc' },
-                { key: 'name', label: t('achievements.sortByName') },
-              ]}
-              value={sortBy}
-              direction={sortDir}
-              onChange={(k, d) => { setSortBy(k); setSortDir(d); }}
-            />
-          </Box>
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
             {sorted.map((item, idx) => (
               <MobileLeaderboardCard

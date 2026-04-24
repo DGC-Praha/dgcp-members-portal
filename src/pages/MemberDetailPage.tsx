@@ -169,14 +169,10 @@ const MemberDetailPage: React.FC = () => {
 
   return (
     <Box>
-      {/* Back button */}
-      <IconButton onClick={() => navigate(-1)} aria-label="back" sx={{ mb: 1, ml: -1 }}>
-        <ArrowBackIcon />
-      </IconButton>
-
-      {/* Hero card */}
+      {/* Hero card — back arrow anchored in the top-left corner */}
       <Card
         sx={{
+          position: 'relative',
           border: '1px solid',
           borderColor: 'divider',
           boxShadow: 'none',
@@ -185,6 +181,21 @@ const MemberDetailPage: React.FC = () => {
           background: `linear-gradient(135deg, ${alpha(badgeColor, 0.03)} 0%, ${alpha(highlightColor, 0.06)} 100%)`,
         }}
       >
+        <IconButton
+          onClick={() => navigate(-1)}
+          aria-label="back"
+          size="small"
+          sx={{
+            position: 'absolute',
+            top: 8,
+            left: 8,
+            zIndex: 1,
+            bgcolor: alpha('#fff', 0.7),
+            '&:hover': { bgcolor: alpha('#fff', 0.95) },
+          }}
+        >
+          <ArrowBackIcon fontSize="small" />
+        </IconButton>
         <CardContent sx={{ p: 3 }}>
           <Grid container spacing={3} alignItems="center">
             {/* Left: player info (60%) */}
