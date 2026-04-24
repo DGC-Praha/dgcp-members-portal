@@ -77,8 +77,10 @@ const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
       rel="noopener noreferrer"
       sx={{ py: 1.25, px: 1.5, minHeight: 64, display: 'block' }}
     >
-      {/* Row 1: name  |  date */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: t.registrationPhases.length > 0 ? 4.5 : 0 }}>
+      {/* Row 1: name  |  date. Always reserve the bell slot so dates align
+          across cards regardless of whether this tournament has an open
+          registration phase. */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 4.5 }}>
         <Typography
           variant="body2"
           sx={{ fontWeight: 700, lineHeight: 1.3, flex: 1, minWidth: 0 }}
