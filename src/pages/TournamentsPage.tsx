@@ -39,7 +39,7 @@ import { formatDateRange } from '../components/UpcomingTournaments';
 import type { RegistrationPhase } from '../components/UpcomingTournaments';
 import RegistrationWatchdog from '../components/RegistrationWatchdog';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { TriStateFilterChip, MultiSelectFilterChip } from '../components/FilterChip';
+import { alpha } from '@mui/material/styles';
 
 interface AllTournament {
   id: number;
@@ -65,6 +65,52 @@ interface FilterOptions {
   cadgTiers: string[];
   pdgaTiers: string[];
 }
+
+/**
+ * Three-state toggle button that cycles All → Yes → No → All on click.
+ * Neutral state is outlined grey; active states are tinted (green for
+ * "yes", red for "no") so the filter direction is readable at a glance.
+ */
+const TriStateToggle: React.FC<{
+  label: string;
+  value: 'all' | 'yes' | 'no';
+  onChange: (v: 'all' | 'yes' | 'no') => void;
+  allLabel: string;
+  yesLabel: string;
+  noLabel: string;
+}> = ({ label, value, onChange, allLabel, yesLabel, noLabel }) => {
+  const cycle = () => {
+    const next = value === 'all' ? 'yes' : value === 'yes' ? 'no' : 'all';
+    onChange(next);
+  };
+  const stateLabel = value === 'all' ? allLabel : value === 'yes' ? yesLabel : noLabel;
+  const active = value !== 'all';
+  const accent = value === 'yes' ? '#2e7d32' : '#c62828';
+
+  return (
+    <Button
+      variant="outlined"
+      size="small"
+      onClick={cycle}
+      disableRipple={false}
+      sx={{
+        height: 40,
+        textTransform: 'none',
+        borderColor: active ? accent : 'divider',
+        color: active ? accent : 'text.primary',
+        bgcolor: active ? alpha(accent, 0.08) : 'transparent',
+        fontWeight: 500,
+        px: 1.5,
+        '&:hover': {
+          borderColor: active ? accent : 'text.secondary',
+          bgcolor: active ? alpha(accent, 0.14) : 'action.hover',
+        },
+      }}
+    >
+      {label}:&nbsp;<Box component="span" sx={{ fontWeight: 700 }}>{stateLabel}</Box>
+    </Button>
+  );
+};
 
 const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
   <Card variant="outlined" sx={{ mb: 0.75, borderRadius: 1 }}>
@@ -264,65 +310,69 @@ const TournamentsPage: React.FC = () => {
           </Button>
         </Box>
       ) : (
-        <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap', mb: 1.5 }}>
-            <TextField
+        <Box sx={{ mb: 3, display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
+          <TextField
+            size="small"
+            placeholder={tr('tournaments.filter.search')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{ width: { sm: 260, md: 300 } }}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={filterOptions.regions}
+            value={regions}
+            onChange={(_e, v) => { setRegions(v); setPage(1); }}
+            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.region')} />}
+            sx={{ minWidth: 200, flex: '1 1 200px', maxWidth: 280 }}
+            limitTags={2}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={filterOptions.cadgTiers}
+            value={cadgTiers}
+            onChange={(_e, v) => { setCadgTiers(v); setPage(1); }}
+            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.cadgTier')} />}
+            sx={{ minWidth: 200, flex: '1 1 200px', maxWidth: 280 }}
+            limitTags={2}
+          />
+          <TriStateToggle
+            label="PDGA"
+            value={pdgaFilter}
+            onChange={(v) => { setPdgaFilter(v); setPage(1); }}
+            allLabel={tr('tournaments.filter.all')}
+            yesLabel={tr('tournaments.filter.yes')}
+            noLabel={tr('tournaments.filter.no')}
+          />
+          <TriStateToggle
+            label={tr('tournaments.filter.registration')}
+            value={regFilter}
+            onChange={(v) => { setRegFilter(v); setPage(1); }}
+            allLabel={tr('tournaments.filter.all')}
+            yesLabel={tr('tournaments.filter.yes')}
+            noLabel={tr('tournaments.filter.no')}
+          />
+          {hasFilters && (
+            <Button
               size="small"
-              placeholder={tr('tournaments.filter.search')}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-              sx={{ width: { sm: 280, md: 320 } }}
-            />
-            <MultiSelectFilterChip
-              label={tr('tournaments.filter.region')}
-              options={filterOptions.regions}
-              value={regions}
-              onChange={(v) => { setRegions(v); setPage(1); }}
-              clearLabel={tr('tournaments.filter.clear')}
-            />
-            <MultiSelectFilterChip
-              label={tr('tournaments.filter.cadgTier')}
-              options={filterOptions.cadgTiers}
-              value={cadgTiers}
-              onChange={(v) => { setCadgTiers(v); setPage(1); }}
-              clearLabel={tr('tournaments.filter.clear')}
-            />
-            <TriStateFilterChip
-              label="PDGA"
-              value={pdgaFilter}
-              onChange={(v) => { setPdgaFilter(v); setPage(1); }}
-              allLabel={tr('tournaments.filter.all')}
-              yesLabel={tr('tournaments.filter.yes')}
-              noLabel={tr('tournaments.filter.no')}
-            />
-            <TriStateFilterChip
-              label={tr('tournaments.filter.registration')}
-              value={regFilter}
-              onChange={(v) => { setRegFilter(v); setPage(1); }}
-              allLabel={tr('tournaments.filter.all')}
-              yesLabel={tr('tournaments.filter.yes')}
-              noLabel={tr('tournaments.filter.no')}
-            />
-            {hasFilters && (
-              <Button
-                size="small"
-                startIcon={<FilterListOffIcon />}
-                onClick={clearFilters}
-                sx={{ color: 'text.secondary', textTransform: 'none', ml: 'auto' }}
-              >
-                {tr('tournaments.filter.clear')}
-              </Button>
-            )}
-          </Box>
+              startIcon={<FilterListOffIcon />}
+              onClick={clearFilters}
+              sx={{ color: 'text.secondary', textTransform: 'none', ml: 'auto' }}
+            >
+              {tr('tournaments.filter.clear')}
+            </Button>
+          )}
         </Box>
       )}
 
