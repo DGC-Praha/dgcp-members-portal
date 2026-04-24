@@ -227,7 +227,13 @@
     "name": "Jméno",
     "search": "Hledat člena...",
     "empty": "Žádní členové.",
-    "loadError": "Nepodařilo se načíst seznam členů."
+    "loadError": "Nepodařilo se načíst seznam členů.",
+    "sortBy": "Řadit podle",
+    "sortByName": "Jméno",
+    "sortByTag": "Tag",
+    "sortByRating": "Rating",
+    "sortDirAsc": "Vzestupně",
+    "sortDirDesc": "Sestupně"
   },
   "achievements": {
     "title": "Achievementy",

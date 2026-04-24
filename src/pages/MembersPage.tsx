@@ -16,12 +16,16 @@ import {
   Chip,
   Avatar,
   TableSortLabel,
+  ToggleButton,
+  ToggleButtonGroup,
+  Stack,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { api, membersApi, type ClubMemberBasic } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useIsMobile } from '../hooks/useIsMobile';
 import TagBadge from '../components/TagBadge';
 
 /** Tagovacka-enriched member row, sourced client-side by joining members-api
@@ -101,6 +105,83 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+type MobileSortKey = 'name' | 'tag' | 'rating';
+
+const MobileMemberCard: React.FC<{
+  member: Member;
+  badgeColor: string;
+  highlightColor: string;
+  onClick?: () => void;
+}> = ({ member, badgeColor, highlightColor, onClick }) => (
+  <Box
+    onClick={onClick}
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 1.5,
+      p: 1.5,
+      borderBottom: '1px solid',
+      borderColor: 'divider',
+      cursor: onClick ? 'pointer' : 'default',
+      opacity: onClick ? 1 : 0.7,
+      '&:active': onClick ? { bgcolor: 'action.hover' } : undefined,
+      '&:hover': onClick ? { bgcolor: 'action.hover' } : undefined,
+      minHeight: 56,
+    }}
+  >
+    <Avatar
+      src={member.avatarUrl || undefined}
+      alt={member.name}
+      sx={{ width: 40, height: 40, bgcolor: '#0d47a1', fontSize: '0.85rem', flexShrink: 0 }}
+    >
+      {getInitials(member.name)}
+    </Avatar>
+    <Box sx={{ flex: 1, minWidth: 0 }}>
+      <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.3 }} noWrap>
+        {member.name}
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
+        {member.iDiscGolfRating && (
+          <Chip
+            label={member.iDiscGolfRating}
+            size="small"
+            sx={{ height: 18, fontSize: '0.7rem', fontWeight: 600, bgcolor: '#e8f5e9', color: '#2e7d32' }}
+          />
+        )}
+        {member.pdgaRating && (
+          <Chip
+            label={member.pdgaRating}
+            size="small"
+            sx={{ height: 18, fontSize: '0.7rem', fontWeight: 600, bgcolor: '#e3f2fd', color: '#1565c0' }}
+          />
+        )}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 0.25 }}>
+          <StatusDotLabeled active={member.dgcpMembershipActive} label="DGCP" />
+          <StatusDotLabeled active={member.cadgMembershipActive} label="ČADG" />
+          {member.pdgaNumber != null && (
+            <StatusDotLabeled active={member.pdgaMembershipActive} label="PDGA" />
+          )}
+        </Box>
+      </Box>
+    </Box>
+    <Box sx={{ flexShrink: 0, ml: 0.5 }}>
+      <TagBadge number={member.tagNumber} size="small" badgeColor={badgeColor} highlightColor={highlightColor} />
+    </Box>
+  </Box>
+);
+
+const StatusDotLabeled: React.FC<{ active: boolean | null; label: string }> = ({ active, label }) => {
+  const color = active === true ? '#4caf50' : active === false ? '#f44336' : '#bdbdbd';
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
+      <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
+      <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.disabled', lineHeight: 1 }}>
+        {label}
+      </Typography>
+    </Box>
+  );
+};
+
 const MembersPage: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,9 +189,11 @@ const MembersPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'tag' | 'rating' | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [mobileSortKey, setMobileSortKey] = useState<MobileSortKey>('name');
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   usePageTitle(t('pageTitle.members'));
 
   const m = user?.tagovacka?.membership;
@@ -157,14 +240,21 @@ const MembersPage: React.FC = () => {
       const q = search.toLowerCase();
       result = result.filter((m) => m.name.toLowerCase().includes(q));
     }
-    if (!sortBy) {
-      // Default: alphabetical by name, Czech-locale aware (á, č, ř, š, …).
-      result = [...result].sort((a, b) => a.name.localeCompare(b.name, 'cs'));
+    // Mobile has its own sort key (includes 'name' as an explicit option);
+    // desktop uses the table-header sortBy + alphabetical fallback.
+    const effectiveKey: 'name' | 'tag' | 'rating' = isMobile
+      ? mobileSortKey
+      : (sortBy ?? 'name');
+    if (effectiveKey === 'name') {
+      result = [...result].sort((a, b) => {
+        const cmp = a.name.localeCompare(b.name, 'cs');
+        return sortDir === 'asc' ? cmp : -cmp;
+      });
     } else {
       result = [...result].sort((a, b) => {
         let valA: number;
         let valB: number;
-        if (sortBy === 'tag') {
+        if (effectiveKey === 'tag') {
           valA = a.tagNumber ?? Infinity;
           valB = b.tagNumber ?? Infinity;
         } else {
@@ -175,7 +265,7 @@ const MembersPage: React.FC = () => {
       });
     }
     return result;
-  }, [members, search, sortBy, sortDir]);
+  }, [members, search, sortBy, sortDir, isMobile, mobileSortKey]);
 
   if (loading) {
     return (
@@ -221,6 +311,63 @@ const MembersPage: React.FC = () => {
             sx={{ mb: 2, maxWidth: 320 }}
             fullWidth
           />
+          {isMobile ? (
+            <>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ mb: 1.5, alignItems: 'center', flexWrap: 'wrap' }}
+              >
+                <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+                  {t('members.sortBy')}:
+                </Typography>
+                <ToggleButtonGroup
+                  size="small"
+                  exclusive
+                  value={mobileSortKey}
+                  onChange={(_e, v: MobileSortKey | null) => {
+                    if (v) {
+                      if (v === mobileSortKey) {
+                        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+                      } else {
+                        setMobileSortKey(v);
+                        setSortDir(v === 'rating' ? 'desc' : 'asc');
+                      }
+                    }
+                  }}
+                  sx={{ '& .MuiToggleButton-root': { py: 0.25, px: 1.25, fontSize: '0.72rem', textTransform: 'none' } }}
+                >
+                  <ToggleButton value="name" aria-label={t('members.sortByName')}>
+                    {t('members.sortByName')}
+                  </ToggleButton>
+                  <ToggleButton value="tag" aria-label={t('members.sortByTag')}>
+                    {t('members.sortByTag')}
+                  </ToggleButton>
+                  <ToggleButton value="rating" aria-label={t('members.sortByRating')}>
+                    {t('members.sortByRating')}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+                <Typography variant="caption" color="text.secondary">
+                  {sortDir === 'asc' ? '▲' : '▼'}
+                </Typography>
+              </Stack>
+              <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
+                {filtered.map((member) => (
+                  <MobileMemberCard
+                    key={member.id}
+                    member={member}
+                    badgeColor={badgeColor}
+                    highlightColor={highlightColor}
+                    onClick={
+                      member.iDiscGolfId != null
+                        ? () => navigate(`/clenove/${member.iDiscGolfId}`)
+                        : undefined
+                    }
+                  />
+                ))}
+              </Box>
+            </>
+          ) : (
           <TableContainer>
             <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.8rem' } }}>
               <TableHead>
@@ -322,6 +469,7 @@ const MembersPage: React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          )}
         </>
       )}
     </Box>

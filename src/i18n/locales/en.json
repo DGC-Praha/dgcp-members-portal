@@ -227,7 +227,13 @@
     "name": "Name",
     "search": "Search member...",
     "empty": "No members.",
-    "loadError": "Failed to load the member list."
+    "loadError": "Failed to load the member list.",
+    "sortBy": "Sort by",
+    "sortByName": "Name",
+    "sortByTag": "Tag",
+    "sortByRating": "Rating",
+    "sortDirAsc": "Ascending",
+    "sortDirDesc": "Descending"
   },
   "achievements": {
     "title": "Achievements",
