@@ -165,7 +165,22 @@ const HomePage: React.FC = () => {
                   {avatarInitials}
                 </Avatar>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, lineHeight: 1.2 }} noWrap>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 700,
+                      lineHeight: 1.2,
+                      // On very narrow widths let long names wrap to 2 lines
+                      // (still clipped after 2) rather than being cut off
+                      // behind the fixed-width tag badge on the right.
+                      display: { xs: '-webkit-box', sm: 'block' },
+                      WebkitLineClamp: { xs: 2, sm: 'none' },
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      whiteSpace: { xs: 'normal', sm: 'nowrap' },
+                      textOverflow: { xs: 'clip', sm: 'ellipsis' },
+                    }}
+                  >
                     {displayName}
                   </Typography>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>

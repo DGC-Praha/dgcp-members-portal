@@ -120,9 +120,22 @@ const Layout: React.FC = () => {
             alt="DGCP"
             sx={{ height: 36, mr: 1.5, display: { xs: 'none', md: 'block' } }}
           />
-          <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 700 }}>
+          <Typography
+            variant="h6"
+            noWrap
+            sx={{
+              flexGrow: 1,
+              fontWeight: 700,
+              // At very narrow widths the title competes with the hamburger,
+              // language toggle and avatar for space — hide it to prevent
+              // squeezing. The logo acts as the brand on md+ and the
+              // drawer still shows "DGCP" at the top inside the drawer.
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
             DGCP Members
           </Typography>
+          <Box sx={{ flexGrow: { xs: 1, sm: 0 } }} />
           <LanguageSwitcher dark />
           {user && (
             <>
