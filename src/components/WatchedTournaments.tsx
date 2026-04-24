@@ -7,7 +7,6 @@ import {
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
-import { dateLocale } from '../i18n/format';
 
 interface WatchdogSubscription {
   tournamentName: string;
@@ -46,7 +45,7 @@ const WatchedTournaments: React.FC = () => {
 
   const formatPhaseTime = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString(dateLocale(), {
+    return date.toLocaleDateString(undefined, {
       day: 'numeric',
       month: 'numeric',
       hour: '2-digit',

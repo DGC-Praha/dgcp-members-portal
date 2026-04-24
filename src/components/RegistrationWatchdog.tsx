@@ -17,7 +17,6 @@ import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import type { RegistrationPhase } from './UpcomingTournaments';
-import { dateLocale } from '../i18n/format';
 
 interface PhaseSubscription {
   phaseNumber: number;
@@ -93,7 +92,7 @@ const RegistrationWatchdog: React.FC<RegistrationWatchdogProps> = ({
 
   const formatPhaseTime = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString(dateLocale(), {
+    return date.toLocaleDateString(undefined, {
       day: 'numeric',
       month: 'numeric',
       hour: '2-digit',

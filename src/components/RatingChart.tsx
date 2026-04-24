@@ -9,7 +9,6 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
-import { dateLocale } from '../i18n/format';
 
 interface RatingEntry {
   type: string;
@@ -49,7 +48,7 @@ const RatingChart: React.FC<RatingChartProps> = ({ ratingHistory, height = 220 }
 
   const formatDate = (date: string) => {
     const d = new Date(date);
-    return d.toLocaleDateString(dateLocale(), { month: 'short', year: '2-digit' });
+    return d.toLocaleDateString(undefined, { month: 'short', year: '2-digit' });
   };
 
   return (

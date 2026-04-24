@@ -26,7 +26,6 @@ import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import TagBadge from './TagBadge';
 import RegistrationWatchdog from './RegistrationWatchdog';
-import { dateLocale } from '../i18n/format';
 
 export interface TournamentMember {
   name: string;
@@ -76,7 +75,7 @@ export function getInitials(name: string): string {
 export function formatDateRange(start: string | null, end: string): string {
   const fmt = (d: string) => {
     const date = new Date(d);
-    return date.toLocaleDateString(dateLocale(), { day: 'numeric', month: 'numeric' });
+    return date.toLocaleDateString(undefined, { day: 'numeric', month: 'numeric' });
   };
   if (!start || start === end) return fmt(end);
   return `${fmt(start)}–${fmt(end)}`;
