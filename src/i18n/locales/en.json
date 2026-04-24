@@ -257,6 +257,9 @@
       "common": "Common",
       "everyone": "Everyone"
     },
+    "sortBy": "Sort by",
+    "sortByRarity": "Rarity",
+    "sortByName": "Name",
     "manualTooltip": "Manually awarded achievement",
     "manualBadge": "manual",
     "badge": {

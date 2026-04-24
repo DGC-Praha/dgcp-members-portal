@@ -9,6 +9,7 @@ import {
   Collapse,
   IconButton,
   LinearProgress,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -16,6 +17,8 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -26,6 +29,7 @@ import { api, membersApi, type LeaderboardItem } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { useIsMobile } from '../hooks/useIsMobile';
 import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from '../components/achievements/shared';
 import { formatDate } from '../i18n/format';
 
@@ -84,6 +88,189 @@ const rarityBucket = (
   if (percent < 35) return { label: t('achievements.rarity.uncommon'), color: '#f59e0b', bg: '#fef9c3' };
   if (percent < 60) return { label: t('achievements.rarity.common'), color: '#2563eb', bg: '#dbeafe' };
   return { label: t('achievements.rarity.everyone'), color: '#059669', bg: '#d1fae5' };
+};
+
+const MobileLeaderboardCard: React.FC<{
+  item: LeaderboardItem;
+  totalMembers: number;
+  rank: number;
+  avatarMap: Map<number, string | null>;
+  onEarnerClick: (iDiscGolfId: number) => void;
+}> = ({ item, totalMembers, rank, avatarMap, onEarnerClick }) => {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const tierColor = TIER_COLORS[item.tier] ?? '#9ca3af';
+  const bucket = rarityBucket(item.rarityPercent, t);
+  const hasEarners = item.earners.length > 0;
+
+  return (
+    <Box sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Box
+        onClick={() => hasEarners && setOpen((o) => !o)}
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 1.5,
+          p: 1.5,
+          cursor: hasEarners ? 'pointer' : 'default',
+          '&:active': hasEarners ? { bgcolor: 'action.hover' } : undefined,
+          '&:hover': hasEarners ? { bgcolor: 'action.hover' } : undefined,
+        }}
+      >
+        <AchievementBadge emoji={item.achievementEmoji || '🏆'} tier={item.tier} size={48} />
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 1 }}>
+            <Box sx={{ minWidth: 0, flex: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+                <Typography variant="body2" sx={{ fontWeight: 700 }} noWrap>
+                  {item.achievementName}
+                </Typography>
+                {item.manual && (
+                  <Tooltip title={t('achievements.manualTooltip')}>
+                    <Chip
+                      label={t('achievements.manualBadge')}
+                      size="small"
+                      sx={{ height: 16, fontSize: '0.6rem', fontWeight: 600, bgcolor: '#f3f4f6', color: '#6b7280' }}
+                    />
+                  </Tooltip>
+                )}
+              </Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  lineHeight: 1.3,
+                  mt: 0.25,
+                }}
+              >
+                {item.achievementDescription}
+              </Typography>
+            </Box>
+            <Typography
+              variant="caption"
+              sx={{ fontWeight: 700, fontSize: '0.75rem', color: 'text.disabled', flexShrink: 0 }}
+            >
+              #{rank}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.75, flexWrap: 'wrap' }}>
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 700,
+                fontSize: '0.65rem',
+                color: tierColor,
+                textTransform: 'uppercase',
+                letterSpacing: 0.5,
+              }}
+            >
+              {tierLabel(item.tier)}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+              ≥ {item.threshold}
+            </Typography>
+            <Box sx={{ flex: 1 }} />
+            <Typography variant="caption" sx={{ fontWeight: 700, fontSize: '0.72rem' }}>
+              {item.rarityPercent}%
+            </Typography>
+            <Chip
+              label={bucket.label}
+              size="small"
+              sx={{
+                height: 20,
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                bgcolor: bucket.bg,
+                color: bucket.color,
+              }}
+            />
+          </Box>
+
+          <Box sx={{ mt: 0.75 }}>
+            <LinearProgress
+              variant="determinate"
+              value={Math.min(item.rarityPercent, 100)}
+              sx={{
+                height: 5,
+                borderRadius: 3,
+                bgcolor: '#f3f4f6',
+                '& .MuiLinearProgress-bar': { bgcolor: bucket.color },
+              }}
+            />
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.62rem' }}>
+              {t('achievements.rarityCountOf', { count: item.earnedCount, total: totalMembers })}
+            </Typography>
+          </Box>
+        </Box>
+
+        {hasEarners && (
+          <Box sx={{ flexShrink: 0, mt: 0.25 }}>
+            <IconButton size="small" sx={{ pointerEvents: 'none', p: 0.25 }}>
+              {open ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
+            </IconButton>
+          </Box>
+        )}
+      </Box>
+
+      {hasEarners && (
+        <Collapse in={open} unmountOnExit>
+          <Box sx={{ pl: 2, pr: 2, pb: 1.5, bgcolor: '#fafbfc' }}>
+            <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.75rem', border: 0 } }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ width: 36 }} />
+                  <TableCell sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 0.5 }}>
+                    {t('members.name')}
+                  </TableCell>
+                  <TableCell align="right" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 0.5, width: 100 }}>
+                    {t('achievements.colEarnedAt')}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {item.earners.map((earner) => (
+                  <TableRow
+                    key={earner.iDiscGolfId}
+                    hover
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEarnerClick(earner.iDiscGolfId);
+                    }}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <TableCell sx={{ width: 36 }}>
+                      <Avatar
+                        src={avatarMap.get(earner.iDiscGolfId) ?? undefined}
+                        alt={earner.name}
+                        sx={{ width: 26, height: 26, bgcolor: tierColor, color: '#fff', fontSize: '0.7rem', fontWeight: 700 }}
+                      >
+                        {earner.name
+                          .split(' ')
+                          .filter(Boolean)
+                          .map((w) => w[0])
+                          .slice(0, 2)
+                          .join('')
+                          .toUpperCase() || '?'}
+                      </Avatar>
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{earner.name}</TableCell>
+                    <TableCell align="right" sx={{ color: 'text.secondary' }}>
+                      {formatDate(earner.earnedAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
+        </Collapse>
+      )}
+    </Box>
+  );
 };
 
 const LeaderboardRow: React.FC<{
@@ -267,6 +454,7 @@ const AchievementsPage: React.FC = () => {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   usePageTitle(t('pageTitle.achievements'));
 
   useEffect(() => {
@@ -347,28 +535,28 @@ const AchievementsPage: React.FC = () => {
             {t('achievements.subtitle', { year })}
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <Box sx={{ textAlign: 'center', px: 2 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', letterSpacing: 1 }}>
+        <Box sx={{ display: 'flex', gap: isMobile ? 0.5 : 1.5, flexWrap: 'wrap' }}>
+          <Box sx={{ textAlign: 'center', px: isMobile ? 1 : 2 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? '0.6rem' : '0.65rem', letterSpacing: 1 }}>
               {t('achievements.statBadges')}
             </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
+            <Typography variant={isMobile ? 'body1' : 'h6'} sx={{ fontWeight: 700, lineHeight: 1 }}>
               {items.length}
             </Typography>
           </Box>
-          <Box sx={{ textAlign: 'center', px: 2 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', letterSpacing: 1 }}>
+          <Box sx={{ textAlign: 'center', px: isMobile ? 1 : 2 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? '0.6rem' : '0.65rem', letterSpacing: 1 }}>
               {t('achievements.statAwarded')}
             </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
+            <Typography variant={isMobile ? 'body1' : 'h6'} sx={{ fontWeight: 700, lineHeight: 1 }}>
               {earnedRows}
             </Typography>
           </Box>
-          <Box sx={{ textAlign: 'center', px: 2 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem', letterSpacing: 1 }}>
+          <Box sx={{ textAlign: 'center', px: isMobile ? 1 : 2 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: isMobile ? '0.6rem' : '0.65rem', letterSpacing: 1 }}>
               {t('achievements.statMembers')}
             </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
+            <Typography variant={isMobile ? 'body1' : 'h6'} sx={{ fontWeight: 700, lineHeight: 1 }}>
               {totalMembers}
             </Typography>
           </Box>
@@ -377,6 +565,56 @@ const AchievementsPage: React.FC = () => {
 
       {items.length === 0 ? (
         <Alert severity="info">{t('achievements.empty')}</Alert>
+      ) : isMobile ? (
+        <>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mb: 1.5, alignItems: 'center', flexWrap: 'wrap' }}
+          >
+            <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
+              {t('achievements.sortBy')}:
+            </Typography>
+            <ToggleButtonGroup
+              size="small"
+              exclusive
+              value={sortBy}
+              onChange={(_e, v: SortColumn | null) => {
+                if (v) {
+                  if (v === sortBy) {
+                    setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+                  } else {
+                    setSortBy(v);
+                    setSortDir(v === 'rarity' ? 'desc' : 'asc');
+                  }
+                }
+              }}
+              sx={{ '& .MuiToggleButton-root': { py: 0.25, px: 1.25, fontSize: '0.72rem', textTransform: 'none' } }}
+            >
+              <ToggleButton value="rarity" aria-label={t('achievements.sortByRarity')}>
+                {t('achievements.sortByRarity')}
+              </ToggleButton>
+              <ToggleButton value="name" aria-label={t('achievements.sortByName')}>
+                {t('achievements.sortByName')}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <Typography variant="caption" color="text.secondary">
+              {sortDir === 'asc' ? '▲' : '▼'}
+            </Typography>
+          </Stack>
+          <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
+            {sorted.map((item, idx) => (
+              <MobileLeaderboardCard
+                key={`${item.achievementKey}-${item.tier}`}
+                item={item}
+                totalMembers={totalMembers}
+                rank={idx + 1}
+                avatarMap={avatarMap}
+                onEarnerClick={(id) => navigate(`/clenove/${id}`)}
+              />
+            ))}
+          </Box>
+        </>
       ) : (
         <TableContainer>
           <Table size="small" sx={{ '& td, & th': { py: 1, fontSize: '0.8rem' } }}>

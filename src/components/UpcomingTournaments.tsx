@@ -177,8 +177,8 @@ export const TournamentCard: React.FC<{
       </CardActionArea>
 
       <Collapse in={isExpanded}>
-        <Box sx={{ px: 2, pb: 2 }}>
-          <Table size="small">
+        <Box sx={{ px: 2, pb: 2, overflowX: 'auto' }}>
+          <Table size="small" sx={{ minWidth: 420 }}>
             <TableHead>
               <TableRow>
                 <TableCell sx={{ pl: 0, py: 0.5, width: 40 }} />

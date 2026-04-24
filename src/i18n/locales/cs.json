@@ -257,6 +257,9 @@
       "common": "Běžný",
       "everyone": "Všichni"
     },
+    "sortBy": "Řadit podle",
+    "sortByRarity": "Vzácnost",
+    "sortByName": "Název",
     "manualTooltip": "Ručně udělovaný achievement",
     "manualBadge": "ručně",
     "badge": {
