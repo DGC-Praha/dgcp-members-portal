@@ -365,6 +365,9 @@
   "common": {
     "loadMore": "Load more"
   },
+  "sort": {
+    "ariaLabel": "Sort"
+  },
   "language": {
     "label": "Language",
     "cs": "Čeština",

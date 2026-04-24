@@ -16,9 +16,6 @@ import {
   Chip,
   Avatar,
   TableSortLabel,
-  ToggleButton,
-  ToggleButtonGroup,
-  Stack,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { api, membersApi, type ClubMemberBasic } from '../api/client';
@@ -27,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useIsMobile } from '../hooks/useIsMobile';
 import TagBadge from '../components/TagBadge';
+import { SortMenu, type SortOption } from '../components/SortMenu';
 
 /** Tagovacka-enriched member row, sourced client-side by joining members-api
  *  (canonical DGCP roster) with tagovacka's /api/members payload on iDiscGolfId.
@@ -318,44 +316,18 @@ const MembersPage: React.FC = () => {
           />
           {isMobile ? (
             <>
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{ mb: 1.5, alignItems: 'center', flexWrap: 'wrap' }}
-              >
-                <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
-                  {t('members.sortBy')}:
-                </Typography>
-                <ToggleButtonGroup
-                  size="small"
-                  exclusive
+              <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
+                <SortMenu<MobileSortKey>
+                  options={[
+                    { key: 'name', label: t('members.sortByName') },
+                    { key: 'tag', label: t('members.sortByTag') },
+                    { key: 'rating', label: t('members.sortByRating'), defaultDir: 'desc' },
+                  ] as SortOption<MobileSortKey>[]}
                   value={mobileSortKey}
-                  onChange={(_e, v: MobileSortKey | null) => {
-                    if (v) {
-                      if (v === mobileSortKey) {
-                        setMobileSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-                      } else {
-                        setMobileSortKey(v);
-                        setMobileSortDir(v === 'rating' ? 'desc' : 'asc');
-                      }
-                    }
-                  }}
-                  sx={{ '& .MuiToggleButton-root': { py: 0.25, px: 1.25, fontSize: '0.72rem', textTransform: 'none' } }}
-                >
-                  <ToggleButton value="name" aria-label={t('members.sortByName')}>
-                    {t('members.sortByName')}
-                  </ToggleButton>
-                  <ToggleButton value="tag" aria-label={t('members.sortByTag')}>
-                    {t('members.sortByTag')}
-                  </ToggleButton>
-                  <ToggleButton value="rating" aria-label={t('members.sortByRating')}>
-                    {t('members.sortByRating')}
-                  </ToggleButton>
-                </ToggleButtonGroup>
-                <Typography variant="caption" color="text.secondary">
-                  {mobileSortDir === 'asc' ? '▲' : '▼'}
-                </Typography>
-              </Stack>
+                  direction={mobileSortDir}
+                  onChange={(k, d) => { setMobileSortKey(k); setMobileSortDir(d); }}
+                />
+              </Box>
               <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
                 {filtered.map((member) => (
                   <MobileMemberCard

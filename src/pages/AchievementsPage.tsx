@@ -9,7 +9,6 @@ import {
   Collapse,
   IconButton,
   LinearProgress,
-  Stack,
   Table,
   TableBody,
   TableCell,
@@ -17,8 +16,6 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  ToggleButton,
-  ToggleButtonGroup,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -32,6 +29,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from '../components/achievements/shared';
 import { formatDate } from '../i18n/format';
+import { SortMenu } from '../components/SortMenu';
 
 type SortColumn = 'rarity' | 'name';
 
@@ -567,41 +565,17 @@ const AchievementsPage: React.FC = () => {
         <Alert severity="info">{t('achievements.empty')}</Alert>
       ) : isMobile ? (
         <>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{ mb: 1.5, alignItems: 'center', flexWrap: 'wrap' }}
-          >
-            <Typography variant="caption" color="text.secondary" sx={{ mr: 0.5 }}>
-              {t('achievements.sortBy')}:
-            </Typography>
-            <ToggleButtonGroup
-              size="small"
-              exclusive
+          <Box sx={{ mb: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
+            <SortMenu<SortColumn>
+              options={[
+                { key: 'rarity', label: t('achievements.sortByRarity'), defaultDir: 'desc' },
+                { key: 'name', label: t('achievements.sortByName') },
+              ]}
               value={sortBy}
-              onChange={(_e, v: SortColumn | null) => {
-                if (v) {
-                  if (v === sortBy) {
-                    setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-                  } else {
-                    setSortBy(v);
-                    setSortDir(v === 'rarity' ? 'desc' : 'asc');
-                  }
-                }
-              }}
-              sx={{ '& .MuiToggleButton-root': { py: 0.25, px: 1.25, fontSize: '0.72rem', textTransform: 'none' } }}
-            >
-              <ToggleButton value="rarity" aria-label={t('achievements.sortByRarity')}>
-                {t('achievements.sortByRarity')}
-              </ToggleButton>
-              <ToggleButton value="name" aria-label={t('achievements.sortByName')}>
-                {t('achievements.sortByName')}
-              </ToggleButton>
-            </ToggleButtonGroup>
-            <Typography variant="caption" color="text.secondary">
-              {sortDir === 'asc' ? '▲' : '▼'}
-            </Typography>
-          </Stack>
+              direction={sortDir}
+              onChange={(k, d) => { setSortBy(k); setSortDir(d); }}
+            />
+          </Box>
           <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
             {sorted.map((item, idx) => (
               <MobileLeaderboardCard
