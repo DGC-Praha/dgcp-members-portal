@@ -303,7 +303,13 @@
       "title": "Filters",
       "filtersButton": "Filters",
       "apply": "Apply",
-      "close": "Close"
+      "close": "Close",
+      "open": "Open",
+      "closed": "Closed"
+    },
+    "registration": {
+      "opensAt": "Opens {{date}}",
+      "over": "Registration over"
     }
   },
   "competitions": {

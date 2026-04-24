@@ -35,6 +35,7 @@ import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { formatDateRange } from '../components/UpcomingTournaments';
+import { formatDate } from '../i18n/format';
 import type { RegistrationPhase } from '../components/UpcomingTournaments';
 import RegistrationWatchdog from '../components/RegistrationWatchdog';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -63,6 +64,39 @@ interface FilterOptions {
   regions: string[];
   cadgTiers: string[];
   pdgaTiers: string[];
+}
+
+/**
+ * Render-time label for the tournament's registration state:
+ *   - tournament already over       → "Registration over"
+ *   - at least one phase has started → current count "X/Y"
+ *   - all phases still in the future → "Opens <date>" of the earliest phase
+ *   - no phases at all                → "Registration over" (treat as closed)
+ */
+function registrationDisplay(
+  t: AllTournament,
+  tr: (key: string, opts?: Record<string, unknown>) => string,
+): { text: string; emphasis: boolean } {
+  const now = Date.now();
+  const todayStart = new Date().setHours(0, 0, 0, 0);
+  const tournamentEnded = new Date(t.dateEnd).getTime() < todayStart;
+  if (tournamentEnded) return { text: tr('tournaments.registration.over'), emphasis: false };
+
+  const phases = t.registrationPhases;
+  const pastPhases = phases.filter((p) => new Date(p.startsAt).getTime() <= now);
+  const futurePhases = phases.filter((p) => new Date(p.startsAt).getTime() > now);
+
+  if (pastPhases.length > 0) {
+    const count = t.playerLimit ? `${t.totalPlayers}/${t.playerLimit}` : String(t.totalPlayers);
+    return { text: count, emphasis: true };
+  }
+  if (futurePhases.length > 0) {
+    const next = futurePhases.reduce((a, b) =>
+      new Date(a.startsAt).getTime() < new Date(b.startsAt).getTime() ? a : b,
+    );
+    return { text: tr('tournaments.registration.opensAt', { date: formatDate(next.startsAt) }), emphasis: false };
+  }
+  return { text: tr('tournaments.registration.over'), emphasis: false };
 }
 
 /**
@@ -365,8 +399,8 @@ const TournamentsPage: React.FC = () => {
             value={regFilter}
             onChange={(v) => { setRegFilter(v); setPage(1); }}
             allLabel={tr('tournaments.filter.all')}
-            yesLabel={tr('tournaments.filter.yes')}
-            noLabel={tr('tournaments.filter.no')}
+            yesLabel={tr('tournaments.filter.open')}
+            noLabel={tr('tournaments.filter.closed')}
           />
           {hasFilters && (
             <Button
@@ -452,8 +486,8 @@ const TournamentsPage: React.FC = () => {
               size="small"
             >
               <ToggleButton value="all" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.all')}</ToggleButton>
-              <ToggleButton value="yes" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.yes')}</ToggleButton>
-              <ToggleButton value="no" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.no')}</ToggleButton>
+              <ToggleButton value="yes" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.open')}</ToggleButton>
+              <ToggleButton value="no" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.closed')}</ToggleButton>
             </ToggleButtonGroup>
           </Box>
         </Stack>
@@ -508,21 +542,13 @@ const TournamentsPage: React.FC = () => {
                 <TableCell sx={{ fontWeight: 600 }}>{tr('tournaments.filter.region')}</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>PDGA</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>{tr('tournaments.filter.registration')}</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 600 }}>{tr('tournaments.members')}</TableCell>
                 <TableCell sx={{ width: 36 }} />
                 <TableCell sx={{ width: 36 }} />
               </TableRow>
             </TableHead>
             <TableBody>
               {tournaments.map((t) => {
-                const regText = (() => {
-                  const parts: string[] = [];
-                  if (t.registrationStatus) parts.push(t.registrationStatus);
-                  if (t.totalPlayers > 0) {
-                    parts.push(t.playerLimit ? `${t.totalPlayers}/${t.playerLimit}` : `${t.totalPlayers}`);
-                  }
-                  return parts.join(' · ');
-                })();
+                const reg = registrationDisplay(t, tr);
 
                 return (
                   <TableRow
@@ -559,18 +585,27 @@ const TournamentsPage: React.FC = () => {
                         />
                       )}
                     </TableCell>
-                    <TableCell sx={{ whiteSpace: 'nowrap', color: 'text.secondary', fontSize: '0.75rem' }}>
-                      {regText}
-                    </TableCell>
-                    <TableCell align="center">
-                      {t.clubMemberCount > 0 && (
-                        <Chip
-                          icon={<PeopleOutlineIcon sx={{ fontSize: '14px !important' }} />}
-                          label={t.clubMemberCount}
-                          size="small"
-                          sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#e8eaf6', color: '#3949ab' }}
-                        />
-                      )}
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <Typography
+                          variant="caption"
+                          sx={{
+                            fontSize: '0.75rem',
+                            color: reg.emphasis ? 'text.primary' : 'text.secondary',
+                            fontWeight: reg.emphasis ? 600 : 400,
+                          }}
+                        >
+                          {reg.text}
+                        </Typography>
+                        {t.clubMemberCount > 0 && (
+                          <Chip
+                            icon={<PeopleOutlineIcon sx={{ fontSize: '14px !important' }} />}
+                            label={t.clubMemberCount}
+                            size="small"
+                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#e8eaf6', color: '#3949ab' }}
+                          />
+                        )}
+                      </Box>
                     </TableCell>
                     <TableCell sx={{ px: 0 }}>
                       {t.registrationPhases.length > 0 && (

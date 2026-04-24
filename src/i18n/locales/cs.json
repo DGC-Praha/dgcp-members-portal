@@ -303,7 +303,13 @@
       "title": "Filtry",
       "filtersButton": "Filtry",
       "apply": "Použít",
-      "close": "Zavřít"
+      "close": "Zavřít",
+      "open": "Otevřená",
+      "closed": "Uzavřená"
+    },
+    "registration": {
+      "opensAt": "Otevírá se {{date}}",
+      "over": "Registrace ukončena"
     }
   },
   "competitions": {
