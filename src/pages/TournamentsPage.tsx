@@ -124,7 +124,10 @@ const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
         )}
         {t.registrationPhases.length > 0 && (
           <Box
-            sx={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}
+            // Pull the bell right by the IconButton's internal padding so the
+            // visible icon glyph — not the invisible button box — aligns with
+            // the card's right edge (and with the row-1 date).
+            sx={{ flexShrink: 0, display: 'flex', alignItems: 'center', mr: -0.75 }}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
