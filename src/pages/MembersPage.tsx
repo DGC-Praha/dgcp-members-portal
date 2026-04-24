@@ -338,7 +338,7 @@ const MembersPage: React.FC = () => {
           </Box>
           {isMobile ? (
             <>
-              <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1, overflow: 'hidden' }}>
                 {filtered.map((member) => (
                   <MobileMemberCard
                     key={member.id}
@@ -355,7 +355,7 @@ const MembersPage: React.FC = () => {
               </Box>
             </>
           ) : (
-          <TableContainer>
+          <TableContainer sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1, maxWidth: '100%', overflowX: 'auto' }}>
             <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.8rem' } }}>
               <TableHead>
                 <TableRow>

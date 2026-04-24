@@ -20,7 +20,6 @@ import {
   IconButton,
   Tooltip,
   Stack,
-  Card,
   CardActionArea,
   Drawer,
   Divider,
@@ -113,14 +112,21 @@ const TriStateToggle: React.FC<{
 };
 
 const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
-  <Card variant="outlined" sx={{ mb: 0.75, borderRadius: 1 }}>
-    <CardActionArea
-      component="a"
-      href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      sx={{ py: 1.25, px: 1.5, minHeight: 64, display: 'block' }}
-    >
+  <CardActionArea
+    component="a"
+    href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    sx={{
+      py: 1.25,
+      px: 1.5,
+      minHeight: 64,
+      display: 'block',
+      borderBottom: '1px solid',
+      borderColor: 'divider',
+      '&:last-of-type': { borderBottom: 'none' },
+    }}
+  >
       {/* Row 1: name (grow) | date (flush right). No bell here, no padding
           reserved — date anchors to the right edge on every card. */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -189,7 +195,6 @@ const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
         )}
       </Box>
     </CardActionArea>
-  </Card>
 );
 
 const TournamentsPage: React.FC = () => {
@@ -487,13 +492,13 @@ const TournamentsPage: React.FC = () => {
       ) : tournaments.length === 0 ? (
         <Typography color="text.secondary">{tr('tournaments.empty')}</Typography>
       ) : isMobile ? (
-        <Stack>
+        <Box sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1, overflow: 'hidden' }}>
           {tournaments.map((t) => (
             <MobileTournamentRow key={t.id} t={t} />
           ))}
-        </Stack>
+        </Box>
       ) : (
-        <TableContainer>
+        <TableContainer sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1, maxWidth: '100%', overflowX: 'auto' }}>
           <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.8rem' } }}>
             <TableHead>
               <TableRow>
