@@ -66,10 +66,7 @@ interface FilterOptions {
 }
 
 const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
-  <Card
-    variant="outlined"
-    sx={{ mb: 0.75, borderRadius: 1, position: 'relative' }}
-  >
+  <Card variant="outlined" sx={{ mb: 0.75, borderRadius: 1 }}>
     <CardActionArea
       component="a"
       href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
@@ -77,10 +74,9 @@ const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
       rel="noopener noreferrer"
       sx={{ py: 1.25, px: 1.5, minHeight: 64, display: 'block' }}
     >
-      {/* Row 1: name  |  date. Always reserve the bell slot so dates align
-          across cards regardless of whether this tournament has an open
-          registration phase. */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 4.5 }}>
+      {/* Row 1: name (grow) | date (flush right). No bell here, no padding
+          reserved — date anchors to the right edge on every card. */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <Typography
           variant="body2"
           sx={{ fontWeight: 700, lineHeight: 1.3, flex: 1, minWidth: 0 }}
@@ -95,8 +91,8 @@ const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
           {formatDateRange(t.dateStart, t.dateEnd)}
         </Typography>
       </Box>
-      {/* Row 2: tier / pdga / region  |  members count */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.75, minHeight: 20 }}>
+      {/* Row 2: tier/region chips (grow) | members count | bell (if any). */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.75, minHeight: 32 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
           {t.cadgTier && (
             <Chip
@@ -126,23 +122,23 @@ const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
             sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e8eaf6', color: '#3949ab', flexShrink: 0 }}
           />
         )}
+        {t.registrationPhases.length > 0 && (
+          <Box
+            sx={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+            onTouchEnd={(e) => e.stopPropagation()}
+          >
+            <RegistrationWatchdog
+              tournamentIdgId={t.iDiscGolfTournamentId}
+              registrationPhases={t.registrationPhases}
+            />
+          </Box>
+        )}
       </Box>
     </CardActionArea>
-    {t.registrationPhases.length > 0 && (
-      <Box
-        sx={{ position: 'absolute', top: 6, right: 6, zIndex: 1 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-        }}
-        onTouchEnd={(e) => e.stopPropagation()}
-      >
-        <RegistrationWatchdog
-          tournamentIdgId={t.iDiscGolfTournamentId}
-          registrationPhases={t.registrationPhases}
-        />
-      </Box>
-    )}
   </Card>
 );
 
