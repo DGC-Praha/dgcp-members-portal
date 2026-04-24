@@ -381,9 +381,9 @@ const LeaderboardRow: React.FC<{
           )}
         </TableCell>
       </TableRow>
-      {hasEarners && (
+      {hasEarners && open && (
         <TableRow>
-          <TableCell colSpan={7} sx={{ p: 0, borderBottom: open ? '1px solid rgba(224,224,224,1)' : 'none' }}>
+          <TableCell colSpan={7} sx={{ p: 0 }}>
             <Collapse in={open} unmountOnExit>
               <Box sx={{ pl: 7, pr: 2, py: 1.5, bgcolor: '#fafbfc' }}>
                 <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.75rem', border: 0 } }}>

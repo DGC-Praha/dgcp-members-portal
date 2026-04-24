@@ -49,8 +49,12 @@ const HomePage: React.FC = () => {
 
   return (
     <Box>
-      {/* Profile card — full width on top */}
-      <Box sx={{ mb: 3 }}>
+      {/* Top row — desktop: leagues (8) beside profile (4). Mobile: profile full-width only. */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid size={{ xs: 0, md: 8 }} sx={{ display: { xs: 'none', md: 'block' } }}>
+          <LeagueTiles />
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card
             sx={{
               border: '1px solid',
@@ -168,12 +172,8 @@ const HomePage: React.FC = () => {
               </Box>
             </CardContent>
           </Card>
-      </Box>
-
-      {/* Leagues — desktop only; mobile uses the "Ligy" drawer nav item instead. */}
-      <Box sx={{ mb: 3, display: { xs: 'none', md: 'block' } }}>
-        <LeagueTiles />
-      </Box>
+        </Grid>
+      </Grid>
 
       {/* Bottom: two columns — club mates left, my stuff right */}
       <Grid container spacing={3}>
