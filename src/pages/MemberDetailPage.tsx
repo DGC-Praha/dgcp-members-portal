@@ -351,7 +351,7 @@ const MemberDetailPage: React.FC = () => {
               <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
                 {tr('playerCard.pastTournaments', { year: new Date().getFullYear() })}
               </Typography>
-              <TableContainer sx={{ maxWidth: '100%' }}>
+              <TableContainer sx={{ maxWidth: '100%', overflowX: 'auto' }}>
                 <Table size="small" sx={{ minWidth: 520, '& td, & th': { py: 0.75, fontSize: '0.8rem' } }}>
                   <TableHead>
                     <TableRow>

@@ -225,7 +225,7 @@ const Layout: React.FC = () => {
         </Drawer>
       )}
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, minWidth: 0, p: { xs: 1.5, sm: 3 } }}>
         <Toolbar />
         <DevBanner />
         <Box sx={{ pt: 2 }}>

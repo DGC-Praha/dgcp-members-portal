@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -77,7 +77,12 @@ const RecentAchievements: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  // Ref guard prevents a double-click race where two loads fire before React
+  // batches the `loading` state update and hides the button.
+  const loadingRef = useRef(false);
   const load = useCallback(async (p: number, append: boolean) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     setLoading(true);
     try {
       const res = await membersApi.getRecentAchievements(p);
@@ -87,6 +92,7 @@ const RecentAchievements: React.FC = () => {
     } catch {
       // non-critical
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   }, []);

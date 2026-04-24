@@ -142,8 +142,12 @@ const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => {
       </CardActionArea>
       {t.registrationPhases.length > 0 && (
         <Box
-          sx={{ position: 'absolute', top: 8, right: 8 }}
-          onClick={(e) => e.stopPropagation()}
+          sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onTouchEnd={(e) => e.stopPropagation()}
         >
           <RegistrationWatchdog
             tournamentIdgId={t.iDiscGolfTournamentId}

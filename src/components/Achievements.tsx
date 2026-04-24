@@ -438,7 +438,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
                       variant="caption"
                       sx={{
                         fontWeight: 700,
-                        fontSize: '0.55rem',
+                        fontSize: '0.7rem',
                         color: ringColor,
                         textTransform: 'uppercase',
                         letterSpacing: 0.5,

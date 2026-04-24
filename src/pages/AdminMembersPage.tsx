@@ -216,7 +216,7 @@ const AdminMembersPage: React.FC = () => {
         />
       </Stack>
 
-      <TableContainer sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1, maxWidth: '100%' }}>
+      <TableContainer sx={{ bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1, maxWidth: '100%', overflowX: 'auto' }}>
         <Table size="small" sx={{ minWidth: 760 }}>
           <TableHead>
             <TableRow>

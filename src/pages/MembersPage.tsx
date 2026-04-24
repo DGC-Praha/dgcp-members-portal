@@ -190,6 +190,10 @@ const MembersPage: React.FC = () => {
   const [sortBy, setSortBy] = useState<'tag' | 'rating' | null>(null);
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [mobileSortKey, setMobileSortKey] = useState<MobileSortKey>('name');
+  // Separate from desktop `sortDir` so that crossing the breakpoint mid-session
+  // doesn't carry a nonsensical direction across (e.g. mobile rating-desc leaking
+  // into desktop tag sort).
+  const [mobileSortDir, setMobileSortDir] = useState<'asc' | 'desc'>('asc');
   const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -245,10 +249,11 @@ const MembersPage: React.FC = () => {
     const effectiveKey: 'name' | 'tag' | 'rating' = isMobile
       ? mobileSortKey
       : (sortBy ?? 'name');
+    const effectiveDir = isMobile ? mobileSortDir : sortDir;
     if (effectiveKey === 'name') {
       result = [...result].sort((a, b) => {
         const cmp = a.name.localeCompare(b.name, 'cs');
-        return sortDir === 'asc' ? cmp : -cmp;
+        return effectiveDir === 'asc' ? cmp : -cmp;
       });
     } else {
       result = [...result].sort((a, b) => {
@@ -261,11 +266,11 @@ const MembersPage: React.FC = () => {
           valA = a.pdgaRating ?? a.iDiscGolfRating ?? 0;
           valB = b.pdgaRating ?? b.iDiscGolfRating ?? 0;
         }
-        return sortDir === 'asc' ? valA - valB : valB - valA;
+        return effectiveDir === 'asc' ? valA - valB : valB - valA;
       });
     }
     return result;
-  }, [members, search, sortBy, sortDir, isMobile, mobileSortKey]);
+  }, [members, search, sortBy, sortDir, isMobile, mobileSortKey, mobileSortDir]);
 
   if (loading) {
     return (
@@ -328,10 +333,10 @@ const MembersPage: React.FC = () => {
                   onChange={(_e, v: MobileSortKey | null) => {
                     if (v) {
                       if (v === mobileSortKey) {
-                        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+                        setMobileSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
                       } else {
                         setMobileSortKey(v);
-                        setSortDir(v === 'rating' ? 'desc' : 'asc');
+                        setMobileSortDir(v === 'rating' ? 'desc' : 'asc');
                       }
                     }
                   }}
@@ -348,7 +353,7 @@ const MembersPage: React.FC = () => {
                   </ToggleButton>
                 </ToggleButtonGroup>
                 <Typography variant="caption" color="text.secondary">
-                  {sortDir === 'asc' ? '▲' : '▼'}
+                  {mobileSortDir === 'asc' ? '▲' : '▼'}
                 </Typography>
               </Stack>
               <Box sx={{ borderTop: '1px solid', borderColor: 'divider' }}>

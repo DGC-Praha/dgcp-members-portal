@@ -174,7 +174,7 @@ const HomePage: React.FC = () => {
                       // (still clipped after 2) rather than being cut off
                       // behind the fixed-width tag badge on the right.
                       display: { xs: '-webkit-box', sm: 'block' },
-                      WebkitLineClamp: { xs: 2, sm: 'none' },
+                      WebkitLineClamp: { xs: 2, sm: 'unset' },
                       WebkitBoxOrient: 'vertical',
                       overflow: 'hidden',
                       whiteSpace: { xs: 'normal', sm: 'nowrap' },

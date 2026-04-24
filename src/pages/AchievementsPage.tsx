@@ -202,7 +202,7 @@ const MobileLeaderboardCard: React.FC<{
                 '& .MuiLinearProgress-bar': { bgcolor: bucket.color },
               }}
             />
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.62rem' }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
               {t('achievements.rarityCountOf', { count: item.earnedCount, total: totalMembers })}
             </Typography>
           </Box>
