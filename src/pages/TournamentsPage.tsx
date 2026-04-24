@@ -29,6 +29,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Paper,
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
@@ -267,12 +268,18 @@ const TournamentsPage: React.FC = () => {
           </Button>
         </Box>
       ) : (
-        <Box
+        <Paper
+          elevation={0}
           sx={{
+            mb: 3,
+            p: 2,
+            borderRadius: 2,
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
             display: 'grid',
             gridTemplateColumns: 'minmax(240px, 2fr) repeat(2, minmax(200px, 2fr)) repeat(2, minmax(150px, 1fr))',
             gap: 1.5,
-            mb: 3,
             alignItems: 'center',
           }}
         >
@@ -350,7 +357,7 @@ const TournamentsPage: React.FC = () => {
               {tr('tournaments.filter.clear')}
             </Button>
           )}
-        </Box>
+        </Paper>
       )}
 
       {/* Mobile filter bottom sheet */}
