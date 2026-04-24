@@ -19,17 +19,22 @@ import {
   TableRow,
   IconButton,
   Tooltip,
+  Stack,
+  Card,
+  CardActionArea,
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
 import SearchIcon from '@mui/icons-material/Search';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { formatDateRange } from '../components/UpcomingTournaments';
 import type { RegistrationPhase } from '../components/UpcomingTournaments';
 import RegistrationWatchdog from '../components/RegistrationWatchdog';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 interface AllTournament {
   id: number;
@@ -56,6 +61,100 @@ interface FilterOptions {
   pdgaTiers: string[];
 }
 
+const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => {
+  const regText = (() => {
+    const parts: string[] = [];
+    if (t.registrationStatus) parts.push(t.registrationStatus);
+    if (t.totalPlayers > 0) {
+      parts.push(t.playerLimit ? `${t.totalPlayers}/${t.playerLimit}` : `${t.totalPlayers}`);
+    }
+    return parts.join(' · ');
+  })();
+
+  return (
+    <Card
+      variant="outlined"
+      sx={{ mb: 1, borderRadius: 2, position: 'relative' }}
+    >
+      <CardActionArea
+        component="a"
+        href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        sx={{ p: 1.5, minHeight: 72, display: 'flex', alignItems: 'flex-start', gap: 1.5 }}
+      >
+        <Box sx={{ mt: 0.25, flexShrink: 0, color: '#e65100' }}>
+          <EmojiEventsIcon sx={{ fontSize: 22 }} />
+        </Box>
+        <Box sx={{ flex: 1, minWidth: 0, pr: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 700, lineHeight: 1.3, flex: 1, minWidth: 0 }}
+              noWrap
+            >
+              {t.name}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ color: 'text.secondary', whiteSpace: 'nowrap', flexShrink: 0, lineHeight: 1.3 }}
+            >
+              {formatDateRange(t.dateStart, t.dateEnd)}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
+            {t.cadgTier && (
+              <Chip
+                label={t.cadgTier}
+                size="small"
+                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+              />
+            )}
+            {t.pdgaTournamentId && (
+              <Chip
+                label={t.pdgaTier || 'PDGA'}
+                size="small"
+                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
+              />
+            )}
+            {t.region && (
+              <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1 }}>
+                {t.region}
+              </Typography>
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
+            {t.clubMemberCount > 0 && (
+              <Chip
+                icon={<PeopleOutlineIcon sx={{ fontSize: '14px !important' }} />}
+                label={t.clubMemberCount}
+                size="small"
+                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#e8eaf6', color: '#3949ab' }}
+              />
+            )}
+            {regText && (
+              <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1 }}>
+                {regText}
+              </Typography>
+            )}
+          </Box>
+        </Box>
+      </CardActionArea>
+      {t.registrationPhases.length > 0 && (
+        <Box
+          sx={{ position: 'absolute', top: 8, right: 8 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <RegistrationWatchdog
+            tournamentIdgId={t.iDiscGolfTournamentId}
+            registrationPhases={t.registrationPhases}
+          />
+        </Box>
+      )}
+    </Card>
+  );
+};
+
 const TournamentsPage: React.FC = () => {
   const [tournaments, setTournaments] = useState<AllTournament[]>([]);
   const [total, setTotal] = useState(0);
@@ -73,6 +172,7 @@ const TournamentsPage: React.FC = () => {
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const { t: tr } = useTranslation();
+  const isMobile = useIsMobile();
   usePageTitle(tr('pageTitle.tournaments'));
 
   useEffect(() => {
@@ -234,13 +334,19 @@ const TournamentsPage: React.FC = () => {
         </Typography>
       )}
 
-      {/* Tournament table */}
+      {/* Tournament table / card list */}
       {loading ? (
         [1, 2, 3, 4, 5, 6].map((i) => (
           <Skeleton key={i} variant="rounded" height={36} sx={{ mb: 0.5 }} />
         ))
       ) : tournaments.length === 0 ? (
         <Typography color="text.secondary">{tr('tournaments.empty')}</Typography>
+      ) : isMobile ? (
+        <Stack>
+          {tournaments.map((t) => (
+            <MobileTournamentRow key={t.id} t={t} />
+          ))}
+        </Stack>
       ) : (
         <TableContainer>
           <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.8rem' } }}>
