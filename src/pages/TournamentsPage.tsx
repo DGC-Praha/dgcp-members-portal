@@ -25,6 +25,10 @@ import {
   Drawer,
   Divider,
   Badge,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
@@ -263,10 +267,18 @@ const TournamentsPage: React.FC = () => {
           </Button>
         </Box>
       ) : (
-        <Box sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'minmax(240px, 2fr) repeat(2, minmax(200px, 2fr)) repeat(2, minmax(150px, 1fr))',
+            gap: 1.5,
+            mb: 3,
+            alignItems: 'center',
+          }}
+        >
           <TextField
             size="small"
-            placeholder={tr('tournaments.filter.search')}
+            label={tr('tournaments.filter.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             slotProps={{
@@ -278,7 +290,6 @@ const TournamentsPage: React.FC = () => {
                 ),
               },
             }}
-            sx={{ minWidth: 200 }}
           />
           <Autocomplete
             multiple
@@ -287,7 +298,6 @@ const TournamentsPage: React.FC = () => {
             value={regions}
             onChange={(_e, v) => { setRegions(v); setPage(1); }}
             renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.region')} />}
-            sx={{ minWidth: 200 }}
             limitTags={2}
           />
           <Autocomplete
@@ -297,59 +307,45 @@ const TournamentsPage: React.FC = () => {
             value={cadgTiers}
             onChange={(_e, v) => { setCadgTiers(v); setPage(1); }}
             renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.cadgTier')} />}
-            sx={{ minWidth: 200 }}
             limitTags={2}
           />
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-              PDGA
-            </Typography>
-            <ToggleButtonGroup
+          <FormControl size="small">
+            <InputLabel id="pdga-filter-label">PDGA</InputLabel>
+            <Select
+              labelId="pdga-filter-label"
+              label="PDGA"
               value={pdgaFilter}
-              exclusive
-              onChange={(_e, v) => { if (v) { setPdgaFilter(v); setPage(1); } }}
-              size="small"
-              sx={{ height: 32 }}
+              onChange={(e) => { setPdgaFilter(e.target.value as 'all' | 'yes' | 'no'); setPage(1); }}
             >
-              <ToggleButton value="all" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-                {tr('tournaments.filter.all')}
-              </ToggleButton>
-              <ToggleButton value="yes" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-                {tr('tournaments.filter.yes')}
-              </ToggleButton>
-              <ToggleButton value="no" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-                {tr('tournaments.filter.no')}
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-              {tr('tournaments.filter.registration')}
-            </Typography>
-            <ToggleButtonGroup
+              <MenuItem value="all">{tr('tournaments.filter.all')}</MenuItem>
+              <MenuItem value="yes">{tr('tournaments.filter.yes')}</MenuItem>
+              <MenuItem value="no">{tr('tournaments.filter.no')}</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small">
+            <InputLabel id="reg-filter-label">{tr('tournaments.filter.registration')}</InputLabel>
+            <Select
+              labelId="reg-filter-label"
+              label={tr('tournaments.filter.registration')}
               value={regFilter}
-              exclusive
-              onChange={(_e, v) => { if (v) { setRegFilter(v); setPage(1); } }}
-              size="small"
-              sx={{ height: 32 }}
+              onChange={(e) => { setRegFilter(e.target.value as 'all' | 'yes' | 'no'); setPage(1); }}
             >
-              <ToggleButton value="all" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-                {tr('tournaments.filter.all')}
-              </ToggleButton>
-              <ToggleButton value="yes" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-                {tr('tournaments.filter.yes')}
-              </ToggleButton>
-              <ToggleButton value="no" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-                {tr('tournaments.filter.no')}
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
+              <MenuItem value="all">{tr('tournaments.filter.all')}</MenuItem>
+              <MenuItem value="yes">{tr('tournaments.filter.yes')}</MenuItem>
+              <MenuItem value="no">{tr('tournaments.filter.no')}</MenuItem>
+            </Select>
+          </FormControl>
           {hasFilters && (
             <Button
               size="small"
               startIcon={<FilterListOffIcon />}
               onClick={clearFilters}
-              sx={{ color: 'text.secondary' }}
+              sx={{
+                gridColumn: '1 / -1',
+                justifySelf: 'end',
+                color: 'text.secondary',
+                textTransform: 'none',
+              }}
             >
               {tr('tournaments.filter.clear')}
             </Button>
