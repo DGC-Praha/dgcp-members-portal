@@ -18,6 +18,7 @@ import TagBadge from '../components/TagBadge';
 import UpcomingTournaments from '../components/UpcomingTournaments';
 import MyTournaments from '../components/MyTournaments';
 import RecentAchievements from '../components/RecentAchievements';
+import LeagueTiles from '../components/LeagueTiles';
 
 const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
   const color = active === true ? '#4caf50' : active === false ? '#f44336' : '#9e9e9e';
@@ -167,6 +168,11 @@ const HomePage: React.FC = () => {
               </Box>
             </CardContent>
           </Card>
+      </Box>
+
+      {/* Leagues — desktop only; mobile uses the "Ligy" drawer nav item instead. */}
+      <Box sx={{ mb: 3, display: { xs: 'none', md: 'block' } }}>
+        <LeagueTiles />
       </Box>
 
       {/* Bottom: two columns — club mates left, my stuff right */}

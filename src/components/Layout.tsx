@@ -57,7 +57,11 @@ const Layout: React.FC = () => {
     { text: t('nav.home'), icon: <HomeIcon />, path: '/' },
     { text: t('nav.tournaments'), icon: <EmojiEventsOutlinedIcon />, path: '/turnaje' },
     { text: t('nav.members'), icon: <PeopleIcon />, path: '/members' },
-    { text: t('nav.leagues'), icon: <SportsScoreOutlinedIcon />, path: '/ligy' },
+    // Leagues are shown directly on the homepage for desktop users, so the
+    // drawer entry only appears on mobile to avoid duplicating the surface.
+    ...(isMobile
+      ? [{ text: t('nav.leagues'), icon: <SportsScoreOutlinedIcon />, path: '/ligy' }]
+      : []),
     { text: t('nav.achievements'), icon: <WorkspacePremiumOutlinedIcon />, path: '/achievements' },
     { text: t('nav.watchedRegistrations'), icon: <NotificationsActiveIcon />, path: '/hlidane-registrace' },
     ...(user?.isAdmin
