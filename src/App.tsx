@@ -10,6 +10,7 @@ import MembersPage from './pages/MembersPage';
 import AchievementsPage from './pages/AchievementsPage';
 import AccountPage from './pages/AccountPage';
 import TournamentsPage from './pages/TournamentsPage';
+import CompetitionsPage from './pages/CompetitionsPage';
 import MemberDetailPage from './pages/MemberDetailPage';
 import AdminMembersPage from './pages/AdminMembersPage';
 import AdminMemberDetailPage from './pages/AdminMemberDetailPage';
@@ -41,6 +42,7 @@ function App() {
             <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
               <Route path="/" element={<HomePage />} />
               <Route path="/turnaje" element={<TournamentsPage />} />
+              <Route path="/ligy" element={<CompetitionsPage />} />
               <Route path="/members" element={<MembersPage />} />
               <Route path="/achievements" element={<AchievementsPage />} />
               <Route path="/clenove/:id" element={<MemberDetailPage />} />

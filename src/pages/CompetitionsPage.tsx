@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Card, CardContent, CardActions, Button, Grid } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const competitions = [
   {
@@ -23,6 +24,7 @@ const competitions = [
 
 const CompetitionsPage: React.FC = () => {
   const { t } = useTranslation();
+  usePageTitle(t('nav.leagues'));
 
   return (
     <Box>

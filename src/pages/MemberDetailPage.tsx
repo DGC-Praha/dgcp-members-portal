@@ -170,7 +170,7 @@ const MemberDetailPage: React.FC = () => {
   return (
     <Box>
       {/* Back button */}
-      <IconButton onClick={() => navigate('/members')} sx={{ mb: 1, ml: -1 }}>
+      <IconButton onClick={() => navigate(-1)} aria-label="back" sx={{ mb: 1, ml: -1 }}>
         <ArrowBackIcon />
       </IconButton>
 

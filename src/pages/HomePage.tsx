@@ -4,7 +4,6 @@ import {
   Box,
   Card,
   CardContent,
-  CardActionArea,
   Typography,
   Grid,
   Chip,
@@ -12,9 +11,6 @@ import {
   Skeleton,
   alpha,
 } from '@mui/material';
-import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
-import AdjustOutlinedIcon from '@mui/icons-material/AdjustOutlined';
-import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -22,38 +18,6 @@ import TagBadge from '../components/TagBadge';
 import UpcomingTournaments from '../components/UpcomingTournaments';
 import MyTournaments from '../components/MyTournaments';
 import RecentAchievements from '../components/RecentAchievements';
-
-const TAGOVACKA_PRIMARY = '#001645';
-const TAGOVACKA_ACCENT = '#db2228';
-const JAMKOVKA_COLOR = '#2e7d32';
-const HDGL_COLOR = '#5c6bc0';
-
-const competitions = [
-  {
-    titleKey: 'competitions.tagovacka',
-    descKey: 'competitions.tagovackaDesc',
-    url: 'https://tagovacka.cz/club/dgcp',
-    color: TAGOVACKA_PRIMARY,
-    accent: TAGOVACKA_ACCENT,
-    icon: <LocalOfferOutlinedIcon />,
-  },
-  {
-    titleKey: 'competitions.jamkovka',
-    descKey: 'competitions.jamkovkaDesc',
-    url: 'https://jamkovka.dgcp.cz/',
-    color: JAMKOVKA_COLOR,
-    accent: JAMKOVKA_COLOR,
-    icon: <AdjustOutlinedIcon />,
-  },
-  {
-    titleKey: 'competitions.hdgl',
-    descKey: 'competitions.hdglDesc',
-    url: 'https://hdgl.lazerfunpraha.cz/',
-    color: HDGL_COLOR,
-    accent: HDGL_COLOR,
-    icon: <LeaderboardOutlinedIcon />,
-  },
-];
 
 const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
   const color = active === true ? '#4caf50' : active === false ? '#f44336' : '#9e9e9e';
@@ -84,49 +48,8 @@ const HomePage: React.FC = () => {
 
   return (
     <Box>
-      {/* Top row: competitions (8 cols) + profile (4 cols) */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Grid container spacing={2} sx={{ height: '100%' }}>
-            {competitions.map((c) => (
-              <Grid size={{ xs: 12, sm: 4 }} key={c.titleKey}>
-            <Card
-              sx={{
-                height: '100%',
-                border: '1px solid',
-                borderColor: 'divider',
-                boxShadow: 'none',
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  borderColor: c.accent,
-                  boxShadow: `0 4px 20px ${alpha(c.accent, 0.15)}`,
-                },
-              }}
-            >
-              <CardActionArea
-                href={c.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ height: '100%', p: 2 }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
-                  <Box sx={{ color: c.accent, display: 'flex' }}>
-                    {c.icon}
-                  </Box>
-                </Box>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, color: c.color, mb: 0.25 }}>
-                  {t(c.titleKey)}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.4 }}>
-                  {t(c.descKey)}
-                </Typography>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-          </Grid>
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }}>
+      {/* Profile card — full width on top */}
+      <Box sx={{ mb: 3 }}>
           <Card
             sx={{
               border: '1px solid',
@@ -244,8 +167,7 @@ const HomePage: React.FC = () => {
               </Box>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+      </Box>
 
       {/* Bottom: two columns — club mates left, my stuff right */}
       <Grid container spacing={3}>

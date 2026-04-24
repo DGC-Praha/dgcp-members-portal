@@ -23,6 +23,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 import PersonIcon from '@mui/icons-material/Person';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
+import SportsScoreOutlinedIcon from '@mui/icons-material/SportsScoreOutlined';
 import WorkspacePremiumOutlinedIcon from '@mui/icons-material/WorkspacePremiumOutlined';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import NotificationsActiveIcon from '@mui/icons-material/NotificationsActive';
@@ -56,6 +57,7 @@ const Layout: React.FC = () => {
     { text: t('nav.home'), icon: <HomeIcon />, path: '/' },
     { text: t('nav.tournaments'), icon: <EmojiEventsOutlinedIcon />, path: '/turnaje' },
     { text: t('nav.members'), icon: <PeopleIcon />, path: '/members' },
+    { text: t('nav.leagues'), icon: <SportsScoreOutlinedIcon />, path: '/ligy' },
     { text: t('nav.achievements'), icon: <WorkspacePremiumOutlinedIcon />, path: '/achievements' },
     { text: t('nav.watchedRegistrations'), icon: <NotificationsActiveIcon />, path: '/hlidane-registrace' },
     ...(user?.isAdmin
