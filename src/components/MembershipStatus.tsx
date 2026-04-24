@@ -59,7 +59,7 @@ const MembershipStatus: React.FC<MembershipStatusProps> = ({ user }) => {
 
   return (
     <Box>
-      <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', fontSize: '0.65rem' }}>
+      <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', fontSize: '0.7rem' }}>
         {tr('membership.title')}
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mt: 0.5 }}>
@@ -85,7 +85,7 @@ const MembershipStatus: React.FC<MembershipStatusProps> = ({ user }) => {
                   size="small"
                   sx={{
                     height: 20,
-                    fontSize: '0.65rem',
+                    fontSize: '0.7rem',
                     fontWeight: 600,
                     bgcolor: '#e8f5e9',
                     color: '#2e7d32',
@@ -99,7 +99,7 @@ const MembershipStatus: React.FC<MembershipStatusProps> = ({ user }) => {
                     size="small"
                     sx={{
                       height: 20,
-                      fontSize: '0.65rem',
+                      fontSize: '0.7rem',
                       fontWeight: 600,
                       bgcolor: '#ffebee',
                       color: '#c62828',
@@ -117,7 +117,7 @@ const MembershipStatus: React.FC<MembershipStatusProps> = ({ user }) => {
                       icon={<OpenInNewIcon sx={{ fontSize: '12px !important' }} />}
                       sx={{
                         height: 20,
-                        fontSize: '0.65rem',
+                        fontSize: '0.7rem',
                         fontWeight: 600,
                         bgcolor: '#fff3e0',
                         color: '#e65100',
@@ -134,7 +134,7 @@ const MembershipStatus: React.FC<MembershipStatusProps> = ({ user }) => {
                   size="small"
                   sx={{
                     height: 20,
-                    fontSize: '0.65rem',
+                    fontSize: '0.7rem',
                     fontWeight: 600,
                     bgcolor: '#f5f5f5',
                     color: '#757575',

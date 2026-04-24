@@ -191,23 +191,23 @@ const RecentAchievements: React.FC = () => {
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5, mt: 1 }}>
           <IconButton
-            size="small"
             disabled={page <= 1 || loading}
             onClick={() => load(page - 1)}
-            sx={{ width: 28, height: 28 }}
+            aria-label="previous page"
+            sx={{ width: 44, height: 44 }}
           >
-            <ChevronLeftIcon sx={{ fontSize: 18 }} />
+            <ChevronLeftIcon sx={{ fontSize: 22 }} />
           </IconButton>
-          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem', minWidth: 40, textAlign: 'center' }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.8rem', minWidth: 48, textAlign: 'center' }}>
             {page} / {totalPages}
           </Typography>
           <IconButton
-            size="small"
             disabled={page >= totalPages || loading}
             onClick={() => load(page + 1)}
-            sx={{ width: 28, height: 28 }}
+            aria-label="next page"
+            sx={{ width: 44, height: 44 }}
           >
-            <ChevronRightIcon sx={{ fontSize: 18 }} />
+            <ChevronRightIcon sx={{ fontSize: 22 }} />
           </IconButton>
         </Box>
       )}

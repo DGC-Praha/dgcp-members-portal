@@ -175,7 +175,7 @@ const StatusDotLabeled: React.FC<{ active: boolean | null; label: string }> = ({
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
       <Box sx={{ width: 7, height: 7, borderRadius: '50%', bgcolor: color, flexShrink: 0 }} />
-      <Typography variant="caption" sx={{ fontSize: '0.6rem', color: 'text.disabled', lineHeight: 1 }}>
+      <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary', lineHeight: 1 }}>
         {label}
       </Typography>
     </Box>

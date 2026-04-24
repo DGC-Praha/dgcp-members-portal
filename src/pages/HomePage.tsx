@@ -228,16 +228,16 @@ const HomePage: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 'auto' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                     <StatusDot active={user.activeMember} />
-                    <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>DGCP</Typography>
+                    <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>DGCP</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                     <StatusDot active={tagLoaded ? tag?.cadgMembershipActive ?? null : null} />
-                    <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>ČADG</Typography>
+                    <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>ČADG</Typography>
                   </Box>
                   {(!tagLoaded || (tag?.pdgaNumber ?? null) !== null) && (
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                       <StatusDot active={tagLoaded ? tag?.pdgaMembershipActive ?? null : null} />
-                      <Typography variant="caption" sx={{ fontSize: '0.55rem', color: 'text.disabled' }}>PDGA</Typography>
+                      <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>PDGA</Typography>
                     </Box>
                   )}
                 </Box>

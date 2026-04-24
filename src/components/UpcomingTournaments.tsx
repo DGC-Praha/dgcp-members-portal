@@ -137,7 +137,7 @@ export const TournamentCard: React.FC<{
             <Chip
               label={tournament.cadgTier}
               size="small"
-              sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+              sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
             />
           )}
           {tournament.region && (
@@ -202,7 +202,7 @@ export const TournamentCard: React.FC<{
                     </Typography>
                   </TableCell>
                   <TableCell sx={{ py: 0.75 }}>
-                    <Chip label={m.division} size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }} />
+                    <Chip label={m.division} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
                   </TableCell>
                   <TableCell sx={{ py: 0.75 }}>
                     <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>

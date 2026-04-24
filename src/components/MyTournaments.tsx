@@ -117,14 +117,14 @@ const MyTournaments: React.FC = () => {
                           <Chip
                             label={t.cadgTier}
                             size="small"
-                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+                            sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
                           />
                         )}
                         {t.pdgaTournamentId && (
                           <Chip
                             label={t.pdgaTier || 'PDGA'}
                             size="small"
-                            sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
+                            sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
                           />
                         )}
                         {t.region && (

@@ -327,9 +327,9 @@ const MemberDetailPage: React.FC = () => {
                           )}
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
-                          <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }} />
+                          <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
                           {t.cadgTier && (
-                            <Chip label={t.cadgTier} size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }} />
+                            <Chip label={t.cadgTier} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }} />
                           )}
                           <Typography variant="caption" color="text.secondary">
                             {formatDateRange(t.dateStart, t.dateEnd)}
@@ -384,7 +384,7 @@ const MemberDetailPage: React.FC = () => {
                           {formatDate(t.dateEnd, { day: 'numeric', month: 'numeric' })}
                         </TableCell>
                         <TableCell>
-                          <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }} />
+                          <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
                         </TableCell>
                         <TableCell align="center" sx={{ fontWeight: 700, color: t.finishPosition && t.finishPosition <= 3 ? ACCENT : 'text.primary' }}>
                           {t.finishPosition ?? '–'}
