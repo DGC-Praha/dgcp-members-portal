@@ -361,6 +361,9 @@
     "rating": "Rating",
     "achievements": "Achievementy"
   },
+  "common": {
+    "loadMore": "Načíst další"
+  },
   "language": {
     "label": "Jazyk",
     "cs": "Čeština",

@@ -2,12 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  IconButton,
+  Button,
+  CircularProgress,
   Skeleton,
   Typography,
 } from '@mui/material';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import BadgeTooltip from './achievements/BadgeTooltip';
@@ -78,11 +77,11 @@ const RecentAchievements: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const load = useCallback(async (p: number) => {
+  const load = useCallback(async (p: number, append: boolean) => {
     setLoading(true);
     try {
       const res = await membersApi.getRecentAchievements(p);
-      setItems(res.data.items);
+      setItems((prev) => (append ? [...prev, ...res.data.items] : res.data.items));
       setTotalPages(res.data.totalPages);
       setPage(res.data.page);
     } catch {
@@ -93,7 +92,7 @@ const RecentAchievements: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    load(1);
+    load(1, false);
   }, [load]);
 
   if (loading && items.length === 0) {
@@ -170,7 +169,7 @@ const RecentAchievements: React.FC = () => {
                     variant="caption"
                     sx={{
                       fontWeight: 700,
-                      fontSize: '0.6rem',
+                      fontSize: '0.7rem',
                       color: tierColor,
                       textTransform: 'uppercase',
                       letterSpacing: 0.5,
@@ -188,27 +187,18 @@ const RecentAchievements: React.FC = () => {
           );
         })}
       </Box>
-      {totalPages > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 0.5, mt: 1 }}>
-          <IconButton
-            disabled={page <= 1 || loading}
-            onClick={() => load(page - 1)}
-            aria-label="previous page"
-            sx={{ width: 44, height: 44 }}
+      {page < totalPages && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1.5 }}>
+          <Button
+            variant="text"
+            size="medium"
+            disabled={loading}
+            onClick={() => load(page + 1, true)}
+            sx={{ minHeight: 44, textTransform: 'none', fontSize: '0.85rem' }}
+            startIcon={loading ? <CircularProgress size={16} /> : null}
           >
-            <ChevronLeftIcon sx={{ fontSize: 22 }} />
-          </IconButton>
-          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.8rem', minWidth: 48, textAlign: 'center' }}>
-            {page} / {totalPages}
-          </Typography>
-          <IconButton
-            disabled={page >= totalPages || loading}
-            onClick={() => load(page + 1)}
-            aria-label="next page"
-            sx={{ width: 44, height: 44 }}
-          >
-            <ChevronRightIcon sx={{ fontSize: 22 }} />
-          </IconButton>
+            {t('common.loadMore')}
+          </Button>
         </Box>
       )}
     </Box>
