@@ -25,11 +25,6 @@ import {
   Drawer,
   Divider,
   Badge,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Paper,
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
@@ -44,6 +39,7 @@ import { formatDateRange } from '../components/UpcomingTournaments';
 import type { RegistrationPhase } from '../components/UpcomingTournaments';
 import RegistrationWatchdog from '../components/RegistrationWatchdog';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { TriStateFilterChip, MultiSelectFilterChip } from '../components/FilterChip';
 
 interface AllTournament {
   id: number;
@@ -268,96 +264,66 @@ const TournamentsPage: React.FC = () => {
           </Button>
         </Box>
       ) : (
-        <Paper
-          elevation={0}
-          sx={{
-            mb: 3,
-            p: 2,
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'divider',
-            bgcolor: 'background.paper',
-            display: 'grid',
-            gridTemplateColumns: 'minmax(240px, 2fr) repeat(2, minmax(200px, 2fr)) repeat(2, minmax(150px, 1fr))',
-            gap: 1.5,
-            alignItems: 'center',
-          }}
-        >
-          <TextField
-            size="small"
-            label={tr('tournaments.filter.search')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-          <Autocomplete
-            multiple
-            size="small"
-            options={filterOptions.regions}
-            value={regions}
-            onChange={(_e, v) => { setRegions(v); setPage(1); }}
-            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.region')} />}
-            limitTags={2}
-          />
-          <Autocomplete
-            multiple
-            size="small"
-            options={filterOptions.cadgTiers}
-            value={cadgTiers}
-            onChange={(_e, v) => { setCadgTiers(v); setPage(1); }}
-            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.cadgTier')} />}
-            limitTags={2}
-          />
-          <FormControl size="small">
-            <InputLabel id="pdga-filter-label">PDGA</InputLabel>
-            <Select
-              labelId="pdga-filter-label"
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap', mb: 1.5 }}>
+            <TextField
+              size="small"
+              placeholder={tr('tournaments.filter.search')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                    </InputAdornment>
+                  ),
+                },
+              }}
+              sx={{ width: { sm: 280, md: 320 } }}
+            />
+            <MultiSelectFilterChip
+              label={tr('tournaments.filter.region')}
+              options={filterOptions.regions}
+              value={regions}
+              onChange={(v) => { setRegions(v); setPage(1); }}
+              clearLabel={tr('tournaments.filter.clear')}
+            />
+            <MultiSelectFilterChip
+              label={tr('tournaments.filter.cadgTier')}
+              options={filterOptions.cadgTiers}
+              value={cadgTiers}
+              onChange={(v) => { setCadgTiers(v); setPage(1); }}
+              clearLabel={tr('tournaments.filter.clear')}
+            />
+            <TriStateFilterChip
               label="PDGA"
               value={pdgaFilter}
-              onChange={(e) => { setPdgaFilter(e.target.value as 'all' | 'yes' | 'no'); setPage(1); }}
-            >
-              <MenuItem value="all">{tr('tournaments.filter.all')}</MenuItem>
-              <MenuItem value="yes">{tr('tournaments.filter.yes')}</MenuItem>
-              <MenuItem value="no">{tr('tournaments.filter.no')}</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl size="small">
-            <InputLabel id="reg-filter-label">{tr('tournaments.filter.registration')}</InputLabel>
-            <Select
-              labelId="reg-filter-label"
+              onChange={(v) => { setPdgaFilter(v); setPage(1); }}
+              allLabel={tr('tournaments.filter.all')}
+              yesLabel={tr('tournaments.filter.yes')}
+              noLabel={tr('tournaments.filter.no')}
+            />
+            <TriStateFilterChip
               label={tr('tournaments.filter.registration')}
               value={regFilter}
-              onChange={(e) => { setRegFilter(e.target.value as 'all' | 'yes' | 'no'); setPage(1); }}
-            >
-              <MenuItem value="all">{tr('tournaments.filter.all')}</MenuItem>
-              <MenuItem value="yes">{tr('tournaments.filter.yes')}</MenuItem>
-              <MenuItem value="no">{tr('tournaments.filter.no')}</MenuItem>
-            </Select>
-          </FormControl>
-          {hasFilters && (
-            <Button
-              size="small"
-              startIcon={<FilterListOffIcon />}
-              onClick={clearFilters}
-              sx={{
-                gridColumn: '1 / -1',
-                justifySelf: 'end',
-                color: 'text.secondary',
-                textTransform: 'none',
-              }}
-            >
-              {tr('tournaments.filter.clear')}
-            </Button>
-          )}
-        </Paper>
+              onChange={(v) => { setRegFilter(v); setPage(1); }}
+              allLabel={tr('tournaments.filter.all')}
+              yesLabel={tr('tournaments.filter.yes')}
+              noLabel={tr('tournaments.filter.no')}
+            />
+            {hasFilters && (
+              <Button
+                size="small"
+                startIcon={<FilterListOffIcon />}
+                onClick={clearFilters}
+                sx={{ color: 'text.secondary', textTransform: 'none', ml: 'auto' }}
+              >
+                {tr('tournaments.filter.clear')}
+              </Button>
+            )}
+          </Box>
+        </Box>
       )}
 
       {/* Mobile filter bottom sheet */}
