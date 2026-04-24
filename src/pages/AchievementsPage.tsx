@@ -106,7 +106,7 @@ const LeaderboardRow: React.FC<{
         onClick={() => hasEarners && setOpen((o) => !o)}
         sx={{
           cursor: hasEarners ? 'pointer' : 'default',
-          ...(hasEarners && { '& > *': { borderBottom: 'unset' } }),
+          ...(hasEarners && open && { '& > *': { borderBottom: 'unset' } }),
         }}
       >
         <TableCell sx={{ width: 40, color: 'text.disabled', fontSize: '0.75rem', fontWeight: 600 }}>
