@@ -9,6 +9,7 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 interface RatingEntry {
   type: string;
@@ -23,6 +24,7 @@ interface RatingChartProps {
 
 const RatingChart: React.FC<RatingChartProps> = ({ ratingHistory, height = 220 }) => {
   const theme = useTheme();
+  const isMobile = useIsMobile();
 
   const chartData = useMemo(() => {
     // Collect all unique dates, merge iDG and PDGA into single rows
@@ -54,21 +56,27 @@ const RatingChart: React.FC<RatingChartProps> = ({ ratingHistory, height = 220 }
   return (
     <Box>
       <ResponsiveContainer width="100%" height={height}>
-        <LineChart data={chartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
+        <LineChart data={chartData} margin={{ top: 5, right: isMobile ? 4 : 10, left: isMobile ? -16 : -10, bottom: 5 }}>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={theme.palette.divider}
+            vertical={!isMobile}
+          />
           <XAxis
             dataKey="date"
             tickFormatter={formatDate}
-            tick={{ fontSize: 11, fill: theme.palette.text.secondary }}
+            tick={{ fontSize: isMobile ? 10 : 11, fill: theme.palette.text.secondary }}
             tickLine={false}
             axisLine={{ stroke: theme.palette.divider }}
+            interval="preserveStartEnd"
+            minTickGap={isMobile ? 30 : 10}
           />
           <YAxis
             domain={['auto', 'auto']}
-            tick={{ fontSize: 11, fill: theme.palette.text.secondary }}
+            tick={{ fontSize: isMobile ? 10 : 11, fill: theme.palette.text.secondary }}
             tickLine={false}
             axisLine={false}
-            width={40}
+            width={isMobile ? 32 : 40}
           />
           <Tooltip
             labelFormatter={(label) => formatDate(String(label))}
@@ -86,7 +94,7 @@ const RatingChart: React.FC<RatingChartProps> = ({ ratingHistory, height = 220 }
               name="iDiscGolf"
               stroke="#2e7d32"
               strokeWidth={2}
-              dot={{ r: 3, fill: '#2e7d32' }}
+              dot={{ r: isMobile ? 2 : 3, fill: '#2e7d32' }}
               activeDot={{ r: 5 }}
               connectNulls
             />
@@ -98,7 +106,7 @@ const RatingChart: React.FC<RatingChartProps> = ({ ratingHistory, height = 220 }
               name="PDGA"
               stroke="#1565c0"
               strokeWidth={2}
-              dot={{ r: 3, fill: '#1565c0' }}
+              dot={{ r: isMobile ? 2 : 3, fill: '#1565c0' }}
               activeDot={{ r: 5 }}
               connectNulls
             />
