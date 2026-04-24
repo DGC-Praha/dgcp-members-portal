@@ -4,6 +4,7 @@ import { Box, Button, Card, CardContent, Typography, Divider } from '@mui/materi
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import DevBanner from '../components/DevBanner';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const TAGOVACKA_PRIMARY = '#001645';
@@ -67,6 +68,10 @@ const LoginPage: React.FC = () => {
           >
             {t('login.button')}
           </Button>
+
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <LanguageSwitcher />
+          </Box>
         </CardContent>
       </Card>
     </Box>

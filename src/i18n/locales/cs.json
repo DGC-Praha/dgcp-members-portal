@@ -241,7 +241,30 @@
     "colEarnedAt": "Získáno",
     "statBadges": "Odznaků",
     "statAwarded": "Uděleno",
-    "statMembers": "Členů"
+    "statMembers": "Členů",
+    "rarityCountOf": "{{count}} / {{total}} členů",
+    "rarity": {
+      "nobody": "Nikdo",
+      "legendary": "Legendární",
+      "rare": "Vzácný",
+      "uncommon": "Neobvyklý",
+      "common": "Běžný",
+      "everyone": "Všichni"
+    },
+    "manualTooltip": "Ručně udělovaný achievement",
+    "manualBadge": "ručně",
+    "badge": {
+      "earnedAt": "Získáno {{date}}",
+      "remaining": "Zbývá {{count}} do zisku.",
+      "nextTier": "Další stupeň: <bold>{{label}}</bold> na {{threshold}}."
+    },
+    "tier": {
+      "bronze": "Bronz",
+      "silver": "Stříbro",
+      "gold": "Zlato",
+      "diamond": "Diamant",
+      "legend": "Legenda"
+    }
   },
   "tournaments": {
     "upcoming": "Nadcházející turnaje",
@@ -270,6 +293,7 @@
     }
   },
   "competitions": {
+    "title": "Soutěže",
     "tagovacka": "Tagovačka",
     "tagovackaDesc": "Bag tag liga",
     "jamkovka": "Jamkovka",
@@ -281,6 +305,7 @@
   "account": {
     "title": "Účet",
     "name": "Jméno",
+    "email": "E-mail",
     "pdga": "PDGA číslo",
     "changePassword": "Změnit heslo (na tagovacka.cz)",
     "logout": "Odhlásit se"
@@ -320,11 +345,16 @@
     "losses": "Prohry",
     "holdDays": "Drží (dní)",
     "upcoming": "Nadcházející turnaje",
-    "pastTournaments": "Odehrané turnaje 2026",
+    "pastTournaments": "Odehrané turnaje {{year}}",
     "sharedTournaments": "Hrajeme spolu",
     "tagHistory": "Historie tagů",
     "score": "Skóre",
     "rating": "Rating",
     "achievements": "Achievementy"
+  },
+  "language": {
+    "label": "Jazyk",
+    "cs": "Čeština",
+    "en": "English"
   }
 }

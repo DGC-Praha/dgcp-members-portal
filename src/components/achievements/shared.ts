@@ -31,14 +31,11 @@ export const TIER_GLOW: Record<string, string> = {
   legend: '0 0 12px rgba(220, 38, 38, 0.5)',
 };
 
-export const TIER_LABEL_CS: Record<string, string> = {
-  bronze: 'Bronz',
-  silver: 'Stříbro',
-  gold: 'Zlato',
-  diamond: 'Diamant',
-  legend: 'Legenda',
-};
+import i18n from '../../i18n';
 
 export function tierLabel(tier: string): string {
-  return TIER_LABEL_CS[tier] ?? tier.charAt(0).toUpperCase() + tier.slice(1);
+  const key = `achievements.tier.${tier}`;
+  const translated = i18n.t(key);
+  if (translated !== key) return translated;
+  return tier.charAt(0).toUpperCase() + tier.slice(1);
 }

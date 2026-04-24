@@ -1,8 +1,9 @@
 # DGCP Members Portal
 
 Club management portal for Discgolf Club Prague. React/Vite SPA.
-Czech-only. Authenticates via OAuth against `disc-golf-tags`
-(tagovacka.cz) and consumes data from **two** backends.
+Czech and English (switchable in-app; Czech is the default and fallback).
+Authenticates via OAuth against `disc-golf-tags` (tagovacka.cz) and
+consumes data from **two** backends.
 
 **Personal side project** — work directly on `main`, no PR workflow.
 
@@ -45,7 +46,7 @@ gh run list --repo DGC-Praha/dgcp-members-portal --limit 3
 ```
 
 ## Tech Stack
-- React 19, Vite 8, MUI, react-router 7, TypeScript 5.9, i18next (cs-only)
+- React 19, Vite 8, MUI, react-router 7, TypeScript 5.9, i18next (cs + en)
 - **Two** HTTP clients in `src/api/client.ts` — `apiClient` → tagovacka,
   `membersApiClient` → dgcp-members-api. Both carry the same tagovacka-issued
   JWT. Refresh logic lives only on `apiClient`; when either backend 401s,

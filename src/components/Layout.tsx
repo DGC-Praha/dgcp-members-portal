@@ -31,6 +31,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import DevBanner from './DevBanner';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const DRAWER_WIDTH = 240;
 
@@ -122,6 +123,7 @@ const Layout: React.FC = () => {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1, fontWeight: 700 }}>
             DGCP Members
           </Typography>
+          <LanguageSwitcher dark />
           {user && (
             <>
               <IconButton

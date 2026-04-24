@@ -23,42 +23,23 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTranslation } from 'react-i18next';
 import { membersApi, type QueueSummary } from '../../api/client';
+import { formatDateTime, formatRelativeTime } from '../../i18n/format';
 
 function formatRelative(value: string | null): string {
   if (value === null) return '—';
-  const d = new Date(value).getTime();
-  if (Number.isNaN(d)) return value;
-  const diffMs = Date.now() - d;
-  const sec = Math.round(diffMs / 1000);
-  if (sec < 60) return `${sec}s`;
-  const min = Math.round(sec / 60);
-  if (min < 60) return `${min} min`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `${hr} h`;
-  const day = Math.round(hr / 24);
-  return `${day} dny`;
+  return formatRelativeTime(value) || value;
 }
 
 function formatAvailability(value: string | null): string {
   if (value === null) return '—';
-  const t = new Date(value).getTime();
-  if (Number.isNaN(t)) return value;
-  const diffSec = Math.round((t - Date.now()) / 1000);
-  if (diffSec <= 0) return 'nyní';
-  if (diffSec < 60) return `za ${diffSec}s`;
-  const min = Math.round(diffSec / 60);
-  if (min < 60) return `za ${min} min`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `za ${hr} h`;
-  const day = Math.round(hr / 24);
-  return `za ${day} dnů`;
+  return formatRelativeTime(value) || value;
 }
 
 function formatAbsolute(value: string | null): string {
   if (value === null) return '—';
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'medium' });
+  return formatDateTime(d, { dateStyle: 'short', timeStyle: 'medium' });
 }
 
 function shortClass(fqn: string): string {

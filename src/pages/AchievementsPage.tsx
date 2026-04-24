@@ -24,8 +24,10 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined';
 import { api, membersApi, type LeaderboardItem } from '../api/client';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from '../components/achievements/shared';
+import { formatDate } from '../i18n/format';
 
 type SortColumn = 'rarity' | 'name';
 
@@ -74,13 +76,14 @@ const AchievementBadge: React.FC<{ emoji: string; tier: string; size?: number }>
 
 const rarityBucket = (
   percent: number,
+  t: TFunction,
 ): { label: string; color: string; bg: string } => {
-  if (percent === 0) return { label: 'Nikdo', color: '#6b7280', bg: '#f3f4f6' };
-  if (percent < 5) return { label: 'Legendární', color: '#dc2626', bg: '#fee2e2' };
-  if (percent < 15) return { label: 'Vzácný', color: '#7c3aed', bg: '#f5f3ff' };
-  if (percent < 35) return { label: 'Neobvyklý', color: '#f59e0b', bg: '#fef9c3' };
-  if (percent < 60) return { label: 'Běžný', color: '#2563eb', bg: '#dbeafe' };
-  return { label: 'Všichni', color: '#059669', bg: '#d1fae5' };
+  if (percent === 0) return { label: t('achievements.rarity.nobody'), color: '#6b7280', bg: '#f3f4f6' };
+  if (percent < 5) return { label: t('achievements.rarity.legendary'), color: '#dc2626', bg: '#fee2e2' };
+  if (percent < 15) return { label: t('achievements.rarity.rare'), color: '#7c3aed', bg: '#f5f3ff' };
+  if (percent < 35) return { label: t('achievements.rarity.uncommon'), color: '#f59e0b', bg: '#fef9c3' };
+  if (percent < 60) return { label: t('achievements.rarity.common'), color: '#2563eb', bg: '#dbeafe' };
+  return { label: t('achievements.rarity.everyone'), color: '#059669', bg: '#d1fae5' };
 };
 
 const LeaderboardRow: React.FC<{
@@ -93,7 +96,7 @@ const LeaderboardRow: React.FC<{
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const tierColor = TIER_COLORS[item.tier] ?? '#9ca3af';
-  const bucket = rarityBucket(item.rarityPercent);
+  const bucket = rarityBucket(item.rarityPercent, t);
   const hasEarners = item.earners.length > 0;
 
   return (
@@ -118,9 +121,9 @@ const LeaderboardRow: React.FC<{
               {item.achievementName}
             </Typography>
             {item.manual && (
-              <Tooltip title="Ručně udělovaný achievement">
+              <Tooltip title={t('achievements.manualTooltip')}>
                 <Chip
-                  label="ručně"
+                  label={t('achievements.manualBadge')}
                   size="small"
                   sx={{ height: 18, fontSize: '0.6rem', fontWeight: 600, bgcolor: '#f3f4f6', color: '#6b7280' }}
                 />
@@ -169,7 +172,7 @@ const LeaderboardRow: React.FC<{
             </Typography>
           </Box>
           <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-            {item.earnedCount} / {totalMembers} členů
+            {t('achievements.rarityCountOf', { count: item.earnedCount, total: totalMembers })}
           </Typography>
         </TableCell>
         <TableCell align="center" sx={{ width: 110 }}>
@@ -238,7 +241,7 @@ const LeaderboardRow: React.FC<{
                         </TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>{earner.name}</TableCell>
                         <TableCell align="right" sx={{ color: 'text.secondary' }}>
-                          {new Date(earner.earnedAt).toLocaleDateString('cs-CZ')}
+                          {formatDate(earner.earnedAt)}
                         </TableCell>
                       </TableRow>
                     ))}

@@ -1,0 +1,360 @@
+{
+  "pageTitle": {
+    "home": "Overview",
+    "tournaments": "Tournaments",
+    "members": "Members",
+    "memberDetail": "Player profile",
+    "watchedRegistrations": "Watched registrations",
+    "achievements": "Achievements",
+    "admin": "Member administration",
+    "account": "Account",
+    "system": "System administration",
+    "login": "Sign in",
+    "callback": "Signing in…"
+  },
+  "devBanner": {
+    "text": "The app is under development. If you find a bug or have an idea, message me on WhatsApp.",
+    "cta": "Message on WhatsApp",
+    "dismiss": "Dismiss"
+  },
+  "login": {
+    "subtitle": "Portal for Discgolf Club Prague members",
+    "button": "Sign in via tagovacka.cz"
+  },
+  "callback": {
+    "noCode": "Missing authorization code.",
+    "stateMismatch": "Invalid authorization state. Please try again.",
+    "exchangeFailed": "Sign-in failed. Please try again.",
+    "backToLogin": "Back to sign-in"
+  },
+  "nav": {
+    "home": "Overview",
+    "tournaments": "Tournaments",
+    "members": "Members",
+    "admin": "Administration",
+    "account": "Account",
+    "watchedRegistrations": "Watched registrations",
+    "achievements": "Achievements",
+    "system": "System"
+  },
+  "system": {
+    "title": "System administration",
+    "subtitle": "Debug tools — visible only to system administrators.",
+    "tabs": {
+      "webhooks": "Received webhooks",
+      "queue": "Task queue",
+      "recompute": "Achievement recompute"
+    },
+    "placeholder": {
+      "comingSoon": "Not implemented yet."
+    },
+    "recompute": {
+      "player": {
+        "title": "Single player",
+        "desc": "Runs a synchronous achievement recompute for one player and season. Real DB result within seconds.",
+        "fieldPlayer": "Player",
+        "fieldYear": "Year",
+        "yearCurrent": "Current season",
+        "action": "Recompute",
+        "success": "Achievements for {{name}} ({{year}}) recomputed."
+      },
+      "season": {
+        "title": "Whole season",
+        "desc": "Dispatches an async job to the queue for every club member for the selected season. Track progress in the Task queue tab.",
+        "action": "Recompute season",
+        "confirm": "Really recompute season {{year}} for all members?",
+        "success": "Dispatched {{dispatched}} jobs for season {{year}}."
+      },
+      "all": {
+        "title": "Full rebuild (all seasons)",
+        "desc": "Dispatches jobs for every combination (each member × each known season). Use only after changing an achievement definition or a webhook outage.",
+        "action": "Recompute everything",
+        "confirm": "Really recompute ALL seasons for all members?",
+        "success": "Dispatched {{dispatched}} jobs ({{seasons}} seasons)."
+      }
+    },
+    "webhooks": {
+      "empty": "No webhooks to display.",
+      "loadMore": "Load more",
+      "refresh": "Refresh",
+      "filter": {
+        "outcome": "Outcome",
+        "eventType": "Event type",
+        "any": "All"
+      },
+      "outcome": {
+        "accepted": "Accepted",
+        "duplicate": "Duplicate",
+        "invalid_signature": "Invalid signature",
+        "malformed": "Malformed payload",
+        "processing_error": "Processing error"
+      },
+      "col": {
+        "receivedAt": "Received",
+        "eventType": "Event type",
+        "outcome": "Outcome",
+        "httpStatus": "HTTP",
+        "processingMs": "Time (ms)",
+        "sourceIp": "IP"
+      },
+      "detail": {
+        "title": "Webhook detail",
+        "signature": "Signature",
+        "signatureOk": "Valid",
+        "signatureBad": "Invalid",
+        "processingError": "Processing error",
+        "payload": "Payload"
+      }
+    },
+    "queue": {
+      "refresh": "Refresh",
+      "counts": {
+        "pending": "Pending",
+        "scheduled": "Scheduled",
+        "inFlight": "In flight",
+        "failed": "Failed"
+      },
+      "pendingHint": "messages waiting to be processed",
+      "scheduledHint": "messages with delayed delivery (retry)",
+      "inFlightHint": "messages the consumer is currently processing",
+      "failedHint": "messages after retries were exhausted",
+      "oldestPending": "Oldest pending:",
+      "oldestPendingNone": "No pending messages.",
+      "failedTitle": "Failed messages",
+      "failedEmpty": "No failed messages.",
+      "queuedTitle": "Queued messages",
+      "queuedEmpty": "No queued messages.",
+      "col": {
+        "id": "ID",
+        "messageType": "Type",
+        "messagePreview": "Message",
+        "errorClass": "Error",
+        "errorMessage": "Detail",
+        "failedAt": "Failed at",
+        "actions": "Actions",
+        "retryCount": "Attempt #",
+        "redeliveredAt": "Retry",
+        "availableAt": "Available"
+      },
+      "action": {
+        "retry": "Retry",
+        "remove": "Delete",
+        "confirmRemove": "Really delete this message from the queue?",
+        "retrySuccess": "Message re-queued.",
+        "removeSuccess": "Message deleted."
+      }
+    }
+  },
+  "admin": {
+    "members": {
+      "title": "Member administration",
+      "subtitle": "Overview of all club members with the ability to edit their contact details and permissions.",
+      "searchPlaceholder": "Search by name, e-mail or phone…",
+      "name": "Name",
+      "contact": "Contact",
+      "age": "Age",
+      "countTotal": "{{count}} total",
+      "countActive": "{{count}} active",
+      "countAdmins": "{{count}} administrators",
+      "missingPii": "Missing personal ID",
+      "missingFields": "Missing data",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "sex": "Sex",
+      "sexMale": "Male",
+      "sexFemale": "Female",
+      "dateOfBirth": "Date of birth",
+      "identificationNumber": "Personal ID number",
+      "address": "Address",
+      "email": "E-mail",
+      "phone": "Phone",
+      "memberSince": "Member since",
+      "lastSeenAt": "Last seen",
+      "status": "Status",
+      "role": "Role",
+      "actions": "Actions",
+      "adminBadge": "Administrator",
+      "memberBadge": "Member",
+      "activeBadge": "Active",
+      "inactiveBadge": "Inactive",
+      "activeMember": "Active membership",
+      "isAdmin": "Administrator",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "editTitle": "Edit member: {{name}}",
+      "emailReadonlyHint": "E-mail is managed by tagovacka.cz",
+      "iDiscGolfId": "iDiscGolf ID",
+      "iDiscGolfIdHint": "Unique player ID on iDiscGolf.cz. Only change if you know what you're doing.",
+      "iDiscGolfIdInvalid": "iDiscGolf ID must be a positive integer.",
+      "empty": "No members match the search.",
+      "loadError": "Failed to load the member list.",
+      "saveError": "Save failed. Please try again.",
+      "detail": {
+        "back": "Back to list",
+        "saved": "Changes saved.",
+        "loadError": "Failed to load the member.",
+        "sectionIdentity": "Personal details",
+        "sectionContact": "Contact",
+        "sectionMembership": "Membership"
+      },
+      "achievements": {
+        "title": "Achievements",
+        "subtitle": "Manually awarded achievements. Automatic ones are recomputed from tournament history.",
+        "season": "Season {{year}}",
+        "noManual": "No manually awarded achievements.",
+        "loadError": "Failed to load achievements.",
+        "saveError": "Failed to save achievement."
+      }
+    }
+  },
+  "home": {
+    "competitions": "Competitions",
+    "profile": "My profile",
+    "membersDesc": "View the club member list",
+    "role": "Role",
+    "myTournaments": "My tournaments",
+    "clubMates": "Where the rest are playing",
+    "watchedTournaments": "Watched tournaments",
+    "myTournamentsEmpty": "You have no upcoming tournaments",
+    "browseTournaments": "Browse tournaments",
+    "viewProfile": "View profile",
+    "recentAchievements": "Recent achievements",
+    "noAchievements": "No achievements yet."
+  },
+  "members": {
+    "title": "Members",
+    "name": "Name",
+    "search": "Search member...",
+    "empty": "No members.",
+    "loadError": "Failed to load the member list."
+  },
+  "achievements": {
+    "title": "Achievements",
+    "subtitle": "Overview of all badges and how rare they are in season {{year}}.",
+    "empty": "No achievements in the catalogue yet.",
+    "loadError": "Failed to load achievements.",
+    "colBadge": "Badge",
+    "colTier": "Tier",
+    "colRarity": "Held by",
+    "colBucket": "Rarity",
+    "colEarnedAt": "Earned",
+    "statBadges": "Badges",
+    "statAwarded": "Awarded",
+    "statMembers": "Members",
+    "rarityCountOf": "{{count}} / {{total}} members",
+    "rarity": {
+      "nobody": "Nobody",
+      "legendary": "Legendary",
+      "rare": "Rare",
+      "uncommon": "Uncommon",
+      "common": "Common",
+      "everyone": "Everyone"
+    },
+    "manualTooltip": "Manually awarded achievement",
+    "manualBadge": "manual",
+    "badge": {
+      "earnedAt": "Earned {{date}}",
+      "remaining": "{{count}} to go.",
+      "nextTier": "Next tier: <bold>{{label}}</bold> at {{threshold}}."
+    },
+    "tier": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "diamond": "Diamond",
+      "legend": "Legend"
+    }
+  },
+  "tournaments": {
+    "upcoming": "Upcoming tournaments",
+    "all": "Tournaments",
+    "member": "member",
+    "members": "members",
+    "name": "Name",
+    "date": "Date",
+    "division": "Division",
+    "rating": "Rating",
+    "tag": "Tag",
+    "showAll": "Show all ({{count}})",
+    "showMore": "Show more ({{count}})",
+    "empty": "No tournaments to display.",
+    "players": "Players",
+    "totalCount": "Found {{count}} tournaments",
+    "filter": {
+      "region": "Region",
+      "cadgTier": "Series",
+      "registration": "Registration",
+      "clear": "Clear filters",
+      "all": "All",
+      "yes": "Yes",
+      "no": "No",
+      "search": "Search tournament..."
+    }
+  },
+  "competitions": {
+    "title": "Competitions",
+    "tagovacka": "Tagovačka",
+    "tagovackaDesc": "Bag tag league",
+    "jamkovka": "Jamkovka",
+    "jamkovkaDesc": "Ace league",
+    "hdgl": "HDGL",
+    "hdglDesc": "Handicap league",
+    "go": "Go"
+  },
+  "account": {
+    "title": "Account",
+    "name": "Name",
+    "email": "E-mail",
+    "pdga": "PDGA number",
+    "changePassword": "Change password (on tagovacka.cz)",
+    "logout": "Sign out"
+  },
+  "watchedRegistrations": {
+    "empty": "No watched registrations. Set up a reminder on any tournament's page."
+  },
+  "watchdog": {
+    "notify": "Notify me",
+    "subscribed": "Watching",
+    "unsubscribe": "Cancel",
+    "phase": "Phase {{number}}",
+    "opensAt": "Opens at {{date}}",
+    "atOpen": "At opening",
+    "minutesBefore": "{{minutes}} min before",
+    "noPhases": "No registration phases",
+    "alreadyOpened": "Registration has already opened",
+    "registrationPhases": "Registration phases"
+  },
+  "membership": {
+    "title": "Membership",
+    "dgcp": "DGCP",
+    "cadg": "ČADG",
+    "pdga": "PDGA",
+    "active": "Active",
+    "inactive": "Inactive",
+    "unknown": "Unknown",
+    "renew": "Renew"
+  },
+  "playerCard": {
+    "memberSince": "Member since",
+    "tagStats": "Tagovačka",
+    "currentTag": "Current",
+    "bestTag": "Best",
+    "exchanges": "Exchanges",
+    "wins": "Wins",
+    "losses": "Losses",
+    "holdDays": "Hold (days)",
+    "upcoming": "Upcoming tournaments",
+    "pastTournaments": "Past tournaments {{year}}",
+    "sharedTournaments": "Playing together",
+    "tagHistory": "Tag history",
+    "score": "Score",
+    "rating": "Rating",
+    "achievements": "Achievements"
+  },
+  "language": {
+    "label": "Language",
+    "cs": "Čeština",
+    "en": "English"
+  }
+}

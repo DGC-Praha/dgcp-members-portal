@@ -31,6 +31,7 @@ import {
   type WebhookLogSummary,
   type WebhookOutcome,
 } from '../../api/client';
+import { formatDateTime, formatRelativeFromNow } from '../../i18n/format';
 
 const OUTCOME_OPTIONS: WebhookOutcome[] = [
   'accepted',
@@ -58,21 +59,11 @@ function outcomeChipColor(outcome: WebhookOutcome): 'success' | 'default' | 'war
 function formatDate(value: string): string {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'medium' });
+  return formatDateTime(d, { dateStyle: 'short', timeStyle: 'medium' });
 }
 
 function formatRelative(value: string): string {
-  const d = new Date(value).getTime();
-  if (Number.isNaN(d)) return '';
-  const diffMs = Date.now() - d;
-  const sec = Math.round(diffMs / 1000);
-  if (sec < 60) return `před ${sec}s`;
-  const min = Math.round(sec / 60);
-  if (min < 60) return `před ${min} min`;
-  const hr = Math.round(min / 60);
-  if (hr < 24) return `před ${hr} h`;
-  const day = Math.round(hr / 24);
-  return `před ${day} dny`;
+  return formatRelativeFromNow(value);
 }
 
 const WebhookLogTab: React.FC = () => {

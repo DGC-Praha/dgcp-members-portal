@@ -35,6 +35,7 @@ import TagBadge from '../components/TagBadge';
 import Achievements from '../components/Achievements';
 import RatingChart from '../components/RatingChart';
 import { formatDateRange } from '../components/UpcomingTournaments';
+import { formatDate } from '../i18n/format';
 
 const ACCENT = '#e65100';
 
@@ -109,8 +110,14 @@ function getInitials(name: string): string {
 }
 
 const StatusDot: React.FC<{ active: boolean | null; label: string }> = ({ active, label }) => {
+  const { t } = useTranslation();
   const color = active === true ? '#4caf50' : active === false ? '#f44336' : '#9e9e9e';
-  const text = active === true ? 'Aktivní' : active === false ? 'Neaktivní' : 'Nezjištěno';
+  const text =
+    active === true
+      ? t('membership.active')
+      : active === false
+      ? t('membership.inactive')
+      : t('membership.unknown');
   return (
     <Tooltip title={text} arrow>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
@@ -258,7 +265,7 @@ const MemberDetailPage: React.FC = () => {
                       {player.pdgaNumber && <StatusDot active={player.pdgaMembershipActive} label="PDGA" />}
                       <Divider orientation="vertical" flexItem />
                       <Typography variant="caption" color="text.secondary">
-                        {tr('playerCard.memberSince')} {new Date(membership.joinedAt).toLocaleDateString('cs-CZ')}
+                        {tr('playerCard.memberSince')} {formatDate(membership.joinedAt)}
                       </Typography>
                     </Box>
                   </Box>
@@ -342,7 +349,7 @@ const MemberDetailPage: React.FC = () => {
           {pastTournaments.length > 0 && (
             <Box sx={{ mb: 3 }}>
               <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
-                {tr('playerCard.pastTournaments')}
+                {tr('playerCard.pastTournaments', { year: new Date().getFullYear() })}
               </Typography>
               <TableContainer>
                 <Table size="small" sx={{ '& td, & th': { py: 0.75, fontSize: '0.8rem' } }}>
@@ -374,7 +381,7 @@ const MemberDetailPage: React.FC = () => {
                           </Box>
                         </TableCell>
                         <TableCell sx={{ color: 'text.secondary', whiteSpace: 'nowrap' }}>
-                          {new Date(t.dateEnd).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
+                          {formatDate(t.dateEnd, { day: 'numeric', month: 'numeric' })}
                         </TableCell>
                         <TableCell>
                           <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 600 }} />
@@ -463,7 +470,7 @@ const MemberDetailPage: React.FC = () => {
                         </Typography>
                       </Box>
                       <Typography variant="caption" color="text.secondary" sx={{ whiteSpace: 'nowrap' }}>
-                        {new Date(h.date).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
+                        {formatDate(h.date, { day: 'numeric', month: 'numeric' })}
                       </Typography>
                     </Box>
                   );

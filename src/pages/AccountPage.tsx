@@ -23,7 +23,7 @@ const AccountPage: React.FC = () => {
               <Typography>{user.displayName}</Typography>
             </Box>
             <Box>
-              <Typography variant="caption" color="text.secondary">Email</Typography>
+              <Typography variant="caption" color="text.secondary">{t('account.email')}</Typography>
               <Typography>{user.email}</Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>

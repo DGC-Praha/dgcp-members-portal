@@ -1,7 +1,9 @@
 import React from 'react';
 import { Box, LinearProgress, Tooltip, Typography, alpha } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Trans, useTranslation } from 'react-i18next';
 import { TIER_COLORS, tierLabel, twemoji } from './shared';
+import { formatDate } from '../../i18n/format';
 
 type NextTier = {
   tier: string;
@@ -33,6 +35,7 @@ const BadgeTooltip: React.FC<BadgeTooltipProps> = ({
   progress,
   nextTier,
 }) => {
+  const { t } = useTranslation();
   const ringColor = TIER_COLORS[tier] ?? '#9ca3af';
   const pct =
     !earned && typeof progress === 'number' && threshold > 0
@@ -75,7 +78,7 @@ const BadgeTooltip: React.FC<BadgeTooltipProps> = ({
 
       {earned && earnedAt && (
         <Typography variant="caption" sx={{ display: 'block', mt: 0.75, fontStyle: 'italic', opacity: 0.75 }}>
-          Získáno {new Date(earnedAt).toLocaleDateString('cs-CZ')}
+          {t('achievements.badge.earnedAt', { date: formatDate(earnedAt) })}
         </Typography>
       )}
 
@@ -101,7 +104,7 @@ const BadgeTooltip: React.FC<BadgeTooltipProps> = ({
           />
           {remaining > 0 && (
             <Typography variant="caption" sx={{ display: 'block', mt: 0.5, opacity: 0.8 }}>
-              Zbývá {remaining} do zisku.
+              {t('achievements.badge.remaining', { count: remaining })}
             </Typography>
           )}
         </Box>
@@ -109,7 +112,11 @@ const BadgeTooltip: React.FC<BadgeTooltipProps> = ({
 
       {earned && nextTier && (
         <Typography variant="caption" sx={{ display: 'block', mt: 0.75, opacity: 0.8 }}>
-          Další stupeň: <b>{tierLabel(nextTier.tier)}</b> na {nextTier.threshold}.
+          <Trans
+            i18nKey="achievements.badge.nextTier"
+            values={{ label: tierLabel(nextTier.tier), threshold: nextTier.threshold }}
+            components={{ bold: <b /> }}
+          />
         </Typography>
       )}
     </Box>

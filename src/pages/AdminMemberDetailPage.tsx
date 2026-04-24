@@ -31,6 +31,7 @@ import {
 import { useAuth } from '../auth/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 import AdminMemberAchievements from '../components/admin/AdminMemberAchievements';
+import { formatDateTime } from '../i18n/format';
 
 interface Draft {
   firstName: string;
@@ -333,7 +334,7 @@ const AdminMemberDetailPage: React.FC = () => {
             label={t('admin.members.lastSeenAt')}
             value={
               member.lastSeenAt
-                ? new Date(member.lastSeenAt).toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'short' })
+                ? formatDateTime(member.lastSeenAt, { dateStyle: 'short', timeStyle: 'short' })
                 : '—'
             }
             fullWidth

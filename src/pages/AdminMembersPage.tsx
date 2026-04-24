@@ -30,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { membersApi, type ClubMember } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { formatDateTime } from '../i18n/format';
 
 function displayName(m: ClubMember): string {
   const full = [m.firstName, m.lastName].filter(Boolean).join(' ').trim();
@@ -63,7 +64,7 @@ function formatLastSeen(value: string | null | undefined): string {
   if (!value) return '—';
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleString('cs-CZ', { dateStyle: 'short', timeStyle: 'short' });
+  return formatDateTime(d, { dateStyle: 'short', timeStyle: 'short' });
 }
 
 type SortKey = 'name' | 'age' | 'status';

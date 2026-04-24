@@ -16,6 +16,7 @@ import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import BadgeTooltip from './achievements/BadgeTooltip';
 import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from './achievements/shared';
+import { formatDate } from '../i18n/format';
 
 // --- Types from API ---
 interface AchievementTier {
@@ -448,7 +449,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
                     </Typography>
                   </Box>
                   <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.65rem' }}>
-                    {new Date(item.earnedAt).toLocaleDateString('cs-CZ')}
+                    {formatDate(item.earnedAt)}
                   </Typography>
                 </Box>
               </Box>

@@ -12,6 +12,7 @@ import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import BadgeTooltip from './achievements/BadgeTooltip';
 import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from './achievements/shared';
+import { formatDate } from '../i18n/format';
 
 interface AchievementItem {
   id: number;
@@ -180,7 +181,7 @@ const RecentAchievements: React.FC = () => {
                   </Typography>
                 </Box>
                 <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  {a.memberName} · {new Date(a.earnedAt).toLocaleDateString('cs-CZ')}
+                  {a.memberName} · {formatDate(a.earnedAt)}
                 </Typography>
               </Box>
             </Box>
