@@ -299,7 +299,11 @@
       "all": "Vše",
       "yes": "Ano",
       "no": "Ne",
-      "search": "Hledat turnaj..."
+      "search": "Hledat turnaj...",
+      "title": "Filtry",
+      "filtersButton": "Filtry",
+      "apply": "Použít",
+      "close": "Zavřít"
     }
   },
   "competitions": {

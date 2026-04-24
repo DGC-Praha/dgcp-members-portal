@@ -22,12 +22,16 @@ import {
   Stack,
   Card,
   CardActionArea,
+  Drawer,
+  Divider,
+  Badge,
 } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FilterListOffIcon from '@mui/icons-material/FilterListOff';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -61,103 +65,84 @@ interface FilterOptions {
   pdgaTiers: string[];
 }
 
-const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => {
-  const regText = (() => {
-    const parts: string[] = [];
-    if (t.registrationStatus) parts.push(t.registrationStatus);
-    if (t.totalPlayers > 0) {
-      parts.push(t.playerLimit ? `${t.totalPlayers}/${t.playerLimit}` : `${t.totalPlayers}`);
-    }
-    return parts.join(' · ');
-  })();
-
-  return (
-    <Card
-      variant="outlined"
-      sx={{ mb: 1, borderRadius: 2, position: 'relative' }}
+const MobileTournamentRow: React.FC<{ t: AllTournament }> = ({ t }) => (
+  <Card
+    variant="outlined"
+    sx={{ mb: 0.75, borderRadius: 1, position: 'relative' }}
+  >
+    <CardActionArea
+      component="a"
+      href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      sx={{ py: 1.25, px: 1.5, minHeight: 64, display: 'block' }}
     >
-      <CardActionArea
-        component="a"
-        href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        sx={{ p: 1.5, minHeight: 72, display: 'flex', alignItems: 'flex-start', gap: 1.5 }}
-      >
-        <Box sx={{ mt: 0.25, flexShrink: 0, color: '#e65100' }}>
-          <EmojiEventsIcon sx={{ fontSize: 22 }} />
-        </Box>
-        <Box sx={{ flex: 1, minWidth: 0, pr: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1 }}>
-            <Typography
-              variant="body2"
-              sx={{ fontWeight: 700, lineHeight: 1.3, flex: 1, minWidth: 0 }}
-              noWrap
-            >
-              {t.name}
-            </Typography>
-            <Typography
-              variant="caption"
-              sx={{ color: 'text.secondary', whiteSpace: 'nowrap', flexShrink: 0, lineHeight: 1.3 }}
-            >
-              {formatDateRange(t.dateStart, t.dateEnd)}
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5, flexWrap: 'wrap' }}>
-            {t.cadgTier && (
-              <Chip
-                label={t.cadgTier}
-                size="small"
-                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
-              />
-            )}
-            {t.pdgaTournamentId && (
-              <Chip
-                label={t.pdgaTier || 'PDGA'}
-                size="small"
-                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
-              />
-            )}
-            {t.region && (
-              <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1 }}>
-                {t.region}
-              </Typography>
-            )}
-          </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.5, flexWrap: 'wrap' }}>
-            {t.clubMemberCount > 0 && (
-              <Chip
-                icon={<PeopleOutlineIcon sx={{ fontSize: '14px !important' }} />}
-                label={t.clubMemberCount}
-                size="small"
-                sx={{ height: 18, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#e8eaf6', color: '#3949ab' }}
-              />
-            )}
-            {regText && (
-              <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1 }}>
-                {regText}
-              </Typography>
-            )}
-          </Box>
-        </Box>
-      </CardActionArea>
-      {t.registrationPhases.length > 0 && (
-        <Box
-          sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-          }}
-          onTouchEnd={(e) => e.stopPropagation()}
+      {/* Row 1: name  |  date */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: t.registrationPhases.length > 0 ? 4.5 : 0 }}>
+        <Typography
+          variant="body2"
+          sx={{ fontWeight: 700, lineHeight: 1.3, flex: 1, minWidth: 0 }}
+          noWrap
         >
-          <RegistrationWatchdog
-            tournamentIdgId={t.iDiscGolfTournamentId}
-            registrationPhases={t.registrationPhases}
-          />
+          {t.name}
+        </Typography>
+        <Typography
+          variant="caption"
+          sx={{ color: 'text.secondary', whiteSpace: 'nowrap', flexShrink: 0, lineHeight: 1.3 }}
+        >
+          {formatDateRange(t.dateStart, t.dateEnd)}
+        </Typography>
+      </Box>
+      {/* Row 2: tier / pdga / region  |  members count */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 0.75, minHeight: 20 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flex: 1, minWidth: 0, flexWrap: 'wrap' }}>
+          {t.cadgTier && (
+            <Chip
+              label={t.cadgTier}
+              size="small"
+              sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+            />
+          )}
+          {t.pdgaTournamentId && (
+            <Chip
+              label={t.pdgaTier || 'PDGA'}
+              size="small"
+              sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e3f2fd', color: '#1565c0' }}
+            />
+          )}
+          {t.region && (
+            <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1, ml: 0.25 }} noWrap>
+              {t.region}
+            </Typography>
+          )}
         </Box>
-      )}
-    </Card>
-  );
-};
+        {t.clubMemberCount > 0 && (
+          <Chip
+            icon={<PeopleOutlineIcon sx={{ fontSize: '14px !important' }} />}
+            label={t.clubMemberCount}
+            size="small"
+            sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#e8eaf6', color: '#3949ab', flexShrink: 0 }}
+          />
+        )}
+      </Box>
+    </CardActionArea>
+    {t.registrationPhases.length > 0 && (
+      <Box
+        sx={{ position: 'absolute', top: 6, right: 6, zIndex: 1 }}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+        }}
+        onTouchEnd={(e) => e.stopPropagation()}
+      >
+        <RegistrationWatchdog
+          tournamentIdgId={t.iDiscGolfTournamentId}
+          registrationPhases={t.registrationPhases}
+        />
+      </Box>
+    )}
+  </Card>
+);
 
 const TournamentsPage: React.FC = () => {
   const [tournaments, setTournaments] = useState<AllTournament[]>([]);
@@ -172,6 +157,7 @@ const TournamentsPage: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const limit = 25;
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -219,6 +205,11 @@ const TournamentsPage: React.FC = () => {
   }, [fetchTournaments]);
 
   const hasFilters = regions.length > 0 || cadgTiers.length > 0 || pdgaFilter !== 'all' || regFilter !== 'all' || debouncedSearch;
+  const activeFilterCount =
+    regions.length +
+    cadgTiers.length +
+    (pdgaFilter !== 'all' ? 1 : 0) +
+    (regFilter !== 'all' ? 1 : 0);
 
   const clearFilters = () => {
     setRegions([]);
@@ -238,98 +229,228 @@ const TournamentsPage: React.FC = () => {
       </Typography>
 
       {/* Filter bar */}
-      <Box sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
-        <TextField
-          size="small"
-          placeholder={tr('tournaments.filter.search')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-            },
-          }}
-          sx={{ minWidth: 200 }}
-        />
-        <Autocomplete
-          multiple
-          size="small"
-          options={filterOptions.regions}
-          value={regions}
-          onChange={(_e, v) => { setRegions(v); setPage(1); }}
-          renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.region')} />}
-          sx={{ minWidth: 200 }}
-          limitTags={2}
-        />
-        <Autocomplete
-          multiple
-          size="small"
-          options={filterOptions.cadgTiers}
-          value={cadgTiers}
-          onChange={(_e, v) => { setCadgTiers(v); setPage(1); }}
-          renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.cadgTier')} />}
-          sx={{ minWidth: 200 }}
-          limitTags={2}
-        />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-            PDGA
-          </Typography>
-          <ToggleButtonGroup
-            value={pdgaFilter}
-            exclusive
-            onChange={(_e, v) => { if (v) { setPdgaFilter(v); setPage(1); } }}
+      {isMobile ? (
+        <Box sx={{ display: 'flex', gap: 1, mb: 2, alignItems: 'center' }}>
+          <TextField
             size="small"
-            sx={{ height: 32 }}
-          >
-            <ToggleButton value="all" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-              {tr('tournaments.filter.all')}
-            </ToggleButton>
-            <ToggleButton value="yes" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-              {tr('tournaments.filter.yes')}
-            </ToggleButton>
-            <ToggleButton value="no" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-              {tr('tournaments.filter.no')}
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-            {tr('tournaments.filter.registration')}
-          </Typography>
-          <ToggleButtonGroup
-            value={regFilter}
-            exclusive
-            onChange={(_e, v) => { if (v) { setRegFilter(v); setPage(1); } }}
-            size="small"
-            sx={{ height: 32 }}
-          >
-            <ToggleButton value="all" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-              {tr('tournaments.filter.all')}
-            </ToggleButton>
-            <ToggleButton value="yes" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-              {tr('tournaments.filter.yes')}
-            </ToggleButton>
-            <ToggleButton value="no" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
-              {tr('tournaments.filter.no')}
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-        {hasFilters && (
+            fullWidth
+            placeholder={tr('tournaments.filter.search')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
           <Button
+            variant="outlined"
             size="small"
-            startIcon={<FilterListOffIcon />}
+            startIcon={
+              <Badge badgeContent={activeFilterCount} color="primary" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem', height: 16, minWidth: 16 } }}>
+                <FilterListIcon fontSize="small" />
+              </Badge>
+            }
+            onClick={() => setMobileFiltersOpen(true)}
+            sx={{ flexShrink: 0, textTransform: 'none', minHeight: 40 }}
+          >
+            {tr('tournaments.filter.filtersButton')}
+          </Button>
+        </Box>
+      ) : (
+        <Box sx={{ display: 'flex', gap: 1.5, mb: 3, flexWrap: 'wrap', alignItems: 'center' }}>
+          <TextField
+            size="small"
+            placeholder={tr('tournaments.filter.search')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              },
+            }}
+            sx={{ minWidth: 200 }}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={filterOptions.regions}
+            value={regions}
+            onChange={(_e, v) => { setRegions(v); setPage(1); }}
+            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.region')} />}
+            sx={{ minWidth: 200 }}
+            limitTags={2}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={filterOptions.cadgTiers}
+            value={cadgTiers}
+            onChange={(_e, v) => { setCadgTiers(v); setPage(1); }}
+            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.cadgTier')} />}
+            sx={{ minWidth: 200 }}
+            limitTags={2}
+          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+              PDGA
+            </Typography>
+            <ToggleButtonGroup
+              value={pdgaFilter}
+              exclusive
+              onChange={(_e, v) => { if (v) { setPdgaFilter(v); setPage(1); } }}
+              size="small"
+              sx={{ height: 32 }}
+            >
+              <ToggleButton value="all" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
+                {tr('tournaments.filter.all')}
+              </ToggleButton>
+              <ToggleButton value="yes" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
+                {tr('tournaments.filter.yes')}
+              </ToggleButton>
+              <ToggleButton value="no" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
+                {tr('tournaments.filter.no')}
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+              {tr('tournaments.filter.registration')}
+            </Typography>
+            <ToggleButtonGroup
+              value={regFilter}
+              exclusive
+              onChange={(_e, v) => { if (v) { setRegFilter(v); setPage(1); } }}
+              size="small"
+              sx={{ height: 32 }}
+            >
+              <ToggleButton value="all" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
+                {tr('tournaments.filter.all')}
+              </ToggleButton>
+              <ToggleButton value="yes" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
+                {tr('tournaments.filter.yes')}
+              </ToggleButton>
+              <ToggleButton value="no" sx={{ px: 1.5, fontSize: '0.7rem', textTransform: 'none' }}>
+                {tr('tournaments.filter.no')}
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+          {hasFilters && (
+            <Button
+              size="small"
+              startIcon={<FilterListOffIcon />}
+              onClick={clearFilters}
+              sx={{ color: 'text.secondary' }}
+            >
+              {tr('tournaments.filter.clear')}
+            </Button>
+          )}
+        </Box>
+      )}
+
+      {/* Mobile filter bottom sheet */}
+      <Drawer
+        anchor="bottom"
+        open={mobileFiltersOpen}
+        onClose={() => setMobileFiltersOpen(false)}
+        slotProps={{
+          paper: {
+            sx: {
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              maxHeight: '85vh',
+            },
+          },
+        }}
+      >
+        <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+            {tr('tournaments.filter.title')}
+          </Typography>
+          <IconButton onClick={() => setMobileFiltersOpen(false)} aria-label={tr('tournaments.filter.close')}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Divider />
+        <Stack spacing={2.5} sx={{ p: 2, overflowY: 'auto', flex: 1 }}>
+          <Autocomplete
+            multiple
+            size="small"
+            options={filterOptions.regions}
+            value={regions}
+            onChange={(_e, v) => { setRegions(v); setPage(1); }}
+            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.region')} />}
+            limitTags={3}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={filterOptions.cadgTiers}
+            value={cadgTiers}
+            onChange={(_e, v) => { setCadgTiers(v); setPage(1); }}
+            renderInput={(params) => <TextField {...params} label={tr('tournaments.filter.cadgTier')} />}
+            limitTags={3}
+          />
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, display: 'block', mb: 0.5 }}>
+              PDGA
+            </Typography>
+            <ToggleButtonGroup
+              value={pdgaFilter}
+              exclusive
+              fullWidth
+              onChange={(_e, v) => { if (v) { setPdgaFilter(v); setPage(1); } }}
+              size="small"
+            >
+              <ToggleButton value="all" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.all')}</ToggleButton>
+              <ToggleButton value="yes" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.yes')}</ToggleButton>
+              <ToggleButton value="no" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.no')}</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, display: 'block', mb: 0.5 }}>
+              {tr('tournaments.filter.registration')}
+            </Typography>
+            <ToggleButtonGroup
+              value={regFilter}
+              exclusive
+              fullWidth
+              onChange={(_e, v) => { if (v) { setRegFilter(v); setPage(1); } }}
+              size="small"
+            >
+              <ToggleButton value="all" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.all')}</ToggleButton>
+              <ToggleButton value="yes" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.yes')}</ToggleButton>
+              <ToggleButton value="no" sx={{ textTransform: 'none' }}>{tr('tournaments.filter.no')}</ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+        </Stack>
+        <Divider />
+        <Box sx={{ p: 2, display: 'flex', gap: 1, justifyContent: 'space-between' }}>
+          <Button
             onClick={clearFilters}
-            sx={{ color: 'text.secondary' }}
+            disabled={!hasFilters}
+            startIcon={<FilterListOffIcon />}
+            sx={{ textTransform: 'none' }}
           >
             {tr('tournaments.filter.clear')}
           </Button>
-        )}
-      </Box>
+          <Button
+            variant="contained"
+            onClick={() => setMobileFiltersOpen(false)}
+            sx={{ textTransform: 'none', minWidth: 120 }}
+          >
+            {tr('tournaments.filter.apply')}
+          </Button>
+        </Box>
+      </Drawer>
 
       {/* Results count */}
       {!loading && (

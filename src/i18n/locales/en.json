@@ -299,7 +299,11 @@
       "all": "All",
       "yes": "Yes",
       "no": "No",
-      "search": "Search tournament..."
+      "search": "Search tournament...",
+      "title": "Filters",
+      "filtersButton": "Filters",
+      "apply": "Apply",
+      "close": "Close"
     }
   },
   "competitions": {
