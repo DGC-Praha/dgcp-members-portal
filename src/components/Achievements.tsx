@@ -15,6 +15,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import BadgeTooltip from './achievements/BadgeTooltip';
+import AchievementBadge from './achievements/AchievementBadge';
 import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from './achievements/shared';
 import { formatDate } from '../i18n/format';
 
@@ -383,8 +384,6 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
         <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 0.25 }}>
           {timeline.map((item) => {
             const ringColor = TIER_COLORS[item.tier] ?? '#9ca3af';
-            const bgColor = TIER_BG[item.tier] ?? '#f5f5f5';
-            const glow = TIER_GLOW[item.tier];
 
             return (
               <Box
@@ -398,34 +397,7 @@ const Achievements: React.FC<AchievementsProps> = ({ iDiscGolfId, title }) => {
                   borderRadius: 1,
                 }}
               >
-                <Box
-                  sx={{
-                    position: 'relative',
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
-                    background: ringColor,
-                    flexShrink: 0,
-                    ...(glow && { boxShadow: glow }),
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: '2px',
-                      left: '2px',
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '50%',
-                      bgcolor: bgColor,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <img src={twemoji(item.emoji)} alt="" width={13} height={13} style={{ pointerEvents: 'none' }} />
-                  </Box>
-                </Box>
+                <AchievementBadge emoji={item.emoji} tier={item.tier} size={28} />
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <Typography variant="caption" sx={{ fontWeight: 600, fontSize: '0.75rem', lineHeight: 1.2 }} noWrap>

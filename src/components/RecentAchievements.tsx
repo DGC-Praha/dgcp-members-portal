@@ -10,7 +10,8 @@ import {
 import { membersApi } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import BadgeTooltip from './achievements/BadgeTooltip';
-import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from './achievements/shared';
+import AchievementBadge from './achievements/AchievementBadge';
+import { TIER_COLORS, tierLabel } from './achievements/shared';
 import { formatDate } from '../i18n/format';
 
 interface AchievementItem {
@@ -25,49 +26,6 @@ interface AchievementItem {
   memberName: string;
   memberIDiscGolfId: number;
 }
-
-const AchievementBadge: React.FC<{ emoji: string; tier: string }> = ({ emoji, tier }) => {
-  const ringColor = TIER_COLORS[tier] ?? '#9ca3af';
-  const bgColor = TIER_BG[tier] ?? '#f5f5f5';
-  const glow = TIER_GLOW[tier];
-
-  return (
-    <Box
-      sx={{
-        position: 'relative',
-        width: 40,
-        height: 40,
-        borderRadius: '50%',
-        background: ringColor,
-        flexShrink: 0,
-        ...(glow && { boxShadow: glow }),
-      }}
-    >
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '2.5px',
-          left: '2.5px',
-          width: '35px',
-          height: '35px',
-          borderRadius: '50%',
-          bgcolor: bgColor,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <img
-          src={twemoji(emoji)}
-          alt=""
-          width={18}
-          height={18}
-          style={{ pointerEvents: 'none' }}
-        />
-      </Box>
-    </Box>
-  );
-};
 
 const RecentAchievements: React.FC = () => {
   const [items, setItems] = useState<AchievementItem[]>([]);

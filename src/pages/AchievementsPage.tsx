@@ -27,54 +27,13 @@ import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useIsMobile } from '../hooks/useIsMobile';
-import { TIER_BG, TIER_COLORS, TIER_GLOW, tierLabel, twemoji } from '../components/achievements/shared';
+import { TIER_COLORS, tierLabel } from '../components/achievements/shared';
+import AchievementBadge from '../components/achievements/AchievementBadge';
 import { formatDate } from '../i18n/format';
 import { SortMenu } from '../components/SortMenu';
+import { getInitials } from '../utils/getInitials';
 
 type SortColumn = 'rarity' | 'name';
-
-const AchievementBadge: React.FC<{ emoji: string; tier: string; size?: number }> = ({
-  emoji,
-  tier,
-  size = 40,
-}) => {
-  const ringColor = TIER_COLORS[tier] ?? '#9ca3af';
-  const bgColor = TIER_BG[tier] ?? '#f5f5f5';
-  const glow = TIER_GLOW[tier];
-  const innerSize = size - 5;
-  const iconSize = Math.round(size * 0.45);
-
-  return (
-    <Box
-      sx={{
-        position: 'relative',
-        width: size,
-        height: size,
-        borderRadius: '50%',
-        background: ringColor,
-        flexShrink: 0,
-        ...(glow && { boxShadow: glow }),
-      }}
-    >
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '2.5px',
-          left: '2.5px',
-          width: innerSize,
-          height: innerSize,
-          borderRadius: '50%',
-          bgcolor: bgColor,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <img src={twemoji(emoji)} alt="" width={iconSize} height={iconSize} style={{ pointerEvents: 'none' }} />
-      </Box>
-    </Box>
-  );
-};
 
 const rarityBucket = (
   percent: number,
@@ -247,13 +206,7 @@ const MobileLeaderboardCard: React.FC<{
                         alt={earner.name}
                         sx={{ width: 26, height: 26, bgcolor: tierColor, color: '#fff', fontSize: '0.7rem', fontWeight: 700 }}
                       >
-                        {earner.name
-                          .split(' ')
-                          .filter(Boolean)
-                          .map((w) => w[0])
-                          .slice(0, 2)
-                          .join('')
-                          .toUpperCase() || '?'}
+                        {getInitials(earner.name)}
                       </Avatar>
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600 }}>{earner.name}</TableCell>
@@ -415,13 +368,7 @@ const LeaderboardRow: React.FC<{
                             alt={earner.name}
                             sx={{ width: 28, height: 28, bgcolor: tierColor, color: '#fff', fontSize: '0.7rem', fontWeight: 700 }}
                           >
-                            {earner.name
-                              .split(' ')
-                              .filter(Boolean)
-                              .map((w) => w[0])
-                              .slice(0, 2)
-                              .join('')
-                              .toUpperCase() || '?'}
+                            {getInitials(earner.name)}
                           </Avatar>
                         </TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>{earner.name}</TableCell>
