@@ -27,7 +27,7 @@ import { useTranslation } from 'react-i18next';
 import TagBadge from './TagBadge';
 import RegistrationWatchdog from './RegistrationWatchdog';
 import type { TournamentPlayerState } from '../types/tournament';
-import { sortByState } from '../types/tournament';
+import { classifyTournament, sortByState } from '../types/tournament';
 
 export interface TournamentMember {
   name: string;
@@ -59,6 +59,8 @@ export interface Tournament {
   iDiscGolfTournamentId: number;
   pdgaTournamentId: number | null;
   propositionsSyncedAt: string | null;
+  /** Set once the operator finalizes results — fed to classifyTournament. */
+  resultsFinalizedAt: string | null;
   registrationPhases?: RegistrationPhase[];
   /** Number of registered (non-waitlist) members of *this club* attending. */
   members: TournamentMember[];
@@ -368,8 +370,35 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
 
   if (tournaments.length === 0) return null;
 
-  const visible = tournaments.slice(0, visibleCount);
-  const hasMore = visibleCount < tournaments.length;
+  // Split into live / upcoming subsections — waiting-for-results rows are
+  // filtered out BE-side (homepage doesn't surface finished tournaments).
+  const liveTournaments = tournaments.filter((t) => classifyTournament(t) === 'live');
+  const onlyUpcoming = tournaments.filter((t) => classifyTournament(t) === 'upcoming');
+
+  // Apply the caller's limit across the combined list, giving live rows
+  // priority (they're always shown; the cap only trims upcoming).
+  const visibleLive = liveTournaments.slice(0, visibleCount);
+  const visibleUpcoming = onlyUpcoming.slice(0, Math.max(0, visibleCount - visibleLive.length));
+  const totalVisible = visibleLive.length + visibleUpcoming.length;
+  const totalAvailable = liveTournaments.length + onlyUpcoming.length;
+  const hasMore = totalVisible < totalAvailable;
+
+  const renderList = (items: Tournament[]) => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+      {items.map((tournament) => (
+        <TournamentCard
+          key={tournament.id}
+          tournament={tournament}
+          isExpanded={expanded.has(tournament.id)}
+          onToggle={() => toggle(tournament.id)}
+        />
+      ))}
+    </Box>
+  );
+
+  // Subsection header only when both subsections are present; if only one
+  // bucket has rows, skip the extra heading to keep the widget compact.
+  const showSubheaders = visibleLive.length > 0 && visibleUpcoming.length > 0;
 
   return (
     <Box>
@@ -378,25 +407,35 @@ const UpcomingTournaments: React.FC<UpcomingTournamentsProps> = ({ limit, showHe
           {tr(headerKey)}
         </Typography>
       )}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        {visible.map((tournament) => (
-          <TournamentCard
-            key={tournament.id}
-            tournament={tournament}
-            isExpanded={expanded.has(tournament.id)}
-            onToggle={() => toggle(tournament.id)}
-          />
-        ))}
-      </Box>
+      {visibleLive.length > 0 && (
+        <Box sx={{ mb: showSubheaders ? 3 : 0 }}>
+          {showSubheaders && (
+            <Typography variant="overline" sx={{ mb: 1, display: 'block', letterSpacing: 1.2, color: '#ef4444', fontWeight: 700 }}>
+              {tr('tournaments.live')}
+            </Typography>
+          )}
+          {renderList(visibleLive)}
+        </Box>
+      )}
+      {visibleUpcoming.length > 0 && (
+        <Box>
+          {showSubheaders && (
+            <Typography variant="overline" sx={{ mb: 1, display: 'block', letterSpacing: 1.2, color: 'text.secondary' }}>
+              {tr('tournaments.upcomingNext')}
+            </Typography>
+          )}
+          {renderList(visibleUpcoming)}
+        </Box>
+      )}
       {hasMore && (
         <Box sx={{ mt: 2, textAlign: 'center' }}>
           <Button
             variant="text"
             endIcon={<ArrowForwardIcon />}
-            onClick={() => setVisibleCount(tournaments.length)}
+            onClick={() => setVisibleCount(totalAvailable)}
             sx={{ color: ACCENT, fontWeight: 600 }}
           >
-            {tr('tournaments.showMore', { count: tournaments.length - visibleCount })}
+            {tr('tournaments.showMore', { count: totalAvailable - totalVisible })}
           </Button>
         </Box>
       )}

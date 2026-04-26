@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -34,6 +34,7 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import TagBadge from '../components/TagBadge';
 import Achievements from '../components/Achievements';
 import type { TournamentPlayerState } from '../types/tournament';
+import { classifyTournament } from '../types/tournament';
 import RatingChart from '../components/RatingChart';
 import { formatDateRange } from '../components/UpcomingTournaments';
 import { formatDate } from '../i18n/format';
@@ -73,26 +74,20 @@ interface MemberDetail {
     newTagNumber: number;
     finishPosition: number;
   }>;
-  upcomingTournaments: Array<{
+  tournaments: Array<{
     name: string;
     dateStart: string | null;
     dateEnd: string;
+    resultsFinalizedAt: string | null;
     division: string;
     state?: TournamentPlayerState;
     cadgTier: string | null;
     region: string | null;
     iDiscGolfTournamentId: number;
-  }>;
-  pastTournaments: Array<{
-    name: string;
-    dateEnd: string;
-    division: string;
+    pdgaTournamentId: number | null;
     totalScore: number | null;
     finishPosition: number | null;
     tournamentRating: number | null;
-    pdgaTournamentId: number | null;
-    cadgTier: string | null;
-    iDiscGolfTournamentId: number;
   }>;
   sharedTournaments: Array<{
     name: string;
@@ -153,6 +148,32 @@ const MemberDetailPage: React.FC = () => {
       .finally(() => setLoading(false));
   }, [id, navigate]);
 
+  // Bucket the unified tournaments list into the three profile sections.
+  // "live" and "waiting" share a section (Právě hraje) with a per-row badge
+  // distinguishing them; past tournaments sit in their own table below.
+  //
+  // Kept ABOVE the early returns because hooks must run unconditionally on
+  // every render — placing it after `if (loading) return …` would change the
+  // hook-call count between renders and trip React's rules-of-hooks check.
+  const tournamentsSource = data?.tournaments;
+  const { liveTournaments, upcomingTournaments, pastTournaments } = useMemo(() => {
+    const live: NonNullable<typeof tournamentsSource> = [];
+    const upcoming: NonNullable<typeof tournamentsSource> = [];
+    const past: NonNullable<typeof tournamentsSource> = [];
+    for (const t of tournamentsSource ?? []) {
+      const bucket = classifyTournament(t);
+      if (bucket === 'live' || bucket === 'waiting') live.push(t);
+      else if (bucket === 'upcoming') upcoming.push(t);
+      else past.push(t);
+    }
+    // Profile expects chronological ordering: live earliest-first, upcoming
+    // earliest-first, past most-recent-first.
+    live.sort((a, b) => (a.dateStart ?? a.dateEnd).localeCompare(b.dateStart ?? b.dateEnd));
+    upcoming.sort((a, b) => (a.dateStart ?? a.dateEnd).localeCompare(b.dateStart ?? b.dateEnd));
+    past.sort((a, b) => b.dateEnd.localeCompare(a.dateEnd));
+    return { liveTournaments: live, upcomingTournaments: upcoming, pastTournaments: past };
+  }, [tournamentsSource]);
+
   if (loading) {
     return (
       <Box>
@@ -165,7 +186,7 @@ const MemberDetailPage: React.FC = () => {
 
   if (!data) return null;
 
-  const { player, membership, tagHistory, upcomingTournaments, pastTournaments, sharedTournaments, ratingHistory } = data;
+  const { player, membership, tagHistory, sharedTournaments, ratingHistory } = data;
 
   const sharedIds = new Set(sharedTournaments.map((t) => t.iDiscGolfTournamentId));
 
@@ -301,6 +322,92 @@ const MemberDetailPage: React.FC = () => {
       <Grid container spacing={3}>
         {/* Left column */}
         <Grid size={{ xs: 12, md: 8 }}>
+          {/* Live / waiting-for-results */}
+          {liveTournaments.length > 0 && (
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="overline" sx={{ letterSpacing: 1.5, color: 'text.secondary', display: 'block', mb: 1.5 }}>
+                {tr('playerCard.live')}
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {liveTournaments.map((t) => {
+                  const isShared = sharedIds.has(t.iDiscGolfTournamentId);
+                  const bucket = classifyTournament(t);
+                  const isWaiting = bucket === 'waiting';
+                  return (
+                    <Card
+                      key={t.iDiscGolfTournamentId}
+                      component="a"
+                      href={`https://idiscgolf.cz/turnaje/${t.iDiscGolfTournamentId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        textDecoration: 'none',
+                        color: 'inherit',
+                        border: '1px solid',
+                        // Live rows get a red accent to pop above the neutral upcoming list.
+                        borderColor: isWaiting ? 'divider' : '#ef4444',
+                        boxShadow: 'none',
+                        transition: 'all 0.2s ease',
+                        ...(isShared && { bgcolor: alpha('#1565c0', 0.03) }),
+                        '&:hover': { borderColor: ACCENT, boxShadow: `0 2px 12px ${alpha(ACCENT, 0.1)}` },
+                      }}
+                    >
+                      <CardContent sx={{ py: 1.5, px: 2, '&:last-child': { pb: 1.5 } }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <EmojiEventsOutlinedIcon sx={{ color: ACCENT, fontSize: 18 }} />
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{t.name}</Typography>
+                            {isShared && (
+                              <Tooltip title={tr('playerCard.sharedTournaments')} arrow>
+                                <GroupIcon sx={{ fontSize: 16, color: '#1565c0' }} />
+                              </Tooltip>
+                            )}
+                          </Box>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+                            {isWaiting ? (
+                              <Chip
+                                label={tr('playerCard.waitingForResults')}
+                                size="small"
+                                sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+                              />
+                            ) : (
+                              <Chip
+                                label={tr('playerCard.liveBadge')}
+                                size="small"
+                                sx={{
+                                  height: 20,
+                                  fontSize: '0.7rem',
+                                  fontWeight: 700,
+                                  bgcolor: '#ef4444',
+                                  color: '#fff',
+                                }}
+                              />
+                            )}
+                            {t.state === 'waiting' && (
+                              <Chip
+                                label={tr('tournaments.waitlist')}
+                                size="small"
+                                sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+                              />
+                            )}
+                            <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
+                            {t.cadgTier && (
+                              <Chip label={t.cadgTier} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }} />
+                            )}
+                            <Typography variant="caption" color="text.secondary">
+                              {formatDateRange(t.dateStart, t.dateEnd)}
+                            </Typography>
+                            <OpenInNewIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
+                          </Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </Box>
+            </Box>
+          )}
+
           {/* Upcoming tournaments */}
           {upcomingTournaments.length > 0 && (
             <Box sx={{ mb: 3 }}>

@@ -277,6 +277,8 @@
     }
   },
   "tournaments": {
+    "live": "Právě hraje",
+    "upcomingNext": "Nadcházející",
     "upcoming": "Nadcházející turnaje",
     "all": "Turnaje",
     "member": "člen",
@@ -363,6 +365,9 @@
     "wins": "Výhry",
     "losses": "Prohry",
     "holdDays": "Drží (dní)",
+    "live": "Právě hraje",
+    "liveBadge": "LIVE",
+    "waitingForResults": "Čeká na výsledky",
     "upcoming": "Nadcházející turnaje",
     "pastTournaments": "Odehrané turnaje {{year}}",
     "sharedTournaments": "Hrajeme spolu",

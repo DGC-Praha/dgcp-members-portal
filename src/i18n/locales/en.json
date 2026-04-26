@@ -277,6 +277,8 @@
     }
   },
   "tournaments": {
+    "live": "Playing now",
+    "upcomingNext": "Upcoming",
     "upcoming": "Upcoming tournaments",
     "all": "Tournaments",
     "member": "member",
@@ -363,6 +365,9 @@
     "wins": "Wins",
     "losses": "Losses",
     "holdDays": "Hold (days)",
+    "live": "Playing now",
+    "liveBadge": "LIVE",
+    "waitingForResults": "Waiting for results",
     "upcoming": "Upcoming tournaments",
     "pastTournaments": "Past tournaments {{year}}",
     "sharedTournaments": "Playing together",
