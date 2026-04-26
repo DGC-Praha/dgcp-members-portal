@@ -77,6 +77,7 @@ interface MemberDetail {
     dateStart: string | null;
     dateEnd: string;
     division: string;
+    state?: string;
     cadgTier: string | null;
     region: string | null;
     iDiscGolfTournamentId: number;
@@ -338,6 +339,13 @@ const MemberDetailPage: React.FC = () => {
                           )}
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+                          {t.state === 'waiting' && (
+                            <Chip
+                              label={tr('tournaments.waitlist')}
+                              size="small"
+                              sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+                            />
+                          )}
                           <Chip label={t.division} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
                           {t.cadgTier && (
                             <Chip label={t.cadgTier} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }} />

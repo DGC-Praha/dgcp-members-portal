@@ -31,6 +31,8 @@ export interface TournamentMember {
   name: string;
   avatarUrl: string | null;
   division: string;
+  /** 'registered' | 'waiting' | 'wildcard' — tagovacka stamps default 'registered' on old payloads. */
+  state?: string;
   tagNumber: number | null;
   iDiscGolfRating: number | null;
   pdgaRating: number | null;
@@ -57,7 +59,11 @@ export interface Tournament {
   pdgaTournamentId: number | null;
   propositionsSyncedAt: string | null;
   registrationPhases?: RegistrationPhase[];
+  /** Number of registered (non-waitlist) members of *this club* attending. */
   members: TournamentMember[];
+  /** Total players whose state is 'waiting' on the tournament — surfaced
+   *  separately so we can render "51/45" overflow. */
+  waitlistedPlayers?: number;
 }
 
 const ACCENT = '#e65100';
@@ -160,13 +166,30 @@ export const TournamentCard: React.FC<{
               },
             }}
           >
-            {tournament.members.map((m, i) => (
-              <Tooltip key={i} title={`${m.name} (${m.division})`} arrow>
-                <Avatar src={m.avatarUrl || undefined} alt={m.name} sx={{ bgcolor: '#0d47a1' }}>
-                  {getInitials(m.name)}
-                </Avatar>
-              </Tooltip>
-            ))}
+            {[...tournament.members]
+              // Registered first, waitlist after — so the avatar group preview
+              // doesn't lead with someone who isn't actually playing.
+              .sort((a, b) => Number(a.state === 'waiting') - Number(b.state === 'waiting'))
+              .map((m, i) => {
+                const onWaitlist = m.state === 'waiting';
+                return (
+                  <Tooltip
+                    key={i}
+                    title={onWaitlist
+                      ? `${m.name} (${m.division}) · ${tr('tournaments.waitlist')}`
+                      : `${m.name} (${m.division})`}
+                    arrow
+                  >
+                    <Avatar
+                      src={m.avatarUrl || undefined}
+                      alt={m.name}
+                      sx={{ bgcolor: '#0d47a1', opacity: onWaitlist ? 0.45 : 1 }}
+                    >
+                      {getInitials(m.name)}
+                    </Avatar>
+                  </Tooltip>
+                );
+              })}
           </AvatarGroup>
           <Typography variant="caption" color="text.secondary">
             {tournament.members.length === 1
@@ -189,17 +212,40 @@ export const TournamentCard: React.FC<{
               </TableRow>
             </TableHead>
             <TableBody>
-              {tournament.members.map((m, i) => (
-                <TableRow key={i} sx={{ '&:last-child td': { borderBottom: 0 } }}>
+              {[...tournament.members]
+                .sort((a, b) => Number(a.state === 'waiting') - Number(b.state === 'waiting'))
+                .map((m, i) => {
+                const onWaitlist = m.state === 'waiting';
+                return (
+                <TableRow key={i} sx={{ '&:last-child td': { borderBottom: 0 }, opacity: onWaitlist ? 0.6 : 1 }}>
                   <TableCell sx={{ pl: 0, py: 0.75, width: 40 }}>
-                    <Avatar src={m.avatarUrl || undefined} alt={m.name} sx={{ width: 32, height: 32, bgcolor: '#0d47a1', fontSize: '0.75rem' }}>
+                    <Avatar
+                      src={m.avatarUrl || undefined}
+                      alt={m.name}
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        bgcolor: '#0d47a1',
+                        fontSize: '0.75rem',
+                        opacity: onWaitlist ? 0.6 : 1,
+                      }}
+                    >
                       {getInitials(m.name)}
                     </Avatar>
                   </TableCell>
                   <TableCell sx={{ py: 0.75 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                      {m.name}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                        {m.name}
+                      </Typography>
+                      {onWaitlist && (
+                        <Chip
+                          label={tr('tournaments.waitlist')}
+                          size="small"
+                          sx={{ height: 18, fontSize: '0.65rem', fontWeight: 600, bgcolor: '#fff3e0', color: '#e65100' }}
+                        />
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell sx={{ py: 0.75 }}>
                     <Chip label={m.division} size="small" sx={{ height: 20, fontSize: '0.7rem', fontWeight: 600 }} />
@@ -240,7 +286,8 @@ export const TournamentCard: React.FC<{
                     </Box>
                   </TableCell>
                 </TableRow>
-              ))}
+                );
+              })}
             </TableBody>
           </Table>
           <Box sx={{ mt: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>

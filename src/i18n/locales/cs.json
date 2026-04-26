@@ -291,6 +291,8 @@
     "empty": "Žádné turnaje k zobrazení.",
     "players": "Hráčů",
     "totalCount": "Nalezeno {{count}} turnajů",
+    "waitlist": "Čekací listina",
+    "youAreWaitlisted": "Jsi na čekací listině",
     "filter": {
       "region": "Kraj",
       "cadgTier": "Série",

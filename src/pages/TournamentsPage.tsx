@@ -52,6 +52,10 @@ interface AllTournament {
   league: string | null;
   playerLimit: number | null;
   totalPlayers: number;
+  /** Players whose state is 'waiting'. Surfaced separately so we can render
+   *  e.g. "51/45" (X = registered + waitlisted) when a tournament is over
+   *  capacity. */
+  waitlistedPlayers?: number;
   registrationStatus: string | null;
   iDiscGolfTournamentId: number;
   pdgaTournamentId: number | null;
@@ -76,27 +80,32 @@ interface FilterOptions {
 function registrationDisplay(
   t: AllTournament,
   tr: (key: string, opts?: Record<string, unknown>) => string,
-): { text: string; emphasis: boolean } {
+): { text: string; emphasis: boolean; overflow: boolean } {
   const now = Date.now();
   const todayStart = new Date().setHours(0, 0, 0, 0);
   const tournamentEnded = new Date(t.dateEnd).getTime() < todayStart;
-  if (tournamentEnded) return { text: tr('tournaments.registration.over'), emphasis: false };
+  if (tournamentEnded) return { text: tr('tournaments.registration.over'), emphasis: false, overflow: false };
 
   const phases = t.registrationPhases;
   const pastPhases = phases.filter((p) => new Date(p.startsAt).getTime() <= now);
   const futurePhases = phases.filter((p) => new Date(p.startsAt).getTime() > now);
 
   if (pastPhases.length > 0) {
-    const count = t.playerLimit ? `${t.totalPlayers}/${t.playerLimit}` : String(t.totalPlayers);
-    return { text: count, emphasis: true };
+    // Total signups = registered + waitlisted. When this exceeds the limit
+    // we render the count in the over-capacity color so e.g. "51/45" reads
+    // as "tournament is full, 6 people are waiting in line".
+    const totalSignups = t.totalPlayers + (t.waitlistedPlayers ?? 0);
+    const overflow = t.playerLimit !== null && totalSignups > t.playerLimit;
+    const count = t.playerLimit ? `${totalSignups}/${t.playerLimit}` : String(totalSignups);
+    return { text: count, emphasis: true, overflow };
   }
   if (futurePhases.length > 0) {
     const next = futurePhases.reduce((a, b) =>
       new Date(a.startsAt).getTime() < new Date(b.startsAt).getTime() ? a : b,
     );
-    return { text: tr('tournaments.registration.opensAt', { date: formatDate(next.startsAt) }), emphasis: false };
+    return { text: tr('tournaments.registration.opensAt', { date: formatDate(next.startsAt) }), emphasis: false, overflow: false };
   }
-  return { text: tr('tournaments.registration.over'), emphasis: false };
+  return { text: tr('tournaments.registration.over'), emphasis: false, overflow: false };
 }
 
 /**
@@ -591,8 +600,12 @@ const TournamentsPage: React.FC = () => {
                           variant="caption"
                           sx={{
                             fontSize: '0.75rem',
-                            color: reg.emphasis ? 'text.primary' : 'text.secondary',
-                            fontWeight: reg.emphasis ? 600 : 400,
+                            color: reg.overflow
+                              ? 'error.main'
+                              : reg.emphasis
+                                ? 'text.primary'
+                                : 'text.secondary',
+                            fontWeight: reg.emphasis || reg.overflow ? 600 : 400,
                           }}
                         >
                           {reg.text}

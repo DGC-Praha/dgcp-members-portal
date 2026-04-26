@@ -30,7 +30,10 @@ interface MyTournament {
   iDiscGolfTournamentId: number;
   pdgaTournamentId: number | null;
   division: string;
+  /** 'registered' | 'waiting' | 'wildcard' — defaults to 'registered' for back-compat. */
+  state?: string;
   totalPlayers: number;
+  waitlistedPlayers?: number;
   playerLimit: number | null;
 }
 
@@ -136,6 +139,13 @@ const MyTournaments: React.FC = () => {
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexShrink: 0, ml: 1.5 }}>
+                    {t.state === 'waiting' && (
+                      <Chip
+                        label={tr('tournaments.youAreWaitlisted')}
+                        size="small"
+                        sx={{ height: 22, fontSize: '0.7rem', fontWeight: 700, bgcolor: '#fff3e0', color: '#e65100' }}
+                      />
+                    )}
                     <Chip
                       label={t.division}
                       size="small"

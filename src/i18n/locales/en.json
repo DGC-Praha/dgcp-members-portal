@@ -291,6 +291,8 @@
     "empty": "No tournaments to display.",
     "players": "Players",
     "totalCount": "Found {{count}} tournaments",
+    "waitlist": "Waitlist",
+    "youAreWaitlisted": "You're on the waitlist",
     "filter": {
       "region": "Region",
       "cadgTier": "Series",
