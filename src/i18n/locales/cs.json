@@ -317,11 +317,8 @@
   "competitions": {
     "title": "Soutěže",
     "tagovacka": "Tagovačka",
-    "tagovackaDesc": "Bag tag liga",
     "jamkovka": "Jamkovka",
-    "jamkovkaDesc": "Ace liga",
     "hdgl": "HDGL",
-    "hdglDesc": "Handicap liga",
     "go": "Přejít"
   },
   "account": {

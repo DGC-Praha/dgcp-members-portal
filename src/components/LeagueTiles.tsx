@@ -14,7 +14,6 @@ const HDGL_COLOR = '#5c6bc0';
 const competitions = [
   {
     titleKey: 'competitions.tagovacka',
-    descKey: 'competitions.tagovackaDesc',
     url: 'https://tagovacka.cz/club/dgcp',
     color: TAGOVACKA_PRIMARY,
     accent: TAGOVACKA_ACCENT,
@@ -22,7 +21,6 @@ const competitions = [
   },
   {
     titleKey: 'competitions.jamkovka',
-    descKey: 'competitions.jamkovkaDesc',
     url: 'https://jamkovka.dgcp.cz/',
     color: JAMKOVKA_COLOR,
     accent: JAMKOVKA_COLOR,
@@ -30,7 +28,6 @@ const competitions = [
   },
   {
     titleKey: 'competitions.hdgl',
-    descKey: 'competitions.hdglDesc',
     url: 'https://hdgl.lazerfunpraha.cz/',
     color: HDGL_COLOR,
     accent: HDGL_COLOR,
@@ -79,16 +76,11 @@ const LeagueTiles: React.FC = () => {
               >
                 {c.icon}
               </Box>
-              <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 0.25 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, color: c.color, lineHeight: 1.25 }}>
-                    {t(c.titleKey)}
-                  </Typography>
-                  <OpenInNewIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
-                </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.4 }}>
-                  {t(c.descKey)}
+              <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 700, color: c.color, lineHeight: 1.25 }}>
+                  {t(c.titleKey)}
                 </Typography>
+                <OpenInNewIcon sx={{ fontSize: 14, color: 'text.disabled' }} />
               </Box>
             </CardActionArea>
           </Card>
