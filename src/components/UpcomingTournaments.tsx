@@ -26,13 +26,14 @@ import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import TagBadge from './TagBadge';
 import RegistrationWatchdog from './RegistrationWatchdog';
+import type { TournamentPlayerState } from '../types/tournament';
+import { sortByState } from '../types/tournament';
 
 export interface TournamentMember {
   name: string;
   avatarUrl: string | null;
   division: string;
-  /** 'registered' | 'waiting' | 'wildcard' — tagovacka stamps default 'registered' on old payloads. */
-  state?: string;
+  state?: TournamentPlayerState;
   tagNumber: number | null;
   iDiscGolfRating: number | null;
   pdgaRating: number | null;
@@ -169,7 +170,7 @@ export const TournamentCard: React.FC<{
             {[...tournament.members]
               // Registered first, waitlist after — so the avatar group preview
               // doesn't lead with someone who isn't actually playing.
-              .sort((a, b) => Number(a.state === 'waiting') - Number(b.state === 'waiting'))
+              .sort(sortByState)
               .map((m, i) => {
                 const onWaitlist = m.state === 'waiting';
                 return (
@@ -213,7 +214,7 @@ export const TournamentCard: React.FC<{
             </TableHead>
             <TableBody>
               {[...tournament.members]
-                .sort((a, b) => Number(a.state === 'waiting') - Number(b.state === 'waiting'))
+                .sort(sortByState)
                 .map((m, i) => {
                 const onWaitlist = m.state === 'waiting';
                 return (

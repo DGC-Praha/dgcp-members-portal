@@ -16,6 +16,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import { formatDateRange } from './UpcomingTournaments';
+import type { TournamentPlayerState } from '../types/tournament';
 
 const ACCENT = '#e65100';
 
@@ -30,8 +31,7 @@ interface MyTournament {
   iDiscGolfTournamentId: number;
   pdgaTournamentId: number | null;
   division: string;
-  /** 'registered' | 'waiting' | 'wildcard' — defaults to 'registered' for back-compat. */
-  state?: string;
+  state?: TournamentPlayerState;
   totalPlayers: number;
   waitlistedPlayers?: number;
   playerLimit: number | null;

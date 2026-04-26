@@ -33,6 +33,7 @@ import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
 import TagBadge from '../components/TagBadge';
 import Achievements from '../components/Achievements';
+import type { TournamentPlayerState } from '../types/tournament';
 import RatingChart from '../components/RatingChart';
 import { formatDateRange } from '../components/UpcomingTournaments';
 import { formatDate } from '../i18n/format';
@@ -77,7 +78,7 @@ interface MemberDetail {
     dateStart: string | null;
     dateEnd: string;
     division: string;
-    state?: string;
+    state?: TournamentPlayerState;
     cadgTier: string | null;
     region: string | null;
     iDiscGolfTournamentId: number;
