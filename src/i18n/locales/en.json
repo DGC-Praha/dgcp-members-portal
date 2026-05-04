@@ -197,7 +197,17 @@
         "loadError": "Failed to load the member.",
         "sectionIdentity": "Personal details",
         "sectionContact": "Contact",
-        "sectionMembership": "Membership"
+        "sectionMembership": "Membership",
+        "sectionTagovacka": "Tagovačka",
+        "tagovacka": {
+          "loadError": "Failed to load Tagovačka data.",
+          "notLinked": "Member has no iDiscGolf ID — cannot manage tag.",
+          "notInClub": "Member is not an active Tagovačka member of this club.",
+          "currentTag": "Current tag",
+          "newTag": "New tag #",
+          "assign": "Assign tag",
+          "assigned": "Tag assigned."
+        }
       },
       "achievements": {
         "title": "Achievements",

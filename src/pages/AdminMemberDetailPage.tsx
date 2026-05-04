@@ -29,8 +29,10 @@ import {
   type Sex,
 } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
+import { canChangeTags } from '../auth/roles';
 import { usePageTitle } from '../hooks/usePageTitle';
 import AdminMemberAchievements from '../components/admin/AdminMemberAchievements';
+import AdminMemberTagovackaSection from '../components/admin/AdminMemberTagovackaSection';
 import { formatDateTime } from '../i18n/format';
 
 interface Draft {
@@ -364,6 +366,10 @@ const AdminMemberDetailPage: React.FC = () => {
           </Stack>
         </Stack>
       </Paper>
+
+      {canChangeTags(user) && (
+        <AdminMemberTagovackaSection iDiscGolfId={member.iDiscGolfId} />
+      )}
 
       <AdminMemberAchievements memberId={member.id} />
 

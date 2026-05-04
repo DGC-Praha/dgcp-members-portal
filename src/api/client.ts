@@ -134,10 +134,45 @@ apiClient.interceptors.response.use(
   },
 );
 
+export interface TagovackaMemberDetailMembership {
+  id: number;
+  tagNumber: number | null;
+  role: string;
+  active: boolean;
+  joinedAt: string;
+}
+
+export interface TagovackaMemberDetail {
+  player: {
+    name: string;
+    avatarUrl: string | null;
+    iDiscGolfId: number;
+    pdgaNumber: number | null;
+    iDiscGolfRating: number | null;
+    pdgaRating: number | null;
+    cadgMembershipActive: boolean | null;
+    pdgaMembershipActive: boolean | null;
+  };
+  membership: TagovackaMemberDetailMembership;
+  tagStats: {
+    currentTag: number | null;
+    bestTag: number | null;
+    totalExchanges: number;
+    wins: number;
+    losses: number;
+    longestHoldDays: number;
+  };
+}
+
 export const api = {
   getMe: () => apiClient.get('/api/me'),
   getMembers: () => apiClient.get('/api/members'),
   getMemberDetail: (iDiscGolfId: number) => apiClient.get(`/api/members/${iDiscGolfId}`),
+  manualTransfer: (data: {
+    clubId: number;
+    transfers: { membershipId: number; newTagNumber: number }[];
+    note?: string;
+  }) => apiClient.post<{ id: number; message: string }>('/api/manual-transfer', data),
   getUpcomingTournaments: () => apiClient.get('/api/tournaments/upcoming'),
   getMyTournaments: () => apiClient.get('/api/tournaments/my'),
   getMyWatchdogSubscriptions: () => apiClient.get('/api/registration-watchdog/subscriptions'),

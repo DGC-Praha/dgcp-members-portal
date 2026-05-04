@@ -6,6 +6,7 @@ interface Membership {
   role: string;
   active: boolean;
   club: {
+    id: number;
     name: string;
     slug: string;
     tagBadgeColor: string | null;
@@ -23,6 +24,9 @@ export interface TagovackaProfile {
   avatarUrl: string | null;
   cadgMembershipActive: boolean | null;
   pdgaMembershipActive: boolean | null;
+  // Tagovacka roles (e.g. ROLE_ADMIN). Used only for UI gating; server
+  // re-checks unconditionally on every mutation.
+  roles: string[];
   membership: Membership | null;
 }
 
@@ -141,12 +145,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             avatarUrl: d.avatarUrl ?? null,
             cadgMembershipActive: d.cadgMembershipActive ?? null,
             pdgaMembershipActive: d.pdgaMembershipActive ?? null,
+            roles: Array.isArray(d.roles) ? d.roles : [],
             membership: m
               ? {
                   tagNumber: m.tagNumber,
                   role: m.role,
                   active: m.active ?? true,
                   club: {
+                    id: m.club.id,
                     name: m.club.name,
                     slug: m.club.slug,
                     tagBadgeColor: m.club.tagBadgeColor,

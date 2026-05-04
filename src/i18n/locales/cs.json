@@ -197,7 +197,17 @@
         "loadError": "Nepodařilo se načíst člena.",
         "sectionIdentity": "Osobní údaje",
         "sectionContact": "Kontakt",
-        "sectionMembership": "Členství"
+        "sectionMembership": "Členství",
+        "sectionTagovacka": "Tagovačka",
+        "tagovacka": {
+          "loadError": "Nepodařilo se načíst data z Tagovačky.",
+          "notLinked": "Člen nemá iDiscGolf ID — tag nelze spravovat.",
+          "notInClub": "Člen není aktivním členem Tagovačky tohoto klubu.",
+          "currentTag": "Aktuální tag",
+          "newTag": "Nový tag #",
+          "assign": "Přiřadit tag",
+          "assigned": "Tag přiřazen."
+        }
       },
       "achievements": {
         "title": "Achievementy",
