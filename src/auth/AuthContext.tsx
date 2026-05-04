@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { Sentry } from '../sentry';
 import { api, membersApi, refreshAccessToken } from '../api/client';
 
 interface Membership {
@@ -129,6 +130,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(coreUser);
       setLoading(false);
 
+      Sentry.setUser({
+        id: String(coreUser.id),
+        email: coreUser.email ?? undefined,
+        username: coreUser.displayName,
+        iDiscGolfId: coreUser.iDiscGolfId,
+        isAdmin: coreUser.isAdmin,
+        isSystemAdmin: coreUser.isSystemAdmin,
+        activeMember: coreUser.activeMember,
+      });
+
       // Tagovacka data arrives independently — ratings, dots, avatar, tag.
       // A failure just leaves tagovacka=null with tagovackaLoaded=true so the
       // UI can drop to neutral placeholders instead of skeletons.
@@ -161,22 +172,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 }
               : null,
           };
-          setUser((prev) =>
-            prev === null
-              ? prev
-              : {
-                  ...prev,
-                  tagovacka,
-                  tagovackaLoaded: true,
-                  displayName: buildDisplayName(
-                    prev.firstName,
-                    prev.lastName,
-                    tagovacka,
-                    prev.email,
-                    prev.iDiscGolfId,
-                  ),
-                },
-          );
+          setUser((prev) => {
+            if (prev === null) return prev;
+            const next = {
+              ...prev,
+              tagovacka,
+              tagovackaLoaded: true,
+              displayName: buildDisplayName(
+                prev.firstName,
+                prev.lastName,
+                tagovacka,
+                prev.email,
+                prev.iDiscGolfId,
+              ),
+            };
+            Sentry.setUser({
+              id: String(next.id),
+              email: next.email ?? undefined,
+              username: next.displayName,
+              iDiscGolfId: next.iDiscGolfId,
+              isAdmin: next.isAdmin,
+              isSystemAdmin: next.isSystemAdmin,
+              activeMember: next.activeMember,
+              clubSlug: tagovacka.membership?.club.slug ?? null,
+              clubRole: tagovacka.membership?.role ?? null,
+              tagNumber: tagovacka.membership?.tagNumber ?? null,
+            });
+            return next;
+          });
         })
         .catch(() => {
           setUser((prev) =>
@@ -193,6 +216,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(null);
       setUser(null);
       setLoading(false);
+      Sentry.setUser(null);
       return false;
     }
   }, []);
@@ -209,6 +233,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const handleLogout = () => {
       setToken(null);
       setUser(null);
+      Sentry.setUser(null);
     };
     window.addEventListener('auth:logout', handleLogout);
     return () => window.removeEventListener('auth:logout', handleLogout);
@@ -241,6 +266,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('oauth_refresh_token');
     setToken(null);
     setUser(null);
+    Sentry.setUser(null);
   };
 
   const setTokenFromCallback = async (accessToken: string): Promise<boolean> => {
