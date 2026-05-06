@@ -67,7 +67,7 @@ function formatLastSeen(value: string | null | undefined): string {
   return formatDateTime(d, { dateStyle: 'short', timeStyle: 'short' });
 }
 
-type SortKey = 'name' | 'age' | 'status';
+type SortKey = 'name' | 'age' | 'status' | 'lastSeen';
 type SortDir = 'asc' | 'desc';
 
 const AdminMembersPage: React.FC = () => {
@@ -122,6 +122,16 @@ const AdminMembersPage: React.FC = () => {
         if (ax === null) return 1;
         if (bx === null) return -1;
         return (ax - bx) * dir;
+      }
+      if (sortKey === 'lastSeen') {
+        const at = a.lastSeenAt ? new Date(a.lastSeenAt).getTime() : NaN;
+        const bt = b.lastSeenAt ? new Date(b.lastSeenAt).getTime() : NaN;
+        const aValid = !Number.isNaN(at);
+        const bValid = !Number.isNaN(bt);
+        if (!aValid && !bValid) return 0;
+        if (!aValid) return 1;
+        if (!bValid) return -1;
+        return (at - bt) * dir;
       }
       const as = (a.activeMember ? 1 : 0) + (a.isAdmin ? 2 : 0);
       const bs = (b.activeMember ? 1 : 0) + (b.isAdmin ? 2 : 0);
@@ -253,7 +263,18 @@ const AdminMembersPage: React.FC = () => {
                   {t('admin.members.status')}
                 </TableSortLabel>
               </TableCell>
-              <TableCell sx={{ width: 160 }}>{t('admin.members.lastSeenAt')}</TableCell>
+              <TableCell
+                sortDirection={sortKey === 'lastSeen' ? sortDir : false}
+                sx={{ width: 160 }}
+              >
+                <TableSortLabel
+                  active={sortKey === 'lastSeen'}
+                  direction={sortKey === 'lastSeen' ? sortDir : 'asc'}
+                  onClick={() => toggleSort('lastSeen')}
+                >
+                  {t('admin.members.lastSeenAt')}
+                </TableSortLabel>
+              </TableCell>
               <TableCell sx={{ width: 48 }} />
             </TableRow>
           </TableHead>
