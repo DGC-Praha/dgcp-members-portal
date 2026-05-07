@@ -396,5 +396,8 @@
     "label": "Jazyk",
     "cs": "Čeština",
     "en": "English"
+  },
+  "footer": {
+    "partners": "Partneři klubu"
   }
 }

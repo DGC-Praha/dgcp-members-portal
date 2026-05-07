@@ -396,5 +396,8 @@
     "label": "Language",
     "cs": "Čeština",
     "en": "English"
+  },
+  "footer": {
+    "partners": "Club partners"
   }
 }

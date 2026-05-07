@@ -32,6 +32,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import DevBanner from './DevBanner';
+import Footer from './Footer';
 import LanguageSwitcher from './LanguageSwitcher';
 
 const DRAWER_WIDTH = 240;
@@ -231,12 +232,23 @@ const Layout: React.FC = () => {
         </Drawer>
       )}
 
-      <Box component="main" sx={{ flexGrow: 1, minWidth: 0, p: { xs: 1.5, sm: 3 } }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          minWidth: 0,
+          p: { xs: 1.5, sm: 3 },
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+        }}
+      >
         <Toolbar />
         <DevBanner />
-        <Box sx={{ pt: 2 }}>
+        <Box sx={{ pt: 2, flexGrow: 1 }}>
           <Outlet />
         </Box>
+        <Footer />
       </Box>
     </Box>
   );
