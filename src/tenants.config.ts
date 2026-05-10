@@ -33,10 +33,10 @@ export interface TenantConfig {
 
 const PROD_TAGOVACKA = {
   oauthAuthorizeUrl: 'https://tagovacka.cz/oauth/authorize',
-  // API + token endpoints route through the Cloudflare Worker, which adds
-  // CORS for cross-origin callers (members.dgcp.cz, etc.). Hitting
-  // tagovacka.cz directly serves the static frontend and 405s API methods.
-  apiUrl: 'https://discgolf-tags.dominik-voda.workers.dev',
+  // API + OAuth token endpoints live on a dedicated subdomain that fronts
+  // the Symfony backend with proper CORS. tagovacka.cz itself is the
+  // static frontend and 405s API methods.
+  apiUrl: 'https://api-discgolf-tags.dominikvoda.com',
   tagovackaPortalUrl: 'https://tagovacka.cz',
   membersApiUrl: 'https://api-members-dgcp.dominikvoda.com',
 };
