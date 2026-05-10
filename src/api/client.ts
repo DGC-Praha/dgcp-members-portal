@@ -206,7 +206,7 @@ export type Sex = 'male' | 'female';
 export type ClubRole = 'member' | 'admin';
 
 export interface ClubMembershipSummary {
-  clubSlug: string;
+  iDiscGolfClubId: number;
   clubName: string;
   role: ClubRole;
   active: boolean;

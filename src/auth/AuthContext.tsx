@@ -9,7 +9,6 @@ interface Membership {
   club: {
     id: number;
     name: string;
-    slug: string;
     tagBadgeColor: string | null;
     tagBadgeHighlightColor: string | null;
   };
@@ -165,7 +164,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   club: {
                     id: m.club.id,
                     name: m.club.name,
-                    slug: m.club.slug,
                     tagBadgeColor: m.club.tagBadgeColor,
                     tagBadgeHighlightColor: m.club.tagBadgeHighlightColor,
                   },
@@ -194,7 +192,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               isAdmin: next.isAdmin,
               isSystemAdmin: next.isSystemAdmin,
               activeMember: next.activeMember,
-              clubSlug: tagovacka.membership?.club.slug ?? null,
+              clubName: tagovacka.membership?.club.name ?? null,
               clubRole: tagovacka.membership?.role ?? null,
               tagNumber: tagovacka.membership?.tagNumber ?? null,
             });
