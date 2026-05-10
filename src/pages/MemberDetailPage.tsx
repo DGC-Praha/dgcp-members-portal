@@ -38,6 +38,9 @@ import { classifyTournament } from '../types/tournament';
 import RatingChart from '../components/RatingChart';
 import { formatDateRange } from '../components/UpcomingTournaments';
 import { formatDate } from '../i18n/format';
+import { resolveTenant } from '../tenants.config';
+
+const TENANT_LABEL = resolveTenant().displayName;
 
 const ACCENT = '#e65100';
 
@@ -294,7 +297,7 @@ const MemberDetailPage: React.FC = () => {
                         </Typography>
                       )}
                       <Divider orientation="vertical" flexItem />
-                      <StatusDot active={membership.active} label="DGCP" />
+                      <StatusDot active={membership.active} label={TENANT_LABEL} />
                       <StatusDot active={player.cadgMembershipActive} label="ČADG" />
                       {player.pdgaNumber && <StatusDot active={player.pdgaMembershipActive} label="PDGA" />}
                       <Divider orientation="vertical" flexItem />

@@ -3,6 +3,7 @@ import { Box, Typography, Chip } from '@mui/material';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useTranslation } from 'react-i18next';
 import type { User } from '../auth/AuthContext';
+import { resolveTenant } from '../tenants.config';
 
 interface MembershipStatusProps {
   user: User;
@@ -32,11 +33,12 @@ const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
 
 const MembershipStatus: React.FC<MembershipStatusProps> = ({ user }) => {
   const { t: tr } = useTranslation();
+  const tenant = resolveTenant();
 
   const tag = user.tagovacka;
   const rows: MembershipRow[] = [
     {
-      label: tr('membership.dgcp'),
+      label: tenant.displayName,
       active: user.activeMember,
       renewUrl: 'https://tagovacka.cz',
       show: true,

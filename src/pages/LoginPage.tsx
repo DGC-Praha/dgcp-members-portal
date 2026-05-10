@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import DevBanner from '../components/DevBanner';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { resolveTenant } from '../tenants.config';
 
 const TAGOVACKA_PRIMARY = '#001645';
 const TAGOVACKA_ACCENT = '#db2228';
@@ -14,6 +15,7 @@ const LoginPage: React.FC = () => {
   const { isAuthenticated, loading, login } = useAuth();
   const { t } = useTranslation();
   usePageTitle(t('pageTitle.login'));
+  const tenant = resolveTenant();
 
   if (loading) return null;
   if (isAuthenticated) return <Navigate to="/" replace />;
@@ -37,15 +39,15 @@ const LoginPage: React.FC = () => {
         <CardContent sx={{ textAlign: 'center', py: 5, px: 4 }}>
           <Box
             component="img"
-            src="/dgcp-logo-white.png"
-            alt="DGCP"
+            src={tenant.logoUrl}
+            alt={tenant.displayName}
             sx={{ height: 48, mb: 2, filter: 'brightness(0)' }}
           />
           <Typography variant="h5" fontWeight={700} sx={{ mb: 0.5 }}>
-            DGCP Members
+            {tenant.displayName} Members
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-            {t('login.subtitle')}
+            {t('login.subtitle', { clubName: tenant.displayName })}
           </Typography>
 
           <Divider sx={{ mb: 3 }} />

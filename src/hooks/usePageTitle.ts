@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
+import { resolveTenant } from '../tenants.config';
 
-const BASE = 'DGCP Members';
+const BASE = `${resolveTenant().displayName} Members`;
 
 export function usePageTitle(title?: string): void {
   useEffect(() => {

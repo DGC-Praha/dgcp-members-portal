@@ -34,6 +34,9 @@ import { useTranslation } from 'react-i18next';
 import DevBanner from './DevBanner';
 import Footer from './Footer';
 import LanguageSwitcher from './LanguageSwitcher';
+import { resolveTenant } from '../tenants.config';
+
+const tenant = resolveTenant();
 
 const DRAWER_WIDTH = 240;
 
@@ -78,12 +81,12 @@ const Layout: React.FC = () => {
       <Toolbar sx={{ gap: 1.5 }}>
         <Box
           component="img"
-          src="/dgcp-logo-white.png"
-          alt="DGCP"
+          src={tenant.logoUrl}
+          alt={tenant.displayName}
           sx={{ height: 32 }}
         />
         <Typography variant="h6" noWrap sx={{ fontWeight: 700 }}>
-          DGCP
+          {tenant.displayName}
         </Typography>
       </Toolbar>
       <List>
@@ -123,8 +126,8 @@ const Layout: React.FC = () => {
           )}
           <Box
             component="img"
-            src="/dgcp-logo-white.png"
-            alt="DGCP"
+            src={tenant.logoUrl}
+            alt={tenant.displayName}
             sx={{ height: 36, mr: 1.5, display: { xs: 'none', md: 'block' } }}
           />
           <Typography
@@ -136,11 +139,11 @@ const Layout: React.FC = () => {
               // At very narrow widths the title competes with the hamburger,
               // language toggle and avatar for space — hide it to prevent
               // squeezing. The logo acts as the brand on md+ and the
-              // drawer still shows "DGCP" at the top inside the drawer.
+              // drawer still shows the tenant name at the top inside the drawer.
               display: { xs: 'none', sm: 'block' },
             }}
           >
-            DGCP Members
+            {tenant.displayName} Members
           </Typography>
           <Box sx={{ flexGrow: { xs: 1, sm: 0 } }} />
           <LanguageSwitcher dark />

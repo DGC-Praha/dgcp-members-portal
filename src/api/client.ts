@@ -1,7 +1,9 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { resolveTenant } from '../tenants.config';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
-const MEMBERS_API_BASE = import.meta.env.VITE_MEMBERS_API_URL || '';
+const tenant = resolveTenant();
+const API_BASE = tenant.apiUrl;
+const MEMBERS_API_BASE = tenant.membersApiUrl;
 
 const apiClient = axios.create({
   baseURL: API_BASE,

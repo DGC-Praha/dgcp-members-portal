@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
+import { resolveTenant } from '../tenants.config';
 
 const OAuthCallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -44,11 +45,11 @@ const OAuthCallbackPage: React.FC = () => {
       }
 
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || '';
-        const res = await axios.post(`${apiUrl}/oauth/token`, {
+        const tenant = resolveTenant();
+        const res = await axios.post(`${tenant.apiUrl}/oauth/token`, {
           grant_type: 'authorization_code',
           code,
-          client_id: import.meta.env.VITE_OAUTH_CLIENT_ID,
+          client_id: tenant.oauthClientId,
           code_verifier: codeVerifier,
           redirect_uri: `${window.location.origin}/oauth/callback`,
         });

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Sentry } from '../sentry';
 import { api, membersApi, refreshAccessToken } from '../api/client';
+import { resolveTenant } from '../tenants.config';
 
 interface Membership {
   tagNumber: number | null;
@@ -246,8 +247,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const challenge = base64UrlEncode(new Uint8Array(challengeBuf));
     sessionStorage.setItem('oauth_code_verifier', verifier);
 
-    const clientId = import.meta.env.VITE_OAUTH_CLIENT_ID;
-    const authorizeUrl = import.meta.env.VITE_OAUTH_AUTHORIZE_URL;
+    const tenant = resolveTenant();
+    const clientId = tenant.oauthClientId;
+    const authorizeUrl = tenant.oauthAuthorizeUrl;
     const redirectUri = `${window.location.origin}/oauth/callback`;
     const params = new URLSearchParams({
       client_id: clientId,

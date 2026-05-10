@@ -19,6 +19,9 @@ import UpcomingTournaments from '../components/UpcomingTournaments';
 import MyTournaments from '../components/MyTournaments';
 import RecentAchievements from '../components/RecentAchievements';
 import LeagueTiles from '../components/LeagueTiles';
+import { resolveTenant } from '../tenants.config';
+
+const TENANT_LABEL = resolveTenant().displayName;
 
 const StatusDot: React.FC<{ active: boolean | null }> = ({ active }) => {
   const color = active === true ? '#4caf50' : active === false ? '#f44336' : '#9e9e9e';
@@ -156,7 +159,7 @@ const HomePage: React.FC = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 'auto' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                     <StatusDot active={user.activeMember} />
-                    <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>DGCP</Typography>
+                    <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>{TENANT_LABEL}</Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
                     <StatusDot active={tagLoaded ? tag?.cadgMembershipActive ?? null : null} />

@@ -5,6 +5,11 @@ import AdjustOutlinedIcon from '@mui/icons-material/AdjustOutlined';
 import LeaderboardOutlinedIcon from '@mui/icons-material/LeaderboardOutlined';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useTranslation } from 'react-i18next';
+import { resolveTenant } from '../tenants.config';
+
+// Tile list is DGCP-specific (jamkovka.dgcp.cz, hdgl.lazerfunpraha.cz). When
+// onboarding more tenants, lift `competitions` into per-tenant config.
+const DGCP_IDISCGOLF_CLUB_ID = 15;
 
 const TAGOVACKA_PRIMARY = '#001645';
 const TAGOVACKA_ACCENT = '#db2228';
@@ -37,6 +42,11 @@ const competitions = [
 
 const LeagueTiles: React.FC = () => {
   const { t } = useTranslation();
+  const tenant = resolveTenant();
+
+  if (tenant.iDiscGolfClubId !== DGCP_IDISCGOLF_CLUB_ID) {
+    return null;
+  }
 
   return (
     <Grid container spacing={2}>

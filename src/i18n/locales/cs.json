@@ -18,7 +18,7 @@
     "dismiss": "Skrýt"
   },
   "login": {
-    "subtitle": "Portál pro členy Discgolf club Prague",
+    "subtitle": "Portál pro členy klubu {{clubName}}",
     "button": "Přihlásit se přes tagovacka.cz"
   },
   "callback": {
@@ -358,7 +358,6 @@
   },
   "membership": {
     "title": "Členství",
-    "dgcp": "DGCP",
     "cadg": "ČADG",
     "pdga": "PDGA",
     "active": "Aktivní",

@@ -25,6 +25,9 @@ import { usePageTitle } from '../hooks/usePageTitle';
 import { useIsMobile } from '../hooks/useIsMobile';
 import TagBadge from '../components/TagBadge';
 import { SortMenu, type SortOption } from '../components/SortMenu';
+import { resolveTenant } from '../tenants.config';
+
+const TENANT_LABEL = resolveTenant().displayName;
 
 /** Tagovacka-enriched member row, sourced client-side by joining members-api
  *  (canonical DGCP roster) with tagovacka's /api/members payload on iDiscGolfId.
@@ -154,7 +157,7 @@ const MobileMemberCard: React.FC<{
           />
         )}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, ml: 0.25 }}>
-          <StatusDotLabeled active={member.dgcpMembershipActive} label="DGCP" />
+          <StatusDotLabeled active={member.dgcpMembershipActive} label={TENANT_LABEL} />
           <StatusDotLabeled active={member.cadgMembershipActive} label="ČADG" />
           {member.pdgaNumber != null && (
             <StatusDotLabeled active={member.pdgaMembershipActive} label="PDGA" />
@@ -379,7 +382,7 @@ const MembersPage: React.FC = () => {
                       {t('tournaments.rating')}
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 600 }}>DGCP</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 600 }}>{TENANT_LABEL}</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600 }}>ČADG</TableCell>
                   <TableCell align="center" sx={{ fontWeight: 600 }}>PDGA</TableCell>
                 </TableRow>
