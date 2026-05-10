@@ -1,11 +1,15 @@
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+import { initSentry } from './sentry';
 import { TENANTS } from './tenants.config';
 
 const root = document.getElementById('root')!;
 
-// Tenant must be resolvable BEFORE any module that calls resolveTenant() at
-// import time (api/client, Layout, usePageTitle). Resolving here lets us
-// render a meaningful "not configured" screen instead of a blank page.
 if (TENANTS[window.location.hostname] === undefined) {
+  // Render a meaningful "not configured" screen instead of letting the
+  // module-evaluation throw chain (api/client, Layout, usePageTitle) leave
+  // the user with a blank page on a misconfigured deploy.
   root.innerHTML = `
     <div style="font-family: system-ui, sans-serif; padding: 2rem; max-width: 36rem; margin: 4rem auto;">
       <h1 style="margin: 0 0 0.5rem;">Tenant not configured</h1>
@@ -16,7 +20,10 @@ if (TENANTS[window.location.hostname] === undefined) {
     </div>
   `;
 } else {
-  // Async-import the rest only after the host is known-good — avoids the
-  // module-evaluation throw chain on misconfigured deploys.
-  import('./bootstrap').then(({ bootstrap }) => bootstrap(root));
+  initSentry();
+  createRoot(root).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  );
 }
