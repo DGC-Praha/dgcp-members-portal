@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { resolveTenant } from '../tenants.config';
+import { resolveTenant, TAGOVACKA_API_URL } from '../tenants.config';
 
 const OAuthCallbackPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -46,7 +46,7 @@ const OAuthCallbackPage: React.FC = () => {
 
       try {
         const tenant = resolveTenant();
-        const res = await axios.post(`${tenant.apiUrl}/oauth/token`, {
+        const res = await axios.post(`${TAGOVACKA_API_URL}/oauth/token`, {
           grant_type: 'authorization_code',
           code,
           client_id: tenant.oauthClientId,

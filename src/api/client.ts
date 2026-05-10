@@ -1,9 +1,8 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import { resolveTenant } from '../tenants.config';
+import { TAGOVACKA_API_URL, MEMBERS_API_URL } from '../tenants.config';
 
-const tenant = resolveTenant();
-const API_BASE = tenant.apiUrl;
-const MEMBERS_API_BASE = tenant.membersApiUrl;
+const API_BASE = TAGOVACKA_API_URL;
+const MEMBERS_API_BASE = MEMBERS_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_BASE,

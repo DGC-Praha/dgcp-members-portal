@@ -4,13 +4,12 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../auth/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { usePageTitle } from '../hooks/usePageTitle';
-import { resolveTenant } from '../tenants.config';
+import { TAGOVACKA_PORTAL_URL } from '../tenants.config';
 
 const AccountPage: React.FC = () => {
   const { user, logout } = useAuth();
   const { t } = useTranslation();
   usePageTitle(t('pageTitle.account'));
-  const tenant = resolveTenant();
 
   if (!user) return null;
 
@@ -71,7 +70,7 @@ const AccountPage: React.FC = () => {
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Button
               variant="outlined"
-              href={`${tenant.tagovackaPortalUrl}/profile`}
+              href={`${TAGOVACKA_PORTAL_URL}/profile`}
               target="_blank"
             >
               {t('account.changePassword')}

@@ -16,30 +16,28 @@ export interface TenantConfig {
   logoUrl: string;
   /** Per-tenant OAuth app's client_id, registered on tagovacka. */
   oauthClientId: string;
-  /** Tagovacka authorize endpoint. */
-  oauthAuthorizeUrl: string;
-  /** Tagovacka API base URL. */
-  apiUrl: string;
-  /**
-   * Tagovacka user-facing portal base URL — links from the SPA into the
-   * provider's profile/password pages append a path to this. Distinct from
-   * `apiUrl` so localhost dev (frontend on :5173, backend on :80) stays
-   * correct.
-   */
-  tagovackaPortalUrl: string;
-  /** dgcp-members-api base URL. */
-  membersApiUrl: string;
 }
 
-const PROD_TAGOVACKA = {
-  oauthAuthorizeUrl: 'https://tagovacka.cz/oauth/authorize',
-  // API + OAuth token endpoints live on a dedicated subdomain that fronts
-  // the Symfony backend with proper CORS. tagovacka.cz itself is the
-  // static frontend and 405s API methods.
-  apiUrl: 'https://api-discgolf-tags.dominikvoda.com',
-  tagovackaPortalUrl: 'https://tagovacka.cz',
-  membersApiUrl: 'https://api-members-dgcp.dominikvoda.com',
-};
+// Backend infrastructure shared across every tenant. Tagovacka is the single
+// auth provider for all clubs; dgcp-members-api is one deployment that scopes
+// requests by JWT claim. None of this should be duplicated into TENANTS.
+const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+
+export const TAGOVACKA_API_URL = isLocalhost
+  ? 'http://disc-golf-tags.local'
+  : 'https://api-discgolf-tags.dominikvoda.com';
+
+export const TAGOVACKA_AUTHORIZE_URL = isLocalhost
+  ? 'http://localhost:5173/oauth/authorize'
+  : 'https://tagovacka.cz/oauth/authorize';
+
+export const TAGOVACKA_PORTAL_URL = isLocalhost
+  ? 'http://localhost:5173'
+  : 'https://tagovacka.cz';
+
+export const MEMBERS_API_URL = isLocalhost
+  ? 'http://localhost:8090'
+  : 'https://api-members-dgcp.dominikvoda.com';
 
 export const TENANTS: Record<string, TenantConfig> = {
   'members.dgcp.cz': {
@@ -47,21 +45,14 @@ export const TENANTS: Record<string, TenantConfig> = {
     displayName: 'DGCP',
     logoUrl: '/dgcp-logo-white.png',
     oauthClientId: 'dgt_b4a0540ab0f098866a241af5651a2aab',
-    ...PROD_TAGOVACKA,
   },
-  // Local development — uses the prod members.dgcp.cz OAuth app id; its
-  // redirect allowlist already covers http://localhost:5174/oauth/callback.
-  // The authorize URL points at tagovacka's frontend (port 5173), the API
-  // base at tagovacka's backend (port 80 / disc-golf-tags.local host alias).
+  // Local development: reuse the prod DGCP OAuth app (its redirect_uri
+  // allowlist already includes http://localhost:5174/oauth/callback).
   localhost: {
     iDiscGolfClubId: 15,
     displayName: 'DGCP (dev)',
     logoUrl: '/dgcp-logo-white.png',
     oauthClientId: 'dgt_b4a0540ab0f098866a241af5651a2aab',
-    oauthAuthorizeUrl: 'http://localhost:5173/oauth/authorize',
-    apiUrl: 'http://disc-golf-tags.local',
-    tagovackaPortalUrl: 'http://localhost:5173',
-    membersApiUrl: 'http://localhost:8090',
   },
 };
 

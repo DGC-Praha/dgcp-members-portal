@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Sentry } from '../sentry';
 import { api, membersApi, refreshAccessToken } from '../api/client';
-import { resolveTenant } from '../tenants.config';
+import { resolveTenant, TAGOVACKA_AUTHORIZE_URL } from '../tenants.config';
 
 interface Membership {
   tagNumber: number | null;
@@ -249,7 +249,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const tenant = resolveTenant();
     const clientId = tenant.oauthClientId;
-    const authorizeUrl = tenant.oauthAuthorizeUrl;
+    const authorizeUrl = TAGOVACKA_AUTHORIZE_URL;
     const redirectUri = `${window.location.origin}/oauth/callback`;
     const params = new URLSearchParams({
       client_id: clientId,
