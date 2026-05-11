@@ -46,6 +46,12 @@ export const TENANTS: Record<string, TenantConfig> = {
     logoUrl: '/dgcp-logo-white.png',
     oauthClientId: 'dgt_b4a0540ab0f098866a241af5651a2aab',
   },
+  'hornicikladno.dominikvoda.com': {
+    iDiscGolfClubId: 3,
+    displayName: 'Hornici Kladno',
+    logoUrl: '/kladno-logo.png',
+    oauthClientId: 'dgt_c463d3af3513ecbb5d5fe2e1eab72280',
+  },
   // Local development: reuse the prod DGCP OAuth app (its redirect_uri
   // allowlist already includes http://localhost:5174/oauth/callback).
   localhost: {
